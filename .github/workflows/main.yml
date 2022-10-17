@@ -24,7 +24,7 @@ jobs:
           maven-version: '3.8.1'
       - name: Build with Maven
         run: |
-          mvn install -q -Dnative -DskipTests
+          mvn clean install -q -Dnative -DskipTests
           ls target
       - name: Upload artifact
         uses: actions/upload-artifact@v2
