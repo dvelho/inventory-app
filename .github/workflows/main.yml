@@ -30,9 +30,7 @@ jobs:
           maven-version: 3.8.6
       - name: Maven Clean and Verify
         run: |
-          brew install docker
-          docker --version 
-          mvn -q clean verify -Pnative --define quarkus.native.container-build=true
+          mvn -q clean verify -Pnative
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         with:
