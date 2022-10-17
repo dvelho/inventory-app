@@ -19,12 +19,18 @@ jobs:
           gu --version
           native-image --version
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v4
+        uses: stCarolas/setup-maven@v4.2
         with:
-          maven-version: '3.8.1'
+          maven-version: '3.8.4'
+      - name: Cache Maven packages
+        uses: actions/cache@v2.1.7
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
       - name: Build with Maven
         run: |
-          mvn clean install -q -Dnative -DskipTests
+          mvn clean install -q -Dnative -DskipTests -Dquarkus.native.container-build=true
           ls target
       - name: Upload artifact
         uses: actions/upload-artifact@v2
