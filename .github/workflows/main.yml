@@ -9,7 +9,7 @@ jobs:
         with:
           version: 'latest'
           java-version: '17'
-          components: 'native-image'
+          components: 'native-image,llvm,llvm-toolchain'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Show variables
         run: |
