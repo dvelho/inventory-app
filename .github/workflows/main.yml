@@ -26,3 +26,9 @@ jobs:
         run: |
           mvn install -q -Dnative -DskipTests
           ls target
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: function
+          path: target/function.zip
+          if-no-files-found: error
