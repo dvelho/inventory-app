@@ -19,8 +19,6 @@ jobs:
     runs-on: macos-12
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
       - name: Install docker
         run: brew install docker 
       - name: Maven Clean and Verify
