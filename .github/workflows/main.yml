@@ -22,7 +22,7 @@ jobs:
       - name: Maven Clean and Verify
         run: |
           brew install docker
-          service docker start 
+          docker --version 
           mvn -q clean verify -Pnative --define quarkus.native.container-build=true
       - name: Upload native executable
         uses: actions/upload-artifact@v2
