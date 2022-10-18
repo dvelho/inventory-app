@@ -38,7 +38,7 @@ jobs:
           sam build --template target/sam.native.yaml
       - name: Sam deploy
         run: |
-          sam deploy --template-file .aws-sam/build/template.yaml --stack-name inventory-app --capabilities CAPABILITY_IAM
+          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name inventory-app --capabilities CAPABILITY_IAM
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         with:
