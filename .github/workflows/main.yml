@@ -1,7 +1,7 @@
 on: [push]
 jobs:
   native_build:
-    runs-on: macos-12
+    runs-on: ubuntu-latest
     name: Build native Quarkus app
     steps:
       - uses: actions/labeler@v4
@@ -21,7 +21,8 @@ jobs:
         env:
             GITHUB_TOKEN: ${{ github.token }}
         run: |
-          mvn -q clean verify -Pnative
+          mvn install -q -Dnative -DskipTests -Dquarkus.native.container-build=true
+
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         env:
