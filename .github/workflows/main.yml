@@ -2,7 +2,7 @@ on: [push]
 
 jobs:
   native_build:
-    runs-on: macos-12
+    runs-on: ubuntu-22.04
     name: Build native Quarkus app
     steps:
       - name: Checkout the code
