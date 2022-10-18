@@ -24,9 +24,9 @@ jobs:
             version: 'latest'
             java-version: '17'
             components: 'native-image'
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
+      #- name: Set up Homebrew
+      #  id: set-up-homebrew
+      #  uses: Homebrew/actions/setup-homebrew@master
       - name: Maven Clean and Verify
         run: |
           mvn -q clean verify -Dnative -DskipTests
