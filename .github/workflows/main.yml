@@ -23,16 +23,16 @@ jobs:
         with:
             version: 'latest'
             java-version: '17'
-            components: 'native-image,llvm-toolchain,llvm'
+            components: 'native-image'
       #- name: Set up Homebrew
       #  id: set-up-homebrew
       #  uses: Homebrew/actions/setup-homebrew@master
       - name: Maven Clean and Verify
         run: |
           mvn -q clean verify -Dnative -DskipTests
-      - name: Invoke local native app
-        run: |
-          sam local invoke --template target/sam.native.yaml --event payload.json
+      #- name: Invoke local native app
+      #  run: |
+      #    sam local invoke --template target/sam.native.yaml --event payload.json
       - name: Sam build
         run: |
           sam build --template target/sam.native.yaml
