@@ -29,8 +29,7 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
       - name: Maven Clean and Verify
         run: |
-          mvn clean verify -Dnative -DskipTests
-            - name: Maven Clean and Verify
+          mvn -q clean verify -Dnative -DskipTests
       - name: Invoke local native app
         run: |
           sam local invoke --template target/sam.native.yaml --event payload.json
