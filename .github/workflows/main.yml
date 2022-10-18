@@ -14,7 +14,8 @@ jobs:
             components: 'native-image'
       - name: Install quarkus cli
         run: |
-          brew install quarkusio/tap/quarkus
+          curl -Ls https://sh.jbang.dev | bash -s - trust add https://repo1.maven.org/maven2/io/quarkus/quarkus-cli/
+          curl -Ls https://sh.jbang.dev | bash -s - app install --fresh --force quarkus@quarkusio
       - name: Maven Clean and Verify
         run: |
           quarkus build --native --no-tests -Dquarkus.native.container-build=true
