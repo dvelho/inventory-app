@@ -13,7 +13,6 @@ jobs:
             version: 'latest'
             java-version: '17'
             components: 'native-image'
-      - name: build image
       - name: Maven Clean and Verify
         run: |
           mvn -q clean verify -Pnative
