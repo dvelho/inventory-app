@@ -22,6 +22,7 @@ jobs:
       - name: Maven Clean and Verify
         run: |
           quarkus build --native --no-tests
+          sam local invoke --template target/sam.native.yaml --event payload.json
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         with:
