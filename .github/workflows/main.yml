@@ -19,5 +19,5 @@ jobs:
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         with:
-          name: function.zip
+          name: function
           path: target/function.zip
