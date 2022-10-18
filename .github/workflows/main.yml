@@ -39,8 +39,3 @@ jobs:
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name inventory-app --capabilities CAPABILITY_IAM
-      - name: Upload native executable
-        uses: actions/upload-artifact@v2
-        with:
-          name: function
-          path: target/function.zip
