@@ -15,13 +15,14 @@ jobs:
       - name: Set up Homebrew
         id: set-up-homebrew
         uses: Homebrew/actions/setup-homebrew@master
-      - name: Install quarkus cli
-        run: |
-          brew install quarkusio/tap/quarkus
-          quarkus --version
+      #- name: Install quarkus cli
+      #  run: |
+      #    brew install quarkusio/tap/quarkus
+      #    quarkus --version
       - name: Maven Clean and Verify
         run: |
-          quarkus build --native --no-tests
+      #    quarkus build --native --no-tests
+          mvn clean verify -Dnative -DskipTests
           sam local invoke --template target/sam.native.yaml --event payload.json
       - name: Upload native executable
         uses: actions/upload-artifact@v2
