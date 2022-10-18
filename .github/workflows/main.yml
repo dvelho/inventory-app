@@ -14,8 +14,8 @@ jobs:
             components: 'native-image'
       - name: Install quarkus cli
         run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew install quarkusio/tap/quarkus
+          quarkus --version
       - name: Maven Clean and Verify
         run: |
           quarkus build --native --no-tests -Dquarkus.native.container-build=true
