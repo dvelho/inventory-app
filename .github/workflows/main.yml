@@ -30,7 +30,16 @@ jobs:
       - name: Maven Clean and Verify
         run: |
           mvn clean verify -Dnative -DskipTests
+            - name: Maven Clean and Verify
+      - name: Invoke local native app
+        run: |
           sam local invoke --template target/sam.native.yaml --event payload.json
+      - name: Sam build
+        run: |
+          sam build --template target/sam.native.yaml
+      - name: Sam deploy
+        run: |
+          sam deploy --template-file .aws-sam/build/template.yaml --stack-name inventory-app --capabilities CAPABILITY_IAM
       - name: Upload native executable
         uses: actions/upload-artifact@v2
         with:
