@@ -1,5 +1,4 @@
 on: [push]
-
 jobs:
   native_build:
     runs-on: macos-12
