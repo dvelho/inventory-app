@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>cloud.minka.product</groupId>
+  <artifactId>service</artifactId>
+  <version>0.0.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Product Services Aggregator</name>
+  <description>Aggregator only pom, should not contain any configuration beyond the modules that should be built.</description>
+  <modules>
+
+    <module>parent-lambda-api</module>
+    <module>parent-lambda-function</module>
+    <module>api-services</module>
+
+    <module>lambda-services</module>
+  </modules>
+</project>

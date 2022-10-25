@@ -1,0 +1,476 @@
+AWSTemplateFormatVersion: "2010-09-09"
+#This is the template for the Cognito User Pool for the tenant
+# Create a Cognito User Pool
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html
+# Create a Cognito User Pool Client
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html
+# Create a Cognito User Pool Domain
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html
+# Create a Cognito Identity Provider from Google
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identityprovider.html
+
+
+
+Parameters:
+  TenantName:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "minka-cloud" #"minka.tech" #
+  GeneralDomain:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "minka.cloud" #"minka.tech" #
+  HostedZoneId:
+    Type: String
+    Description: The ID of the Hosted Zone for the domain
+    Default: "Z06530912SIRHBPLWQDWO" #"Z012886125XSYKBOI8V6M" #
+  CognitoDomain:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "auth.minka.cloud" #"auth.minka.tech"  #
+  Environment:
+    Type: String
+    Description: The environment name
+    Default: "prod"
+  CertificateArn:
+    Type: String
+    Description: The ARN of the certificate
+    Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
+
+Conditions:
+  IsProd: !Equals [ !Ref Environment, "prod" ]
+
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UsernameConfiguration:
+        CaseSensitive: false
+      AutoVerifiedAttributes:
+        - email
+      UserPoolName: !Sub ${Environment}-tenant-user-pool-${TenantName}
+      LambdaConfig:
+        PreSignUp: !GetAtt PreSignupTriggerLambda.Arn
+        PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
+      Schema:
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+        - Name: name
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: tenantId
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: region
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: domain
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+
+  UserPoolIdentityProvider:
+    Type: AWS::Cognito::UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref UserPool
+      ProviderName: "Google"
+      ProviderDetails:
+        client_id: "691358772610-9hpn91utmgmesledd2lidie4lq5kn9ih.apps.googleusercontent.com"
+        client_secret: "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"
+        authorize_scopes: "profile email openid"
+      ProviderType: "Google"
+      AttributeMapping:
+        email: "email"
+        name: "name"
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: UserPoolIdentityProvider
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: !Sub ${Environment}-auth-${TenantName}
+      GenerateSecret: true
+      AllowedOAuthFlowsUserPoolClient: true
+      CallbackURLs:
+        - http://localhost:3000
+        - !Sub https://${GeneralDomain}
+      AllowedOAuthFlows:
+        - code
+        - implicit
+      AllowedOAuthScopes:
+        - phone
+        - email
+        - openid
+        - profile
+      SupportedIdentityProviders:
+        - COGNITO
+        - Google
+
+  # Create dummy a root domain for the auth app
+  #AuthDomainRootRecord:
+  #  Type: AWS::Route53::RecordSet
+  #  Properties:
+  #    HostedZoneId:  !Ref HostedZoneId
+  #    Name: !Ref CognitoDomain
+  #    ResourceRecords:
+  #      - 127.0.0.1
+  #    TTL: 900
+  #    Type: A
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain:  !Sub "${Environment}.${CognitoDomain}" # !If [ isProd, !Sub "${CognitoDomain}", !Sub "${Environment}.${CognitoDomain}" ]
+      UserPoolId: !Ref UserPool
+      CustomDomainConfig:
+        CertificateArn: !Ref CertificateArn
+
+  UserPoolDomainRecord:
+    Type: AWS::Route53::RecordSet
+    #DependsOn: AuthDomainRootRecord
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref UserPoolDomain
+      Type: A
+      AliasTarget:
+        # Do not change. Hard coded zone id for cloudformation
+        HostedZoneId: Z2FDTNDATAQYW2
+        DNSName: !GetAtt UPDomain.CloudFrontDistribution
+        EvaluateTargetHealth: false
+
+
+  UPDomain:
+    Type: Custom::UserPoolCloudFrontDistribution
+    Properties:
+      # This is the labmda that will define the properties for custom object
+      ServiceToken: !GetAtt GetUserPoolClientCFDistribution.Arn
+      # This becomes a ResourceProperty of the event passed to lambda
+      UserPoolDomain:
+        !Ref UserPoolDomain
+
+  PreSignupTriggerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Look up CloudFrontDistribution of UserPoolDomain
+      FunctionName: !Sub ${Environment}-PreSignupTriggerLambda-${TenantName}
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "nodejs16.x"
+      Timeout: 30
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {
+            console.log('Received event:', JSON.stringify(event, null, 2));
+            callback(null, event);
+          }
+
+  PreAuthenticationTriggerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: Look up CloudFrontDistribution of UserPoolDomain
+      FunctionName: !Sub ${Environment}-PreAuthenticationTriggerLambda-${TenantName}
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "nodejs16.x"
+      Timeout: 30
+      Code:
+        ZipFile: |
+          exports.handler = async (event) => {
+            console.log("event", event);
+            return event;
+          }
+
+      # PreSignupTrigger
+      #PreSignupTriggerLambda:
+      #  Type: AWS::Lambda::Function
+      #  Properties:
+      #   Code:
+      #    ZipFile: |
+      #     exports.handler = (event, context, callback) => {
+      #         console.log('Received event:', JSON.stringify(event, null, 2));
+      #         event.response.autoConfirmUser = true;
+      #         event.response.autoVerifyEmail = true;
+      #         event.response.autoVerifyPhone = true;
+      #         callback(null, event);
+      #       }
+      #Handler: index.handler
+      # Role: !GetAtt LambdaExecutionRole.Arn
+    #  Runtime: nodejs16.x
+    #   Timeout: 10
+
+    # PreAuthenticationTrigger
+    #PreAuthenticationTriggerLambda:
+    # Type: AWS::Lambda::Function
+    # Properties:
+    # Code:
+    #   ZipFile: |
+    #    exports.handler = (event, context, callback) => {
+    #      console.log('Received event:', JSON.stringify(event, null, 2));
+    #      callback(null, event);
+    #    }
+    # Handler: index.handler
+    # Role: !GetAtt LambdaExecutionRole.Arn
+    # Runtime: nodejs16.x
+    # Timeout: 10
+
+
+  GetUserPoolClientCFDistribution:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${Environment}-GetUserPoolClientCFDistribution-${TenantName}
+      Description: Look up CloudFrontDistribution of UserPoolDomain
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "python3.7"
+      Timeout: 30
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          import cfnresponse
+          import logging
+          
+          def handler(event, context):
+            logger = logging.getLogger()
+            logger.setLevel(logging.INFO)
+          
+            # initialize our responses, assume failure by default
+            response_data = {}
+            response_status = cfnresponse.FAILED
+          
+            logger.info('Received event: {}'.format(json.dumps(event))) #'
+          
+            # When you get deleted, congratulate the deleter.
+            if event['RequestType'] == 'Delete':
+              response_status = cfnresponse.SUCCESS
+              cfnresponse.send(event, context, response_status, response_data)
+              return None
+          
+            # Make ourselves a cognito api client
+            try:
+              cognito=boto3.client('cognito-idp')
+            except Exception as e:
+              logger.info('boto3.client failure: {}'.format(e)) #'
+              cfnresponse.send(event, context, response_status, response_data)
+              return None
+          
+            # Look up the properties of the user pool domain
+            # UserPoolDomain is passed in via the event
+            user_pool_domain = event['ResourceProperties']['UserPoolDomain']
+            try:
+              user_pool_domain_info = cognito.describe_user_pool_domain(Domain=user_pool_domain)
+            except Exception as e:
+              logger.info('cognito.describe_user_pool_client failure: {}'.format(e)) # appease yaml highlighting'
+              cfnresponse.send(event, context, response_status, response_data)
+              return None
+            # Extract the pertient information
+            cloudfront_distribution = user_pool_domain_info['DomainDescription']['CloudFrontDistribution']
+            # Stuff the information into the response
+            response_data['CloudFrontDistribution'] = cloudfront_distribution
+            # Ship off the reponse
+            response_status = cfnresponse.SUCCESS
+            cfnresponse.send(event, context, response_status, response_data, noEcho=True)
+    
+
+  # Creates a federeated Identity pool
+  IdentityPool:
+    Type: "AWS::Cognito::IdentityPool"
+    Properties:
+      IdentityPoolName: !Sub ${Environment}-Identity-${TenantName}
+      AllowUnauthenticatedIdentities: true
+      CognitoIdentityProviders:
+        - ClientId: !Ref UserPoolClient
+          ProviderName: !GetAtt UserPool.ProviderName
+
+  # Assigns the roles to the Identity Pool
+  IdentityPoolRoleMapping:
+    Type: "AWS::Cognito::IdentityPoolRoleAttachment"
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        authenticated: !GetAtt CognitoAuthorizedRole.Arn
+        unauthenticated: !GetAtt CognitoUnAuthorizedRole.Arn
+
+  # Create a role for unauthorized acces to AWS resources. Very limited access. Only allows users in the previously created Identity Pool
+  CognitoUnAuthorizedRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub ${Environment}-CognitoUnAuthorizedRole-${TenantName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Federated: "cognito-identity.amazonaws.com"
+            Action:
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": unauthenticated
+      Policies:
+        - PolicyName: "CognitoUnauthorizedPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                Resource: "*"
+
+  # Create a role for authorized acces to AWS resources. Control what your user can access. This example only allows Lambda invokation
+  # Only allows users in the previously created Identity Pool
+  CognitoAuthorizedRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub ${Environment}-CognitoAuthorizedRole-${TenantName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Federated: "cognito-identity.amazonaws.com"
+            Action:
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              StringEquals:
+                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies:
+        - PolicyName: "CognitoAuthorizedPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "mobileanalytics:PutEvents"
+                  - "cognito-sync:*"
+                  - "cognito-identity:*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: "*"
+
+
+
+        #ACMCognitoCertificate:
+   # Type: "AWS::CertificateManager::Certificate"
+    #Properties:
+      #DomainName: !Ref GeneralDomain
+      #DomainValidationOptions:
+       # - DomainName: !Ref CognitoDomain
+       #   HostedZoneId: !Ref HostedZoneId
+      #ValidationMethod: DNS
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${Environment}-LambdaExecutionRole-${TenantName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - cognito-idp:DescribeUserPoolDomain
+                  - cloudwatch:PutMetricData
+                  - cloudwatch:ListMetrics
+                  - cloudwatch:PutMetricAlarm
+                Resource: '*'
+
+  # Creates a role that allows Cognito to send SNS messages
+  SNSRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub ${Environment}-SNSRole-${TenantName}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "cognito-idp.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: "CognitoSNSPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action: "sns:publish"
+                Resource: "*"
+
+  #  PreSignupTriggerLambda
+  #  PreAuthenticationTriggerLambda
+  OnCognitoPreAuthenticatePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt PreAuthenticationTriggerLambda.Arn
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
+
+  OnCognitoPreSignupPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt PreSignupTriggerLambda.Arn
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
+
+Outputs:
+  CognitoUserPoolID:
+    Value: !Ref UserPool
+    Description: The UserPool ID
+  CognitoAppClientID:
+    Value: !Ref UserPoolClient
+    Description: The app client
+  #HostedUIURL:
+  #  Value: !Sub https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
+  #  Description: The hosted UI URL
+  GeneralUIURL:
+    Value: !Sub https://${Environment}.${CognitoDomain}/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
+    Description: The hosted UI URL
+  UserPoolDomainTarget:
+    Description: "The CloudFront distribution target for A and AAAA aliases."
+    Value: !GetAtt UPDomain.CloudFrontDistribution
+
+

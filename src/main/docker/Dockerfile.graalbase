@@ -1,7 +1,0 @@
-FROM ghcr.io/graalvm/graalvm-ce:latest AS build
-RUN gu install native-image
-RUN gu install llvm
-RUN gu install llvm-toolchain
-WORKDIR /project
-VOLUME ["/project"]
-ENTRYPOINT ["native-image"]
