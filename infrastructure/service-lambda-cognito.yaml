@@ -3,13 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: AWS Serverless Quarkus - quarkus-amazon-lambda-common-deployment
 Globals:
   Api:
+    EndpointConfiguration: REGIONAL
     BinaryMediaTypes:
       - "*/*"
-      -
+
 Resources:
   MainAuthorizerNative:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub ${AWS::StackName}-MainAuthorizer-Native-${AWS::Region}
       Handler: not.used.in.provided.runtime
       Runtime: provided
       CodeUri: ../product/service/lambda-services/cognito/main-authorizer/target/function.zip
@@ -19,3 +21,29 @@ Resources:
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
+  OrdersApiNative:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-OrdersApi-Native-${AWS::Region}
+      Handler: not.used.in.provided.runtimei
+      Runtime: provided
+      CodeUri: ../product/service/api-services/orders-api/target/function.zip
+      MemorySize: 128
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 15
+      Environment:
+        Variables:
+          DISABLE_SIGNAL_HANDLERS: true
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+
+Outputs:
+  OrdersApiNativeApi:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Export:
+      Name: OrdersApiNativeApi

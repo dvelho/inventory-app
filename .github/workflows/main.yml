@@ -44,13 +44,16 @@ jobs:
       #- name: Set up Homebrew
       #  id: set-up-homebrew
       #  uses: Homebrew/actions/setup-homebrew@master
-      - name: Maven Clean and Verify
+      - name: Maven Clean and Verify on MainAuthorizerNative
         run: |
           mvn -f product/service/lambda-services/cognito/main-authorizer/pom.xml -q clean verify -Dnative -DskipTests
-
       #- name: Invoke local native app
       #  run: |
       #    sam local invoke --template target/sam.native.yaml --event payload.json
+      - name: Maven Clean and Verify on OrdersApiNative
+        run: |
+          mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
+
       - name: Sam build
         run: |
           sam build --template infrastructure/service-lambda-cognito.yaml --base-dir product/service/lambda-services/cognito/main-authorizer
