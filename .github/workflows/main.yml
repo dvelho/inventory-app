@@ -29,13 +29,17 @@ jobs:
       #  uses: Homebrew/actions/setup-homebrew@master
       - name: Maven Clean and Verify
         run: |
-          mvn -q clean verify -Dnative -DskipTests
+          mvn -f product/service/lambda-services/cognito/main-authorizer/pom.xml -q clean verify -Dnative -DskipTests
+
       #- name: Invoke local native app
       #  run: |
       #    sam local invoke --template target/sam.native.yaml --event payload.json
       - name: Sam build
         run: |
-          sam build --template target/sam.native.yaml
+          sam build --template infrastructure/service-lambda-cognito.yaml
       - name: Sam deploy
         run: |
-          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name inventory-app --capabilities CAPABILITY_IAM
+          ls
+      - name: Sam deploy
+        run: |
+          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name testing-actions --capabilities CAPABILITY_IAM
