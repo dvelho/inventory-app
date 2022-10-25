@@ -1,15 +1,30 @@
-on: [push]
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - stage
 permissions:
   id-token: write
   contents: read #This is required for actions/checkout@v2
 jobs:
   native_build:
     runs-on: ubuntu-latest
-    env:
-      AWS_DEFAULT_REGION: eu-west-1
 
     name: Build native Quarkus app
     steps:
+        # I only need to declare environment variables once at the beginning
+        # The subsequent steps can access the variables by default
+      - name: Configuration for master branch
+        if: ${{ github.ref == 'refs/heads/master' }}
+        # Side note, I can run any Linux command here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
+        run: |
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+      - name: Configuration for dev branch
+        if: ${{ github.ref == 'refs/heads/dev' }}
+        run: |
+          echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/}
       - name: Configure AWS credentials
