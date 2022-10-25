@@ -93,7 +93,7 @@
         <configuration>
           <configLocation>product/checkstyle.xml</configLocation>
         </configuration>
-      </plugin> -->
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-pmd-plugin</artifactId>
@@ -118,7 +118,7 @@
           </rulesets>
           <printFailingErrors>true</printFailingErrors>
         </configuration>
-      </plugin>
+      </plugin>-->
     </plugins>
   </build>
   <reporting>
