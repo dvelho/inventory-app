@@ -10,6 +10,8 @@ jobs:
 
     name: Build native Quarkus app
     steps:
+      - name: Branch name
+        run: echo running on branch ${GITHUB_REF##*/}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -37,9 +39,6 @@ jobs:
       - name: Sam build
         run: |
           sam build --template infrastructure/service-lambda-cognito.yaml --base-dir product/service/lambda-services/cognito/main-authorizer
-      - name: Sam deploy
-        run: |
-          ls
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name testing-actions --capabilities CAPABILITY_IAM
