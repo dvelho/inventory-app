@@ -12,7 +12,7 @@ Resources:
     Properties:
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      CodeUri: product/service/lambda-services/cognito/main-authorizer/target/function.zip
+      CodeUri: target/function.zip
       MemorySize: 128
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 15

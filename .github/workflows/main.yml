@@ -36,7 +36,7 @@ jobs:
       #    sam local invoke --template target/sam.native.yaml --event payload.json
       - name: Sam build
         run: |
-          sam build --template infrastructure/service-lambda-cognito.yaml
+          sam build --template infrastructure/service-lambda-cognito.yaml --base-dir product/service/lambda-services/cognito/main-authorizer
       - name: Sam deploy
         run: |
           ls
