@@ -11,13 +11,6 @@
   <artifactId>main-authorizer</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <name>Product Services Lambda Main Authorizer</name>
-  <dependencies>
-    <dependency>
-      <groupId>software.amazon.lambda</groupId>
-      <artifactId>powertools-serialization</artifactId>
-      <version>1.12.3</version>
-    </dependency>
-  </dependencies>
   <build>
     <plugins>
       <plugin>

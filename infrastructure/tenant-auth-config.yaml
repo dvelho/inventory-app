@@ -156,16 +156,32 @@ Resources:
   UPDomain:
     Type: Custom::UserPoolCloudFrontDistribution
     Properties:
-      # This is the labmda that will define the properties for custom object
+      # This is the lambda that will get the created cognito domain
       ServiceToken: !GetAtt GetUserPoolClientCFDistribution.Arn
       # This becomes a ResourceProperty of the event passed to lambda
       UserPoolDomain:
         !Ref UserPoolDomain
+  #  PreSignupTriggerLambda
+  #  PreAuthenticationTriggerLambda
+  OnCognitoPreAuthenticatePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt PreAuthenticationTriggerLambda.Arn
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
 
+  OnCognitoPreSignupPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt PreSignupTriggerLambda.Arn
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
   PreSignupTriggerLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Description: Look up CloudFrontDistribution of UserPoolDomain
+      Description: This lambda function is triggered before a user signs up
       FunctionName: !Sub ${Environment}-PreSignupTriggerLambda-${TenantName}
       Handler: index.handler
       MemorySize: 128
@@ -182,7 +198,7 @@ Resources:
   PreAuthenticationTriggerLambda:
     Type: AWS::Lambda::Function
     Properties:
-      Description: Look up CloudFrontDistribution of UserPoolDomain
+      Description: This lambda function is triggered before a user signs in
       FunctionName: !Sub ${Environment}-PreAuthenticationTriggerLambda-${TenantName}
       Handler: index.handler
       MemorySize: 128
@@ -438,23 +454,7 @@ Resources:
                 Action: "sns:publish"
                 Resource: "*"
 
-  #  PreSignupTriggerLambda
-  #  PreAuthenticationTriggerLambda
-  OnCognitoPreAuthenticatePermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt PreAuthenticationTriggerLambda.Arn
-      Principal: "cognito-idp.amazonaws.com"
-      SourceArn: !GetAtt UserPool.Arn
 
-  OnCognitoPreSignupPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt PreSignupTriggerLambda.Arn
-      Principal: "cognito-idp.amazonaws.com"
-      SourceArn: !GetAtt UserPool.Arn
 
 Outputs:
   CognitoUserPoolID:
