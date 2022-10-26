@@ -43,7 +43,9 @@ jobs:
             components: 'native-image'
       - name: Maven Clean and install
         run: |
+          cd product
           mvn  clean verify -Dnative 
+          cd ..
 
       #- name: Set up Homebrew
       #  id: set-up-homebrew
