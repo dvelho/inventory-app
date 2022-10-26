@@ -7,7 +7,6 @@
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
-  <groupId>cloud.minka.product</groupId>
   <artifactId>common</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <name>Product Common</name>

@@ -39,8 +39,12 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
             version: 'latest'
-            java-version: '17'
+            java-version: '19'
             components: 'native-image'
+      - name: Maven Clean and install
+        run: |
+          mvn  clean verify -Dnative 
+
       #- name: Set up Homebrew
       #  id: set-up-homebrew
       #  uses: Homebrew/actions/setup-homebrew@master

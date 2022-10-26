@@ -65,6 +65,7 @@ Resources:
         - Name: email
           AttributeDataType: String
           Mutable: false
+
           Required: true
         - Name: name
           AttributeDataType: String
