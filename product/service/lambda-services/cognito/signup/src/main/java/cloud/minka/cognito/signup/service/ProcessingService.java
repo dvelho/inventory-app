@@ -35,6 +35,7 @@ public final class ProcessingService {
         GetItemResponse tenant = getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
         CognitoSignupEvent responseSuccess = new CognitoSignupEvent(
+                input.version(),
                 input.region(),
                 input.userPoolId(),
                 input.userName(),
