@@ -51,15 +51,6 @@ jobs:
             version: 'latest'
             java-version: '19'
             components: 'native-image'
-     # - name: Maven Clean and install
-     #   run: |
-     #     cd product
-     #     mvn  clean verify -Dnative
-     #     cd ..
-
-      #- name: Set up Homebrew
-      #  id: set-up-homebrew
-      #  uses: Homebrew/actions/setup-homebrew@master
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@v3
@@ -75,7 +66,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Download production artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/download-artifact@v3
         with:
           name: dist-without-markdown
       - name: Maven Clean and Verify on Cognito Signup Lambda
