@@ -87,12 +87,6 @@ jobs:
      # - name: Maven Clean and Verify on OrdersApiNative
      #   run: |
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist-without-markdown
-          path: |
-            product/service/lambda-services/cognito/signup/target
 
       - name: Sam build
         run: |

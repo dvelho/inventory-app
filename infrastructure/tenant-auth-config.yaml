@@ -495,7 +495,7 @@ Outputs:
   #  Description: The hosted UI URL
 
   GeneralUIURL:
-    Value: !Sub https://${Environment}.${CognitoDomain}/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
+    Value: !Sub https://${Environment}.${CognitoDomain}/login?client_id=${UserPoolClient}&response_type=token&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
     Description: The hosted UI URL
   UserPoolDomainTarget:
     Description: "The CloudFront distribution target for A and AAAA aliases."
