@@ -16,6 +16,8 @@ cognito-deploy-dev-minka-tech:
 cognito-deploy-delete-dev-tech:
 	sam delete --stack-name sam-cognito-tenant-minka-tech-dev-config
 
+cognito-deploy-dev-minka-cloud-validade:
+	sam validate --template-file infrastructure/tenant-auth-config.yaml \
 
 cognito-deploy-dev-minka-cloud:
 	sam build --template-file infrastructure/tenant-auth-config.yaml \
@@ -24,6 +26,7 @@ cognito-deploy-dev-minka-cloud:
 	--stack-name sam-cognito-tenant-minka-cloud-dev-config \
 	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
 	--region eu-west-1 \
+	--resolve-s3 \
 	--parameter-overrides \
 	TenantName=minka-cloud \
 	GeneralDomain=minka.cloud \
@@ -41,6 +44,7 @@ cognito-deploy-prod-minka-cloud:
 	--stack-name sam-cognito-tenant-minka-cloud-prod-config \
 	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
 	--region eu-west-1 \
+	--resolve-s3 \
 	--parameter-overrides \
 	TenantName=minka-cloud \
 	GeneralDomain=minka.cloud \
@@ -63,3 +67,6 @@ maven-release:
 
 install-nx:
 	yarn global add nx
+
+build-presignup:
+	 mvn -f product/service/lambda-services/cognito/signup/pom.xml -q clean verify -Dnative -DskipTests

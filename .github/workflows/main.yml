@@ -77,7 +77,7 @@ jobs:
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
-            --stack-name sam-cognito-tenant-minka-cloud-prod-config \
+            --stack-name sam-cognito-tenant-minka-cloud-dev-config \
             --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --parameter-overrides \
             TenantName=minka-cloud \
             GeneralDomain=minka.cloud \

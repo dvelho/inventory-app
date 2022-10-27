@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-#Transform: AWS::Serverless-2016-10-31
+Transform: AWS::Serverless-2016-10-31
 Description: Shared Tenant setup auth service
 #This is the template for the Cognito User Pool for the tenant
 # Create a Cognito User Pool
@@ -150,7 +150,6 @@ Resources:
         DNSName: !GetAtt UPDomain.CloudFrontDistribution
         EvaluateTargetHealth: false
 
-
   UPDomain:
     Type: Custom::UserPoolCloudFrontDistribution
     Properties:
@@ -186,18 +185,19 @@ Resources:
       SourceArn: !GetAtt UserPool.Arn
 
   PreSignupTriggerLambda:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-Signup-Native-${AWS::Region}-${TenantName}
+      FunctionName: !Sub ${Environment}-Signup-Native-${TenantName}
       Handler: not.used.in.provided.runtime
       Runtime: provided
       CodeUri: ../product/service/lambda-services/cognito/signup/target/function.zip
       MemorySize: 128
-      Policies: AWSLambdaBasicExecutionRole
       Timeout: 15
+      Role: !GetAtt LambdaExecutionRole.Arn
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
+
 
   PostConfirmationTriggerLambda:
     Type: AWS::Lambda::Function
@@ -480,8 +480,6 @@ Resources:
               - Effect: "Allow"
                 Action: "sns:publish"
                 Resource: "*"
-
-
 
 Outputs:
   CognitoUserPoolID:

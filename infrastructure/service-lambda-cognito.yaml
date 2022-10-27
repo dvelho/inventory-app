@@ -20,6 +20,7 @@ Resources:
       MemorySize: 128
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 15
+
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
