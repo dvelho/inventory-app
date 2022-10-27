@@ -4,6 +4,7 @@ import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.ResponseSignup;
 
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
+import com.fasterxml.jackson.databind.JsonNode;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -29,7 +30,8 @@ public final class ProcessingService {
     public CognitoSignupEvent processPreSignup(CognitoSignupEvent input) {
         String tableName = "tenant";
         createTenantTable(tableName);
-        String userEmail = input.request().userAttributes().email();
+       // JsonNode request = input.request();
+        String userEmail =  input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = getTenantFromTable(tableName, tenantDomain);

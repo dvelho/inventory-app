@@ -1,5 +1,8 @@
 package cloud.minka.cognito.signup.model.cloudformation;
 
+
+import com.fasterxml.jackson.databind.JsonNode;
+
 public record CognitoSignupEvent(
         String version,
         String region,
@@ -7,7 +10,7 @@ public record CognitoSignupEvent(
         String userName,
         CallerContext callerContext,
         TriggerSource triggerSource,
-        RequestSignup request,
+        JsonNode request,
         ResponseSignup response) {
 
 }
