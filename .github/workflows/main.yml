@@ -51,21 +51,11 @@ jobs:
             version: 'latest'
             java-version: '19'
             components: 'native-image'
-      - name: Cache maven modules
-        id: cache-maven
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-maven-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path:  ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+
 
       - name: Download production artifacts
+        env:
+          GH_TOKEN: ${{ secrets.KEY_GH }}
         run: |
           gh run download -n dist-without-markdown
 
@@ -78,6 +68,20 @@ jobs:
      # - name: Maven Clean and Verify on OrdersApiNative
      #   run: |
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
+      - name: Cache maven modules
+        id: cache-maven
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-maven-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
