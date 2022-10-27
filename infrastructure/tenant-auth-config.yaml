@@ -1,4 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Shared Tenant setup auth service
 #This is the template for the Cognito User Pool for the tenant
 # Create a Cognito User Pool
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html
@@ -184,7 +186,7 @@ Resources:
       SourceArn: !GetAtt UserPool.Arn
 
   PreSignupTriggerLambda:
-    Type: AWS::Serverless::Function
+    Type: AWS::Lambda::Function
     Properties:
       FunctionName: !Sub ${AWS::StackName}-Signup-Native-${AWS::Region}-${TenantName}
       Handler: not.used.in.provided.runtime
