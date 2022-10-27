@@ -4,7 +4,7 @@ public record CognitoSignupEvent(String region,
                                  String userPoolId,
                                  String userName,
                                  CallerContext callerContext,
-                                 String triggerSource,
+                                 TriggerSource triggerSource,
                                  RequestSignup request,
                                  ResponseSignup response) {
 

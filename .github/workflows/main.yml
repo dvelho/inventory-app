@@ -20,11 +20,14 @@ jobs:
         if: ${{ github.ref == 'refs/heads/master' }}
         # Side note, I can run any Linux command here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
         run: |
-          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
+           echo "STACK_NAME=sam-cognito-tenant-minka-tech-dev-config" >> $GITHUB_ENV
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
-          echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
+
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/}
       - name: Configure AWS credentials
@@ -62,7 +65,7 @@ jobs:
 
       - name: Sam build
         run: |
-          sam build --template infrastructure/service-lambda-cognito.yaml --base-dir product/service/lambda-services/cognito/signup
+          sam build --template infrastructure/tenant-auth-config.yaml
       - name: Sam deploy
         run: |
-          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name testing-actions --capabilities CAPABILITY_IAM
+          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name sam-cognito-tenant-minka-cloud-prod-config --capabilities CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND --parameter-overrides TenantName=minka-cloud, Environment=prod
