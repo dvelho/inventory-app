@@ -23,8 +23,8 @@ Resources:
           DISABLE_SIGNAL_HANDLERS: true
 
 Outputs:
-  OrdersApiNativeApi:
-    Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
-    Export:
-      Name: OrdersApiNativeApi
+    Signup:
+        Description: Signup Lambda Function ARN
+        Value: !GetAtt Signup.Arn
+        Export:
+        Name: !Sub ${AWS::StackName}-SignupLambdaFunctionArn
