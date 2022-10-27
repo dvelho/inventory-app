@@ -37,18 +37,18 @@ public final class ProcessingService {
         if (tenant.item().size() == 0) {
             insertTenantIntoTable(tableName, tenantDomain);
             return new ResponseSignup(false, false, false);
-        } else {
-            //Check if the tenant is in pending configuration
-            System.out.println("event::cognito::signup::request::tenant::exists");
-            TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
-            switch (tenantStatus) {
-                case PENDING_CONFIGURATION:
-                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-                case ACTIVE:
-                    return new ResponseSignup(false, false, false);
-                default:
-                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-            }
+        }
+        //Check if the tenant is in pending configuration
+        System.out.println("event::cognito::signup::request::tenant::exists");
+        TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
+        switch (tenantStatus) {
+            case PENDING_CONFIGURATION:
+                throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
+            case ACTIVE:
+                return new ResponseSignup(false, false, false);
+            default:
+                throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
+
         }
     }
 
