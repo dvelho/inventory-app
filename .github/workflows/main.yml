@@ -73,6 +73,7 @@ jobs:
       - name: Sam build
         run: |
           sam build --template infrastructure/tenant-auth-config.yaml
+        #--base-dir product/service/lambda-services/cognito/signup
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
