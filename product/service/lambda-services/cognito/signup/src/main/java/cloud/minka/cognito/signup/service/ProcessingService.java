@@ -3,6 +3,7 @@ package cloud.minka.cognito.signup.service;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.ResponseSignup;
 
+import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -35,18 +36,18 @@ public final class ProcessingService {
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
         if (tenant.item().size() == 0) {
             insertTenantIntoTable(tableName, tenantDomain);
-            return new ResponseSignup(true, true, false);
+            return new ResponseSignup(false, false, false);
         } else {
             //Check if the tenant is in pending configuration
             System.out.println("event::cognito::signup::request::tenant::exists");
-            String tenantStatus = tenant.item().get("status").s();
-            if (tenantStatus.equals(PENDING_CONFIGURATION.toString())) {
-                System.out.println("event::cognito::signup::request::tenant::exists::create::pending::error::" + userEmail);
-                //TODO send an email to the admin to warn him that the user is trying to sign up
-                throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-            } else {
-                System.out.println("event::cognito::signup::request::tenant::exists::create::enduser: " + userEmail );
-                return new ResponseSignup(true, true, false);
+            TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
+            switch (tenantStatus) {
+                case PENDING_CONFIGURATION:
+                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
+                case ACTIVE:
+                    return new ResponseSignup(false, false, false);
+                default:
+                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
             }
         }
     }

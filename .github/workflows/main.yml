@@ -68,4 +68,4 @@ jobs:
           sam build --template infrastructure/tenant-auth-config.yaml
       - name: Sam deploy
         run: |
-          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name sam-cognito-tenant-minka-cloud-prod-config --capabilities CAPABILITY_IAM, CAPABILITY_AUTO_EXPAND --parameter-overrides TenantName=minka-cloud, Environment=prod
+          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 --stack-name sam-cognito-tenant-minka-cloud-prod-config --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND --parameter-overrides TenantName=minka-cloud, Environment=prod
