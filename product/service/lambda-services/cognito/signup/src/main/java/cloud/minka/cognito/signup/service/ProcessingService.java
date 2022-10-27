@@ -16,7 +16,7 @@ import static cloud.minka.cognito.signup.model.cloudformation.TenantStatus.PENDI
 @ApplicationScoped
 public final class ProcessingService {
     @Inject
-    private DynamoDbClient client;
+    DynamoDbClient client;
 
     /**
      * Process pre signup response signup.
@@ -26,7 +26,7 @@ public final class ProcessingService {
      * @param input the input
      * @return the response signup
      */
-    public ResponseSignup processPreSignup(CognitoSignupEvent input) {
+    public CognitoSignupEvent processPreSignup(CognitoSignupEvent input) {
         String tableName = "tenant";
         createTenantTable(tableName);
         String userEmail = input.request().userAttributes().email();
@@ -34,22 +34,29 @@ public final class ProcessingService {
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
+        CognitoSignupEvent responseSuccess = new CognitoSignupEvent(
+                input.region(),
+                input.userPoolId(),
+                input.userName(),
+                input.callerContext(),
+                input.triggerSource(),
+                input.request(),
+                new ResponseSignup("false", "false", "false")
+        );
         if (tenant.item().size() == 0) {
             insertTenantIntoTable(tableName, tenantDomain);
-            return new ResponseSignup("false", "false", "false");
+            return responseSuccess;
         }
         //Check if the tenant is in pending configuration
         System.out.println("event::cognito::signup::request::tenant::exists");
         TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
-        switch (tenantStatus) {
-            case PENDING_CONFIGURATION:
-                throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-            case ACTIVE:
-                return new ResponseSignup("false", "false", "false");
-            default:
-                throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-
-        }
+        return switch (tenantStatus) {
+            case PENDING_CONFIGURATION ->
+                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
+            case ACTIVE -> responseSuccess;
+            default ->
+                    throw new IllegalArgumentException("You domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
+        };
     }
 
     public void createTenantTable(String tenantTable) {
