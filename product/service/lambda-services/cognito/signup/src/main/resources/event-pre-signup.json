@@ -1,0 +1,25 @@
+{
+  "version": "1",
+  "region": "eu-west-1",
+  "userPoolId": "eu-west-1_fPlMwNPBd",
+  "userName": "google_102051572441221876770",
+  "callerContext": {
+    "awsSdkVersion": "aws-sdk-unknown-unknown",
+    "clientId": "3u2jnelgo9itbc7oaaog1lq51h"
+  },
+  "triggerSource": "PreSignUp_ExternalProvider",
+  "request": {
+    "userAttributes": {
+      "email_verified": "false",
+      "cognito:email_alias": "",
+      "cognito:phone_number_alias": "",
+      "email": "diogo.velho@mindera.com"
+    },
+    "validationData": {}
+  },
+  "response": {
+    "autoConfirmUser": false,
+    "autoVerifyEmail": false,
+    "autoVerifyPhone": false
+  }
+}

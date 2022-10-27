@@ -60,17 +60,13 @@ Resources:
       UserPoolName: !Sub ${Environment}-tenant-user-pool-${TenantName}
       LambdaConfig:
         PreSignUp: !GetAtt PreSignupTriggerLambda.Arn
+        PostConfirmation: !GetAtt PostConfirmationTriggerLambda.Arn
         PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
       Schema:
         - Name: email
           AttributeDataType: String
           Mutable: false
-
           Required: true
-        - Name: name
-          AttributeDataType: String
-          Mutable: true
-          Required: false
         - Name: tenantId
           AttributeDataType: String
           Mutable: true
@@ -96,7 +92,6 @@ Resources:
       ProviderType: "Google"
       AttributeMapping:
         email: "email"
-        name: "name"
 
   UserPoolClient:
     Type: AWS::Cognito::UserPoolClient
@@ -135,7 +130,7 @@ Resources:
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
-      Domain:  !Sub "${Environment}.${CognitoDomain}" # !If [ isProd, !Sub "${CognitoDomain}", !Sub "${Environment}.${CognitoDomain}" ]
+      Domain: !Sub "${Environment}.${CognitoDomain}" # !If [ isProd, !Sub "${CognitoDomain}", !Sub "${Environment}.${CognitoDomain}" ]
       UserPoolId: !Ref UserPool
       CustomDomainConfig:
         CertificateArn: !Ref CertificateArn
@@ -179,11 +174,40 @@ Resources:
       FunctionName: !GetAtt PreSignupTriggerLambda.Arn
       Principal: "cognito-idp.amazonaws.com"
       SourceArn: !GetAtt UserPool.Arn
+
+  OnCognitoPostConfirmationPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt PostConfirmationTriggerLambda.Arn
+      Principal: "cognito-idp.amazonaws.com"
+      SourceArn: !GetAtt UserPool.Arn
+
   PreSignupTriggerLambda:
     Type: AWS::Lambda::Function
     Properties:
       Description: This lambda function is triggered before a user signs up
       FunctionName: !Sub ${Environment}-PreSignupTriggerLambda-${TenantName}
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "nodejs16.x"
+      Timeout: 30
+      Code:
+        ZipFile: |
+          exports.handler = (event, context, callback) => {
+            console.log('Received event:', JSON.stringify(event, null, 2));
+            //event.response.autoConfirmUser = true;
+            event.response.autoVerifyEmail = true;
+            console.log('Response:', JSON.stringify(event.response, null, 2));
+            callback(null, event);
+          }
+
+  PostConfirmationTriggerLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Description: This lambda function is triggered after a user signs up
+      FunctionName: !Sub ${Environment}-PostSignupTriggerLambda-${TenantName}
       Handler: index.handler
       MemorySize: 128
       Role: !GetAtt LambdaExecutionRole.Arn
@@ -208,43 +232,49 @@ Resources:
       Timeout: 30
       Code:
         ZipFile: |
-          exports.handler = async (event) => {
-            console.log("event", event);
-            return event;
-          }
+          exports.handler = (event, context, callback) => {
+              // Impose a condition that the minimum length of the username is 5 is imposed on all user pools.
+              if (event.userName.length < 5) {
+                var error = new Error("Cannot register users with username less than the minimum length of 5");
+                // Return error to Amazon Cognito
+                callback(error, event);
+            }
+              // Return to Amazon Cognito
+              callback(null, event);
+          };
 
-      # PreSignupTrigger
-      #PreSignupTriggerLambda:
-      #  Type: AWS::Lambda::Function
-      #  Properties:
-      #   Code:
-      #    ZipFile: |
-      #     exports.handler = (event, context, callback) => {
-      #         console.log('Received event:', JSON.stringify(event, null, 2));
-      #         event.response.autoConfirmUser = true;
-      #         event.response.autoVerifyEmail = true;
-      #         event.response.autoVerifyPhone = true;
-      #         callback(null, event);
-      #       }
-      #Handler: index.handler
-      # Role: !GetAtt LambdaExecutionRole.Arn
-    #  Runtime: nodejs16.x
-    #   Timeout: 10
+  # PreSignupTrigger
+  #PreSignupTriggerLambda:
+  #  Type: AWS::Lambda::Function
+  #  Properties:
+  #   Code:
+  #    ZipFile: |
+  #     exports.handler = (event, context, callback) => {
+  #         console.log('Received event:', JSON.stringify(event, null, 2));
+  #         event.response.autoConfirmUser = true;
+  #         event.response.autoVerifyEmail = true;
+  #         event.response.autoVerifyPhone = true;
+  #         callback(null, event);
+  #       }
+  #Handler: index.handler
+  # Role: !GetAtt LambdaExecutionRole.Arn
+  #  Runtime: nodejs16.x
+  #   Timeout: 10
 
-    # PreAuthenticationTrigger
-    #PreAuthenticationTriggerLambda:
-    # Type: AWS::Lambda::Function
-    # Properties:
-    # Code:
-    #   ZipFile: |
-    #    exports.handler = (event, context, callback) => {
-    #      console.log('Received event:', JSON.stringify(event, null, 2));
-    #      callback(null, event);
-    #    }
-    # Handler: index.handler
-    # Role: !GetAtt LambdaExecutionRole.Arn
-    # Runtime: nodejs16.x
-    # Timeout: 10
+  # PreAuthenticationTrigger
+  #PreAuthenticationTriggerLambda:
+  # Type: AWS::Lambda::Function
+  # Properties:
+  # Code:
+  #   ZipFile: |
+  #    exports.handler = (event, context, callback) => {
+  #      console.log('Received event:', JSON.stringify(event, null, 2));
+  #      callback(null, event);
+  #    }
+  # Handler: index.handler
+  # Role: !GetAtt LambdaExecutionRole.Arn
+  # Runtime: nodejs16.x
+  # Timeout: 10
 
 
   GetUserPoolClientCFDistribution:
@@ -304,7 +334,7 @@ Resources:
             # Ship off the reponse
             response_status = cfnresponse.SUCCESS
             cfnresponse.send(event, context, response_status, response_data, noEcho=True)
-    
+  
 
   # Creates a federeated Identity pool
   IdentityPool:
@@ -392,12 +422,12 @@ Resources:
 
 
         #ACMCognitoCertificate:
-   # Type: "AWS::CertificateManager::Certificate"
-    #Properties:
-      #DomainName: !Ref GeneralDomain
-      #DomainValidationOptions:
-       # - DomainName: !Ref CognitoDomain
-       #   HostedZoneId: !Ref HostedZoneId
+        # Type: "AWS::CertificateManager::Certificate"
+        #Properties:
+        #DomainName: !Ref GeneralDomain
+        #DomainValidationOptions:
+        # - DomainName: !Ref CognitoDomain
+        #   HostedZoneId: !Ref HostedZoneId
       #ValidationMethod: DNS
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -467,6 +497,7 @@ Outputs:
   #HostedUIURL:
   #  Value: !Sub https://${CognitoDomain}.auth.${AWS::Region}.amazoncognito.com/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
   #  Description: The hosted UI URL
+
   GeneralUIURL:
     Value: !Sub https://${Environment}.${CognitoDomain}/login?client_id=${UserPoolClient}&response_type=code&scope=email+openid+phone+profile&redirect_uri=http://localhost:3000
     Description: The hosted UI URL

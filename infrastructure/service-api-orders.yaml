@@ -8,19 +8,25 @@ Globals:
       - "*/*"
 
 Resources:
-  Signup:
+  OrdersApiNative:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${AWS::StackName}-MainAuthorizer-Native-${AWS::Region}
-      Handler: not.used.in.provided.runtime
+      FunctionName: !Sub ${AWS::StackName}-OrdersApi-Native-${AWS::Region}
+      Handler: not.used.in.provided.runtimei
       Runtime: provided
-      CodeUri: ../product/service/lambda-services/cognito/signup/target/function.zip
+      CodeUri: ../product/service/api-services/orders-api/target/function.zip
       MemorySize: 128
       Policies: AWSLambdaBasicExecutionRole
       Timeout: 15
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
 
 Outputs:
   OrdersApiNativeApi:
