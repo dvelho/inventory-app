@@ -66,6 +66,8 @@ jobs:
             ${{ runner.os }}-
 
       - name: Download production artifacts
+        run: |
+          gh run download -n dist-without-markdown
         uses: actions/download-artifact@v3
         with:
           name: dist-without-markdown
