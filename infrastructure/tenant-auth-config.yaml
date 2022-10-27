@@ -456,6 +456,8 @@ Resources:
                   - cloudwatch:PutMetricData
                   - cloudwatch:ListMetrics
                   - cloudwatch:PutMetricAlarm
+                  - dynamodb:*
+
                 Resource: '*'
 
   # Creates a role that allows Cognito to send SNS messages
