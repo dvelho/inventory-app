@@ -51,13 +51,32 @@ jobs:
             version: 'latest'
             java-version: '19'
             components: 'native-image'
-
-
-      - name: Download production artifacts
+      - name: Cache maven modules
+        id: cache-maven
+        uses: actions/cache@v3
         env:
-          GH_TOKEN: ${{ secrets.KEY_GH }}
-        run: |
-          gh run download -n dist-without-markdown
+          cache-name: cache-maven-modules
+        with:
+          path:  ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+
+      - name: Cache target modules
+        id: cache-target
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-target-modules
+        with:
+          path: product/service/lambda-services/cognito/signup/target
+          key: ${{ runner.os }}-maven-${{ hashFiles('product/service/lambda-services/**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
@@ -68,20 +87,6 @@ jobs:
      # - name: Maven Clean and Verify on OrdersApiNative
      #   run: |
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
-      - name: Cache maven modules
-        id: cache-maven
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-maven-modules
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
