@@ -26,5 +26,3 @@ Outputs:
     Signup:
         Description: Signup Lambda Function ARN
         Value: !GetAtt Signup.Arn
-        Export:
-        Name: !Sub ${AWS::StackName}-SignupLambdaFunctionArn
