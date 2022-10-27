@@ -60,9 +60,9 @@ jobs:
       #- name: Set up Homebrew
       #  id: set-up-homebrew
       #  uses: Homebrew/actions/setup-homebrew@master
-      - name: Maven Clean and Verify on Cognito Signup Lambda
-        run: |
-          mvn -f product/service/lambda-services/cognito/signup/pom.xml -q clean verify -Dnative -DskipTests
+     # - name: Maven Clean and Verify on Cognito Signup Lambda
+     #   run: |
+     #     mvn -f product/service/lambda-services/cognito/signup/pom.xml -q clean verify -Dnative -DskipTests
       #- name: Invoke local native app
       #  run: |
       #    sam local invoke --template target/sam.native.yaml --event payload.json
