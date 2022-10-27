@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Transform: AWS::Serverless-2016-10-31
+#Transform: AWS::Serverless-2016-10-31
 Description: Shared Tenant setup auth service
 #This is the template for the Cognito User Pool for the tenant
 # Create a Cognito User Pool
