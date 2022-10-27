@@ -65,10 +65,10 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-     # - name: Download production artifacts
-     #   uses: actions/download-artifact@v3
-     #   with:
-     #     name: dist-without-markdown
+      - name: Download production artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist-without-markdown
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q verify -Dnative -DskipTests
