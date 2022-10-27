@@ -17,6 +17,8 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, R
 
     @Override
     public ResponseSignup handleRequest(CognitoSignupEvent input, Context context) {
+        System.out.println("Input: " + input);
+        System.out.println("Context: " + context);
         return service.process(input);
     }
 }
