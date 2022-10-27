@@ -92,7 +92,7 @@ jobs:
         with:
           name: dist-without-markdown
           path: |
-            */target/*
+            product/service/lambda-services/cognito/signup/target
 
       - name: Sam build
         run: |
