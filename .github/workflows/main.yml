@@ -12,7 +12,7 @@ jobs:
   native_build:
     runs-on: ubuntu-latest
 
-    name: Build native Quarkus app
+    name: Deploy Tenant Creation Service
     steps:
         # I only need to declare environment variables once at the beginning
         # The subsequent steps can access the variables by default

@@ -28,9 +28,4 @@ Resources:
             Path: /{proxy+}
             Method: any
 
-Outputs:
-  OrdersApiNativeApi:
-    Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
-    Export:
-      Name: OrdersApiNativeApi
+
