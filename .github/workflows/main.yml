@@ -51,8 +51,8 @@ jobs:
             version: 'latest'
             java-version: '19'
             components: 'native-image'
-      - name: Cache node modules
-        id: cache-npm
+      - name: Cache maven modules
+        id: cache-maven
         uses: actions/cache@v3
         env:
           cache-name: cache-maven-modules
@@ -65,10 +65,10 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Download production artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: dist-without-markdown
+     # - name: Download production artifacts
+     #   uses: actions/download-artifact@v3
+     #   with:
+     #     name: dist-without-markdown
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q verify -Dnative -DskipTests
