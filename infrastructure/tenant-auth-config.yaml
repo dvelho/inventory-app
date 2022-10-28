@@ -55,8 +55,8 @@ Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UsernameConfiguration:
-        CaseSensitive: false
+      UsernameAttributes:
+        - "email"
       AutoVerifiedAttributes:
         - email
       UserPoolName: !Sub ${Environment}-tenant-user-pool-${TenantName}
@@ -145,8 +145,7 @@ Resources:
       # This is the lambda that will get the created cognito domain
       ServiceToken: !GetAtt GetUserPoolClientCFDistribution.Arn
       # This becomes a ResourceProperty of the event passed to lambda
-      UserPoolDomain:
-        !Ref UserPoolDomain
+      UserPoolDomain:  !Ref UserPoolDomain
 
   PreSignupTriggerLambdaPermission:
     Type: 'AWS::Lambda::Permission'
@@ -264,7 +263,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - cognito-idp:*
-                Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/*"
+                Resource: !Sub "*"
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
