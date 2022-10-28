@@ -273,7 +273,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - cognito-idp:*
-                Resource: 'userpool*'
+                Resource: '*'
 
   # Creates a role that allows Cognito to send SNS messages
 
