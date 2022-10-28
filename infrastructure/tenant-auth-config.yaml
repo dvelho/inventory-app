@@ -265,13 +265,15 @@ Resources:
                 Resource: arn:aws:logs:*:*:*
               - Effect: Allow
                 Action:
-                  - cognito-idp:*
                   - cloudwatch:PutMetricData
                   - cloudwatch:ListMetrics
                   - cloudwatch:PutMetricAlarm
                   - dynamodb:*
-
                 Resource: '*'
+              - Effect: Allow
+                Action:
+                  - cognito-idp:*
+                Resource: 'userpool*'
 
   # Creates a role that allows Cognito to send SNS messages
 
