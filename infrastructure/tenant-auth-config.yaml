@@ -303,6 +303,13 @@ Resources:
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
 
+  CognitoTenantAdminGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: tenant.main.admin
+      Description: Tenant admins that can manage the tenant
+      UserPoolId: !Ref UserPool
+
   # Creates a role that allows Cognito to send SNS messages
 Outputs:
   CognitoUserPoolID:

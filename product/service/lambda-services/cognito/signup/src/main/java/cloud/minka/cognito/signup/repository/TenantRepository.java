@@ -1,5 +1,6 @@
 package cloud.minka.cognito.signup.repository;
 
+import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -47,5 +48,19 @@ public class TenantRepository {
                 .key(Map.of("PK", pk))
                 .build();
         return client.getItem(request);
+    }
+
+    public void updateTenant(String tableName, String tenantDomain, TenantStatus active) {
+        AttributeValue pk = AttributeValue.builder().s(tenantDomain).build();
+        AttributeValue sk = AttributeValue.builder().s("tenant").build();
+        AttributeValue status = AttributeValue.builder().s(String.valueOf(active)).build();
+        UpdateItemRequest request = UpdateItemRequest.builder()
+                .tableName(tableName)
+                .key(Map.of("PK", pk, "SK", sk))
+                .updateExpression("set #status = :status")
+                .expressionAttributeNames(Map.of("#status", "status"))
+                .expressionAttributeValues(Map.of(":status", status))
+                .build();
+        client.updateItem(request);
     }
 }
