@@ -61,8 +61,8 @@ Resources:
         - email
       UserPoolName: !Sub ${Environment}-tenant-user-pool-${TenantName}
       LambdaConfig:
-        PreSignUp: !GetAtt SignupTriggerLambda.Arn
-        PostConfirmation: !GetAtt SignupTriggerLambda.Arn
+        PreSignUp: !GetAtt  PreSignupTriggerLambda.Arn
+        PostConfirmation: !GetAtt  PreSignupTriggerLambda.Arn
        # PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
       Schema:
         - Name: email
@@ -148,15 +148,15 @@ Resources:
       UserPoolDomain:
         !Ref UserPoolDomain
 
-  SignupTriggerLambdaPermission:
+  PreSignupTriggerLambdaPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt SignupTriggerLambda.Arn
+      FunctionName: !GetAtt  PreSignupTriggerLambda.Arn
       Principal: "cognito-idp.amazonaws.com"
       SourceArn: !GetAtt UserPool.Arn
 
-  SignupTriggerLambda:
+  PreSignupTriggerLambda:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-Signup-Native-${TenantName}
