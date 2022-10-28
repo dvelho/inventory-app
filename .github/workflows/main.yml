@@ -80,7 +80,7 @@ jobs:
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
-          mvn -f product/service/lambda-services/cognito/signup/pom.xml -q  -Dnative -DskipTests
+          mvn -f product/service/lambda-services/cognito/signup/pom.xml -q install -Dnative -DskipTests
       #- name: Invoke local native app
       #  run: |
       #    sam local invoke --template target/sam.native.yaml --event payload.json
