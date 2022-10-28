@@ -69,4 +69,4 @@ install-nx:
 	yarn global add nx
 
 build-presignup:
-	 mvn -f product/service/lambda-services/cognito/signup/pom.xml -q clean verify -Dnative -DskipTests
+	 mvn -f product/service/lambda-services/cognito/signup/pom.xml -q  install -Dnative -DskipTests

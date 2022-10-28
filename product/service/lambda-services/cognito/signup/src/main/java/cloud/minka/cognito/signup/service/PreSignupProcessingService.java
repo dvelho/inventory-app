@@ -44,7 +44,7 @@ public final class PreSignupProcessingService {
                 input.callerContext(),
                 input.triggerSource(),
                 input.request(),
-                new ResponseSignup("true", "false", "false")
+                new ResponseSignup("true", "true", "true")
         );
         if (tenant.item().size() == 0) {
             insertTenantIntoTable(tableName, tenantDomain);
