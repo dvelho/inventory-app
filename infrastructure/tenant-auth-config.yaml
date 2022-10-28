@@ -148,11 +148,6 @@ Resources:
       UserPoolDomain:
         !Ref UserPoolDomain
 
-
-
-
-
-
   PreSignupTriggerLambdaPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
@@ -235,9 +230,6 @@ Resources:
             cfnresponse.send(event, context, response_status, response_data, noEcho=True)
   
 
-
-
-
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -268,15 +260,31 @@ Resources:
                   - cloudwatch:PutMetricData
                   - cloudwatch:ListMetrics
                   - cloudwatch:PutMetricAlarm
-                  - dynamodb:*
-                Resource: '*'
+                Resource: "*"
               - Effect: Allow
                 Action:
                   - cognito-idp:*
-                Resource: '*'
+                Resource: !GetAtt UserPool.Arn
+              - Effect: Allow
+                Action:
+                    - dynamodb: dynamodb:GetItem
+                    - dynamodb: dynamodb:PutItem
+                    - dynamodb: dynamodb:UpdateItem
+                    - dynamodb: dynamodb:DeleteItem
+                    - dynamodb: dynamodb:Scan
+                    - dynamodb: dynamodb:Query
+                    - dynamodb: dynamodb:BatchGetItem
+                    - dynamodb: dynamodb:BatchWriteItem
+                    - dynamodb: dynamodb:CreateTable
+                    - dynamodb: dynamodb:DescribeTable
+                    - dynamodb: dynamodb:ListTables
+                    - dynamodb: dynamodb:UpdateTable
+                    - dynamodb: dynamodb:DeleteTable
+                    - dynamodb: dynamodb:DescribeTimeToLive
+                    - dynamodb: dynamodb:UpdateTimeToLive
+                Resource: !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*
 
   # Creates a role that allows Cognito to send SNS messages
-
 Outputs:
   CognitoUserPoolID:
     Value: !Ref UserPool
