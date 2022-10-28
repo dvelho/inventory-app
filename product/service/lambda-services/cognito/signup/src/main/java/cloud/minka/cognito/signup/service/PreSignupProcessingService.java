@@ -33,16 +33,8 @@ public final class PreSignupProcessingService {
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
-        CognitoSignupEvent responseSuccess = new CognitoSignupEvent(
-                input.version(),
-                input.region(),
-                input.userPoolId(),
-                input.userName(),
-                input.callerContext(),
-                input.triggerSource(),
-                input.request(),
-                new ResponseSignup("true", "true", "true")
-        );
+        CognitoSignupEvent responseSuccess = createSignupEvent(input);
+        System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
             tenantRepository.insertTenantIntoTable(tableName, tenantDomain);
             return responseSuccess;
@@ -57,6 +49,19 @@ public final class PreSignupProcessingService {
             default ->
                     throw new IllegalArgumentException("The tenant is not in a valid state");
         };
+    }
+
+    public CognitoSignupEvent createSignupEvent(CognitoSignupEvent input) {
+        return new CognitoSignupEvent(
+                input.version(),
+                input.region(),
+                input.userPoolId(),
+                input.userName(),
+                input.callerContext(),
+                input.triggerSource(),
+                input.request(),
+                new ResponseSignup("true", "false", "false")
+        );
     }
 
 
