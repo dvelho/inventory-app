@@ -67,7 +67,7 @@ Resources:
       Schema:
         - Name: email
           AttributeDataType: String
-          Mutable: false
+          Mutable: true
           Required: true
         - Name: tenantId
           AttributeDataType: String
