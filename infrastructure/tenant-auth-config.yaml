@@ -61,9 +61,9 @@ Resources:
         - email
       UserPoolName: !Sub ${Environment}-tenant-user-pool-${TenantName}
       LambdaConfig:
-        PreSignUp: !GetAtt PreSignupTriggerLambda.Arn
-        PostConfirmation: !GetAtt PostConfirmationTriggerLambda.Arn
-        PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
+        PreSignUp: !GetAtt SignupTriggerLambda.Arn
+        PostConfirmation: !GetAtt SignupTriggerLambda.Arn
+       # PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
       Schema:
         - Name: email
           AttributeDataType: String
@@ -118,17 +118,6 @@ Resources:
         - COGNITO
         - Google
 
-  # Create dummy a root domain for the auth app
-  #AuthDomainRootRecord:
-  #  Type: AWS::Route53::RecordSet
-  #  Properties:
-  #    HostedZoneId:  !Ref HostedZoneId
-  #    Name: !Ref CognitoDomain
-  #    ResourceRecords:
-  #      - 127.0.0.1
-  #    TTL: 900
-  #    Type: A
-
   UserPoolDomain:
     Type: AWS::Cognito::UserPoolDomain
     Properties:
@@ -158,33 +147,16 @@ Resources:
       # This becomes a ResourceProperty of the event passed to lambda
       UserPoolDomain:
         !Ref UserPoolDomain
-  #  PreSignupTriggerLambda
-  #  PreAuthenticationTriggerLambda
-  OnCognitoPreAuthenticatePermission:
+
+  SignupTriggerLambdaPermission:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt PreAuthenticationTriggerLambda.Arn
+      FunctionName: !GetAtt SignupTriggerLambda.Arn
       Principal: "cognito-idp.amazonaws.com"
       SourceArn: !GetAtt UserPool.Arn
 
-  OnCognitoPreSignupPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt PreSignupTriggerLambda.Arn
-      Principal: "cognito-idp.amazonaws.com"
-      SourceArn: !GetAtt UserPool.Arn
-
-  OnCognitoPostConfirmationPermission:
-    Type: 'AWS::Lambda::Permission'
-    Properties:
-      Action: "lambda:InvokeFunction"
-      FunctionName: !GetAtt PostConfirmationTriggerLambda.Arn
-      Principal: "cognito-idp.amazonaws.com"
-      SourceArn: !GetAtt UserPool.Arn
-
-  PreSignupTriggerLambda:
+  SignupTriggerLambda:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-Signup-Native-${TenantName}
@@ -197,80 +169,6 @@ Resources:
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
-
-
-  PostConfirmationTriggerLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: This lambda function is triggered after a user signs up
-      FunctionName: !Sub ${Environment}-PostSignupTriggerLambda-${TenantName}
-      Handler: index.handler
-      MemorySize: 128
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Runtime: "nodejs16.x"
-      Timeout: 30
-      Code:
-        ZipFile: |
-          exports.handler = (event, context, callback) => {
-            console.log('Received event:', JSON.stringify(event, null, 2));
-            callback(null, event);
-          }
-
-  PreAuthenticationTriggerLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: This lambda function is triggered before a user signs in
-      FunctionName: !Sub ${Environment}-PreAuthenticationTriggerLambda-${TenantName}
-      Handler: index.handler
-      MemorySize: 128
-      Role: !GetAtt LambdaExecutionRole.Arn
-      Runtime: "nodejs16.x"
-      Timeout: 30
-      Code:
-        ZipFile: |
-          exports.handler = (event, context, callback) => {
-              // Impose a condition that the minimum length of the username is 5 is imposed on all user pools.
-              if (event.userName.length < 5) {
-                var error = new Error("Cannot register users with username less than the minimum length of 5");
-                // Return error to Amazon Cognito
-                callback(error, event);
-            }
-              // Return to Amazon Cognito
-              callback(null, event);
-          };
-
-  # PreSignupTrigger
-  #PreSignupTriggerLambda:
-  #  Type: AWS::Lambda::Function
-  #  Properties:
-  #   Code:
-  #    ZipFile: |
-  #     exports.handler = (event, context, callback) => {
-  #         console.log('Received event:', JSON.stringify(event, null, 2));
-  #         event.response.autoConfirmUser = true;
-  #         event.response.autoVerifyEmail = true;
-  #         event.response.autoVerifyPhone = true;
-  #         callback(null, event);
-  #       }
-  #Handler: index.handler
-  # Role: !GetAtt LambdaExecutionRole.Arn
-  #  Runtime: nodejs16.x
-  #   Timeout: 10
-
-  # PreAuthenticationTrigger
-  #PreAuthenticationTriggerLambda:
-  # Type: AWS::Lambda::Function
-  # Properties:
-  # Code:
-  #   ZipFile: |
-  #    exports.handler = (event, context, callback) => {
-  #      console.log('Received event:', JSON.stringify(event, null, 2));
-  #      callback(null, event);
-  #    }
-  # Handler: index.handler
-  # Role: !GetAtt LambdaExecutionRole.Arn
-  # Runtime: nodejs16.x
-  # Timeout: 10
 
 
   GetUserPoolClientCFDistribution:
@@ -332,99 +230,9 @@ Resources:
             cfnresponse.send(event, context, response_status, response_data, noEcho=True)
   
 
-  # Creates a federeated Identity pool
-  IdentityPool:
-    Type: "AWS::Cognito::IdentityPool"
-    Properties:
-      IdentityPoolName: !Sub ${Environment}-Identity-${TenantName}
-      AllowUnauthenticatedIdentities: true
-      CognitoIdentityProviders:
-        - ClientId: !Ref UserPoolClient
-          ProviderName: !GetAtt UserPool.ProviderName
-
-  # Assigns the roles to the Identity Pool
-  IdentityPoolRoleMapping:
-    Type: "AWS::Cognito::IdentityPoolRoleAttachment"
-    Properties:
-      IdentityPoolId: !Ref IdentityPool
-      Roles:
-        authenticated: !GetAtt CognitoAuthorizedRole.Arn
-        unauthenticated: !GetAtt CognitoUnAuthorizedRole.Arn
-
-  # Create a role for unauthorized acces to AWS resources. Very limited access. Only allows users in the previously created Identity Pool
-  CognitoUnAuthorizedRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: !Sub ${Environment}-CognitoUnAuthorizedRole-${TenantName}
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Federated: "cognito-identity.amazonaws.com"
-            Action:
-              - "sts:AssumeRoleWithWebIdentity"
-            Condition:
-              StringEquals:
-                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
-              "ForAnyValue:StringLike":
-                "cognito-identity.amazonaws.com:amr": unauthenticated
-      Policies:
-        - PolicyName: "CognitoUnauthorizedPolicy"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "mobileanalytics:PutEvents"
-                  - "cognito-sync:*"
-                Resource: "*"
-
-  # Create a role for authorized acces to AWS resources. Control what your user can access. This example only allows Lambda invokation
-  # Only allows users in the previously created Identity Pool
-  CognitoAuthorizedRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: !Sub ${Environment}-CognitoAuthorizedRole-${TenantName}
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Federated: "cognito-identity.amazonaws.com"
-            Action:
-              - "sts:AssumeRoleWithWebIdentity"
-            Condition:
-              StringEquals:
-                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
-              "ForAnyValue:StringLike":
-                "cognito-identity.amazonaws.com:amr": authenticated
-      Policies:
-        - PolicyName: "CognitoAuthorizedPolicy"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action:
-                  - "mobileanalytics:PutEvents"
-                  - "cognito-sync:*"
-                  - "cognito-identity:*"
-                Resource: "*"
-              - Effect: "Allow"
-                Action:
-                  - "lambda:InvokeFunction"
-                Resource: "*"
 
 
 
-        #ACMCognitoCertificate:
-        # Type: "AWS::CertificateManager::Certificate"
-        #Properties:
-        #DomainName: !Ref GeneralDomain
-        #DomainValidationOptions:
-        # - DomainName: !Ref CognitoDomain
-        #   HostedZoneId: !Ref HostedZoneId
-      #ValidationMethod: DNS
   LambdaExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -461,27 +269,6 @@ Resources:
                 Resource: '*'
 
   # Creates a role that allows Cognito to send SNS messages
-  SNSRole:
-    Type: "AWS::IAM::Role"
-    Properties:
-      RoleName: !Sub ${Environment}-SNSRole-${TenantName}
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service:
-                - "cognito-idp.amazonaws.com"
-            Action:
-              - "sts:AssumeRole"
-      Policies:
-        - PolicyName: "CognitoSNSPolicy"
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: "Allow"
-                Action: "sns:publish"
-                Resource: "*"
 
 Outputs:
   CognitoUserPoolID:

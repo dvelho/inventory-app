@@ -11,6 +11,13 @@
   <artifactId>signup</artifactId>
   <version>0.0.2-SNAPSHOT</version>
   <name>Product Services Lambda Tenant Signup flows</name>
+  <description>Product Services Lambda Tenant Signup flows</description>
+  <dependencies>
+    <dependency>
+      <groupId>io.quarkiverse.amazonservices</groupId>
+      <artifactId>quarkus-amazon-cognito-user-pools</artifactId>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>

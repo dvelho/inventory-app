@@ -72,7 +72,7 @@ jobs:
           cache-name: cache-target-modules
         with:
           path: product/service/lambda-services/cognito/signup/target
-          key: ${{ runner.os }}-maven-${{ hashFiles('product/service/lambda-services/**/pom.xml') }}
+          key: ${{ runner.os }}-target-${{ hashFiles('product/service/lambda-services/**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
@@ -80,7 +80,7 @@ jobs:
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
-          mvn -f product/service/lambda-services/cognito/signup/pom.xml -q verify -Dnative -DskipTests
+          mvn -f product/service/lambda-services/cognito/signup/pom.xml -q  -Dnative -DskipTests
       #- name: Invoke local native app
       #  run: |
       #    sam local invoke --template target/sam.native.yaml --event payload.json

@@ -2,9 +2,8 @@ package cloud.minka.cognito.signup.service;
 
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.ResponseSignup;
-
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
-import com.fasterxml.jackson.databind.JsonNode;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -15,9 +14,11 @@ import java.util.Map;
 import static cloud.minka.cognito.signup.model.cloudformation.TenantStatus.PENDING_CONFIGURATION;
 
 @ApplicationScoped
-public final class ProcessingService {
+public final class PreSignupProcessingService {
     @Inject
     DynamoDbClient client;
+
+
 
     /**
      * Process pre signup response signup.
@@ -27,7 +28,7 @@ public final class ProcessingService {
      * @param input the input
      * @return the response signup
      */
-    public CognitoSignupEvent processPreSignup(CognitoSignupEvent input) {
+    public CognitoSignupEvent process(CognitoSignupEvent input) {
         String tableName = "tenant";
         createTenantTable(tableName);
        // JsonNode request = input.request();
