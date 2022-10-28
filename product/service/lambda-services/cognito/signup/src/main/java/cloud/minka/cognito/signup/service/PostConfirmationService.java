@@ -12,10 +12,10 @@ public class PostConfirmationService {
     @Inject
     CognitoIdentityProviderClient cognitoClient;
     public CognitoSignupEvent process(CognitoSignupEvent input) {
-        cognitoClient.adminAddUserToGroup(builder -> builder
+      /*  cognitoClient.adminAddUserToGroup(builder -> builder
                 .groupName("user")
                 .userPoolId(input.userPoolId())
-                .username(input.userName()));
+                .username(input.userName()));*/
         return input;
     }
 }

@@ -31,7 +31,6 @@ public final class PreSignupProcessingService {
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String tableName = "tenant";
         createTenantTable(tableName);
-       // JsonNode request = input.request();
         String userEmail =  input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
@@ -45,7 +44,7 @@ public final class PreSignupProcessingService {
                 input.callerContext(),
                 input.triggerSource(),
                 input.request(),
-                new ResponseSignup("false", "false", "false")
+                new ResponseSignup("true", "false", "false")
         );
         if (tenant.item().size() == 0) {
             insertTenantIntoTable(tableName, tenantDomain);
