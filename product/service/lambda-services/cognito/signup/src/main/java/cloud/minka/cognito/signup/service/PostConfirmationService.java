@@ -27,6 +27,7 @@ public class PostConfirmationService {
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
+
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
