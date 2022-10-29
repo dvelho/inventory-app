@@ -13,7 +13,7 @@ public record CognitoSignupEvent(
         CallerContext callerContext,
         TriggerSource triggerSource,
         JsonNode request,
-        ResponseSignup response) {
+        JsonNode response) {
 
 
 }

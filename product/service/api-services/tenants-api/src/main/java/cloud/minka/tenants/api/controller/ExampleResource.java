@@ -1,4 +1,4 @@
-package cloud.minka.cognito.signup.controller;
+package cloud.minka.tenants.api.controller;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

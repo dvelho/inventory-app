@@ -41,15 +41,15 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-        System.out.println(CognitoSignupEventConverter.toJson(input));
-        return CognitoSignupEventConverter.response(input);
+        System.out.println(CognitoSignupEventConverter.responsePostSignup(input));
+        return CognitoSignupEventConverter.responsePostSignup(input);
     }
 
     public CognitoSignupEvent finishTenantUserSetup(CognitoSignupEvent input, String tenantDomain) {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.users".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-        return CognitoSignupEventConverter.response(input);
+        return CognitoSignupEventConverter.responsePostSignup(input);
     }
 
     public void setUserCognitoAttributes(CognitoSignupEvent input, String tenantDomain) {
