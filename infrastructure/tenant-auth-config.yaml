@@ -169,7 +169,7 @@ Resources:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
           TENANT_NAME: !Ref TenantAggregatorName
-          TENANT_INFO_TABLE_NAME:  !GetAtt TenantInfoTable.TableName
+          TENANT_INFO_TABLE_NAME:  !Ref TenantInfoTable
 
 
   GetUserPoolClientCFDistribution:
