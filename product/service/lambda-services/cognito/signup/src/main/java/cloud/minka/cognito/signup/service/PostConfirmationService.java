@@ -9,8 +9,10 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.Locale;
 
 @ApplicationScoped
 public class PostConfirmationService {
@@ -21,7 +23,7 @@ public class PostConfirmationService {
     CognitoTenantRepository cognitoTenantRepository;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue="dev-tenants-info-minka-cloud")
     String tableName;
-
+    @RolesAllowed({"ADMIN","CSR"})
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
