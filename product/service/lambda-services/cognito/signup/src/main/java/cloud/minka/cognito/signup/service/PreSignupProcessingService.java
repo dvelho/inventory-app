@@ -1,7 +1,7 @@
 package cloud.minka.cognito.signup.service;
 
+import cloud.minka.cognito.signup.command.CognitoSignupEventConverter;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
-import cloud.minka.cognito.signup.model.cloudformation.ResponseSignup;
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
@@ -42,7 +42,7 @@ public final class PreSignupProcessingService {
         // Check if the tenant exists
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
-        CognitoSignupEvent responseSuccess = createSignupEvent(input);
+        CognitoSignupEvent responseSuccess = CognitoSignupEventConverter.response(input);
         System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
             System.out.printf("event::cognito::signup::request::tenant::create::table::tenant::%s%n", tenantDomain);
@@ -60,18 +60,7 @@ public final class PreSignupProcessingService {
         };
     }
 
-    public CognitoSignupEvent createSignupEvent(CognitoSignupEvent input) {
-        return new CognitoSignupEvent(
-                input.version(),
-                input.region(),
-                input.userPoolId(),
-                input.userName(),
-                input.callerContext(),
-                input.triggerSource(),
-                input.request(),
-                new ResponseSignup("true", "false", "false")
-        );
-    }
+
 
 
 }

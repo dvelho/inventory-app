@@ -1,5 +1,6 @@
 package cloud.minka.cognito.signup.service;
 
+import cloud.minka.cognito.signup.command.CognitoSignupEventConverter;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
@@ -39,7 +40,8 @@ public class PostConfirmationService {
             cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
             cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
             tenantRepository.updateTenant(tableName, tenantDomain, TenantStatus.ACTIVE);
-            return input;
+            System.out.println("event::cognito::signup::request::tenant::status::updated::to::active");
+            return CognitoSignupEventConverter.response(input);
         }
 
 
