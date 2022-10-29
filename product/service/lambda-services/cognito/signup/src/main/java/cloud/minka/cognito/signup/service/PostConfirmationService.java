@@ -10,8 +10,11 @@ import javax.inject.Inject;
 @ApplicationScoped
 public class PostConfirmationService {
 
-    @Inject
     CognitoTenantRepository cognitoTenantRepository;
+    public PostConfirmationService(CognitoTenantRepository cognitoTenantRepository) {
+        this.cognitoTenantRepository = cognitoTenantRepository;
+    }
+
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.user");
       /*  cognitoClient.adminAddUserToGroup(builder -> builder

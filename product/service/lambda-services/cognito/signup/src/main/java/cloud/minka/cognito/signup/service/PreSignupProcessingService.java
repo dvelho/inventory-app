@@ -35,12 +35,14 @@ public final class PreSignupProcessingService {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
+
+        // Check if the tenant exists
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
         CognitoSignupEvent responseSuccess = createSignupEvent(input);
         System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
-           // cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
+            cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
             cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.users".formatted(tenantDomain));
             cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.admins".formatted(tenantDomain));
             cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
