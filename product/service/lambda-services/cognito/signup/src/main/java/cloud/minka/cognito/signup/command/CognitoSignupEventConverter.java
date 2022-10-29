@@ -22,6 +22,6 @@ public class CognitoSignupEventConverter {
         }
 
     public static String toJson(CognitoSignupEvent input) {
-        return mapper.valueToTree(input).toString();
+        return mapper.valueToTree(response(input)).toString();
     }
 }
