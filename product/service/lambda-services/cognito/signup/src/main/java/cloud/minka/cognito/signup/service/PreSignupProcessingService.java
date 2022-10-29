@@ -21,6 +21,8 @@ public final class PreSignupProcessingService {
 
     @Inject
     CognitoTenantRepository cognitoTenantRepository;
+    @Inject
+    CognitoSignupEventConverter cognitoSignupEventConverter;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue="dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -42,7 +44,7 @@ public final class PreSignupProcessingService {
         // Check if the tenant exists
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
-        CognitoSignupEvent responseSuccess = CognitoSignupEventConverter.response(input);
+        CognitoSignupEvent responseSuccess = cognitoSignupEventConverter.response(input);
         System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
             System.out.printf("event::cognito::signup::request::tenant::create::table::tenant::%s%n", tenantDomain);

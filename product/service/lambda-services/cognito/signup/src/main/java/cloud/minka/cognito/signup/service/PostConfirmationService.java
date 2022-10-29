@@ -18,6 +18,9 @@ public class PostConfirmationService {
 
     @Inject
     CognitoTenantRepository cognitoTenantRepository;
+
+    @Inject
+    CognitoSignupEventConverter cognitoSignupEventConverter;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -41,15 +44,15 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-        System.out.println(CognitoSignupEventConverter.responsePostSignup(input));
-        return CognitoSignupEventConverter.responsePostSignup(input);
+        System.out.println(cognitoSignupEventConverter.responsePostSignup(input));
+        return cognitoSignupEventConverter.responsePostSignup(input);
     }
 
     public CognitoSignupEvent finishTenantUserSetup(CognitoSignupEvent input, String tenantDomain) {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.users".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-        return CognitoSignupEventConverter.responsePostSignup(input);
+        return cognitoSignupEventConverter.responsePostSignup(input);
     }
 
     public void setUserCognitoAttributes(CognitoSignupEvent input, String tenantDomain) {

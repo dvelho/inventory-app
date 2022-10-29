@@ -4,10 +4,14 @@ import cloud.minka.cognito.signup.model.cloudformation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class CognitoSignupEventConverter {
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-        public static CognitoSignupEvent response(CognitoSignupEvent input) {
+@ApplicationScoped
+public class CognitoSignupEventConverter {
+    @Inject
+    public   ObjectMapper mapper;
+        public  CognitoSignupEvent response(CognitoSignupEvent input) {
             return CognitoSignupEventBuilder.builder()
                     .version(input.version())
                     .region(input.region())
@@ -24,15 +28,15 @@ public class CognitoSignupEventConverter {
                     .build();
         }
 
-    public static String toJson(CognitoSignupEvent input) {
+    public  String toJson(CognitoSignupEvent input) {
         return mapper.valueToTree(response(input)).toString();
     }
 
-    public static CognitoSignupEvent fromJson(String input) {
+    public  CognitoSignupEvent fromJson(String input) {
         return mapper.convertValue(input, CognitoSignupEvent.class);
     }
 
-    public static CognitoSignupEvent responsePostSignup(CognitoSignupEvent input) {
+    public  CognitoSignupEvent responsePostSignup(CognitoSignupEvent input) {
 
         return CognitoSignupEventBuilder.builder()
                 .version(input.version())
