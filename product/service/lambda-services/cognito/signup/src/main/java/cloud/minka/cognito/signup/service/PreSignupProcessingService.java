@@ -34,7 +34,7 @@ public final class PreSignupProcessingService {
      */
     public CognitoSignupEvent process(CognitoSignupEvent input) {
 
-      //  tenantRepository.createTenantTable(tableName);
+        tenantRepository.createTenantTable(tableName);
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
@@ -45,19 +45,8 @@ public final class PreSignupProcessingService {
         CognitoSignupEvent responseSuccess = createSignupEvent(input);
         System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
-            System.out.println("event::cognito::signup::request::tenant::add::group::admin");
-            cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
-            System.out.println("event::cognito::signup::request::tenant::create::group::tenant::admin");
-            cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.admins".formatted(tenantDomain));
-            System.out.println("event::cognito::signup::request::tenant::create::group::tenant::users");
-            cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.users".formatted(tenantDomain));
-            System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
-            cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:domain", tenantDomain);
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
-            System.out.println("event::cognito::signup::request::tenant::create::table::tenant::%s".formatted(tenantDomain));
-            tenantRepository.insertTenantIntoTable(tableName, tenantDomain);
+            System.out.printf("event::cognito::signup::request::tenant::create::table::tenant::%s%n", tenantDomain);
+            tenantRepository.insertTenantIntoTable(tableName, tenantDomain, userEmail);
             return responseSuccess;
         }
         //Check if the tenant is in pending configuration
