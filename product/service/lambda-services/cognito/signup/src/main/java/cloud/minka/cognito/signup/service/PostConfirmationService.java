@@ -8,11 +8,8 @@ import cloud.minka.cognito.signup.repository.TenantRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
-
-import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Locale;
 
 @ApplicationScoped
 public class PostConfirmationService {
@@ -21,38 +18,53 @@ public class PostConfirmationService {
 
     @Inject
     CognitoTenantRepository cognitoTenantRepository;
-    @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue="dev-tenants-info-minka-cloud")
+    @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
-    @RolesAllowed({"ADMIN","CSR"})
+
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
-        if (tenant.item().get("status").s().equals(TenantStatus.PENDING_CONFIGURATION.name())) {
-            System.out.println("event::cognito::signup::request::tenant::add::group::admin");
-            cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
-            System.out.println("event::cognito::signup::request::tenant::create::group::tenant::admin");
-            cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.admins".formatted(tenantDomain));
-            System.out.println("event::cognito::signup::request::tenant::create::group::tenant::users");
-            cognitoTenantRepository.createGroup(input.userPoolId(), "tenant.%s.users".formatted(tenantDomain));
-            System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
-            cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:domain", tenantDomain);
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
-            cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
-            tenantRepository.updateTenant(tableName, tenantDomain, TenantStatus.ACTIVE);
-            System.out.println("event::cognito::signup::request::tenant::status::updated::to::active");
-            return CognitoSignupEventConverter.response(input);
-        }
-
-
-        /*  cognitoClient.adminAddUserToGroup(builder -> builder
-                .groupName("user")
-                .userPoolId(input.userPoolId())
-                .username(input.userName()));*/
-        return input;
+        TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
+        return switch (tenantStatus) {
+            case PENDING_CONFIGURATION -> finishTenantAdminSetup(input, tenantDomain);
+            case ACTIVE -> finishTenantUserSetup(input, tenantDomain);
+            default -> throw new IllegalArgumentException("The tenant is not in a valid state");
+        };
     }
 
+    public CognitoSignupEvent finishTenantAdminSetup(CognitoSignupEvent input, String tenantDomain) {
+        System.out.println("event::cognito::signup::request::tenant::add::group::admin");
+        cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
+        createTenantGroups(input.userPoolId(), tenantDomain);
+        System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
+        cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
+        setUserCognitoAttributes(input, tenantDomain);
+        tenantRepository.updateTenant(tableName, tenantDomain, TenantStatus.ACTIVE);
+        System.out.println("event::cognito::signup::request::tenant::status::updated::to::active");
+        return CognitoSignupEventConverter.response(input);
+    }
+
+    public CognitoSignupEvent finishTenantUserSetup(CognitoSignupEvent input, String tenantDomain) {
+        System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
+        cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.users".formatted(tenantDomain));
+        setUserCognitoAttributes(input, tenantDomain);
+        return CognitoSignupEventConverter.response(input);
+    }
+
+    public void setUserCognitoAttributes(CognitoSignupEvent input, String tenantDomain) {
+        System.out.println("event::cognito::signup::request::tenant::config::cognito::user::attributes");
+        cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:domain", tenantDomain);
+        cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
+        cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
+    }
+
+    public void createTenantGroups(String userPoolId, String tenantDomain) {
+        System.out.println("event::cognito::signup::request::tenant::create::group::tenant::admin");
+        cognitoTenantRepository.createGroup(userPoolId, "tenant.%s.admins".formatted(tenantDomain));
+        System.out.println("event::cognito::signup::request::tenant::create::group::tenant::users");
+        cognitoTenantRepository.createGroup(userPoolId, "tenant.%s.users".formatted(tenantDomain));
+    }
 
 }
