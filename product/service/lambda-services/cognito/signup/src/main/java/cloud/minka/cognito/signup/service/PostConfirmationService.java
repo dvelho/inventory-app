@@ -41,6 +41,7 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
+        System.out.println(CognitoSignupEventConverter.toJson(input));
         return CognitoSignupEventConverter.response(input);
     }
 

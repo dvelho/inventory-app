@@ -3,9 +3,11 @@ package cloud.minka.cognito.signup.command;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEventBuilder;
 import cloud.minka.cognito.signup.model.cloudformation.ResponseSignup;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CognitoSignupEventConverter {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
         public static CognitoSignupEvent response(CognitoSignupEvent input) {
             return CognitoSignupEventBuilder.builder()
                     .version(input.version())
@@ -18,4 +20,8 @@ public class CognitoSignupEventConverter {
                     .response(new ResponseSignup("true", "false", "false"))
                     .build();
         }
+
+    public static String toJson(CognitoSignupEvent input) {
+        return mapper.valueToTree(input).toString();
+    }
 }
