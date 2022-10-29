@@ -41,8 +41,6 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-        tenantRepository.updateTenant(tableName, tenantDomain, TenantStatus.ACTIVE);
-        System.out.println("event::cognito::signup::request::tenant::status::updated::to::active");
         return CognitoSignupEventConverter.response(input);
     }
 
@@ -57,7 +55,7 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::config::cognito::user::attributes");
         cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:domain", tenantDomain);
         cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
-        cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
+      //  cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
     }
 
     public void createTenantGroups(String userPoolId, String tenantDomain) {
