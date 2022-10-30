@@ -1,15 +1,21 @@
 package cloud.minka.cognito.signup.service;
 
-import cloud.minka.cognito.signup.command.CognitoSignupEventConverter;
+import cloud.minka.cognito.signup.converter.CognitoSignupEventConverter;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @ApplicationScoped
 public class PostConfirmationService {
@@ -21,6 +27,9 @@ public class PostConfirmationService {
 
     @Inject
     CognitoSignupEventConverter cognitoSignupEventConverter;
+
+    @Inject
+    SnsAsyncClient snsAsyncClient;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -42,17 +51,14 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::admin");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.main.admin");
         createTenantGroups(input.userPoolId(), tenantDomain);
-        System.out.println("event::cognito::signup::request::tenant::add::group::tenant::admin");
-        cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.admins".formatted(tenantDomain));
-        setUserCognitoAttributes(input, tenantDomain);
-        System.out.println(cognitoSignupEventConverter.responsePostSignup(input));
-        return cognitoSignupEventConverter.responsePostSignup(input);
+        return finishTenantUserSetup(input, tenantDomain);
     }
 
     public CognitoSignupEvent finishTenantUserSetup(CognitoSignupEvent input, String tenantDomain) {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.users".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
+      //  sendSNSMessage(input);
         return cognitoSignupEventConverter.responsePostSignup(input);
     }
 
@@ -60,14 +66,40 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::config::cognito::user::attributes");
         cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:domain", tenantDomain);
         cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:tenantId", tenantDomain);
-      //  cognitoTenantRepository.adminUpdateUserAttributes(input.userPoolId(), input.userName(), "custom:region", input.region());
     }
 
     public void createTenantGroups(String userPoolId, String tenantDomain) {
-        System.out.println("event::cognito::signup::request::tenant::create::group::tenant::admin");
-        cognitoTenantRepository.createGroup(userPoolId, "tenant.%s.admins".formatted(tenantDomain));
         System.out.println("event::cognito::signup::request::tenant::create::group::tenant::users");
         cognitoTenantRepository.createGroup(userPoolId, "tenant.%s.users".formatted(tenantDomain));
+    }
+
+    private void sendSNSMessage(CognitoSignupEvent input) {
+        System.out.println("event::cognito::signup::request::tenant::send::sns::message");
+
+        CompletableFuture<PublishResponse> response = snsAsyncClient
+                .publish(builder -> builder.topicArn("arn:aws:sns:us-east-1:123456789012:dev-tenant-signup-minka-cloud")
+                        .message("New user signup for tenant %s".formatted(input.request().get("userAttributes").get("email").asText()))
+                        .messageAttributes(new HashMap<>() {{
+                            put("tenant", MessageAttributeValue.builder()
+                                    .dataType("String").stringValue(input.request()
+                                            .get("userAttributes")
+                                            .get("email").asText().split("@")[1])
+                                    .build());
+                            put("user", MessageAttributeValue.builder()
+                                    .dataType("String").stringValue(input.request()
+                                            .get("userAttributes")
+                                            .get("email").asText())
+                                    .build());
+                        }}).build());
+        // .messageAttributes();
+
+        //Not really async, trying out
+        try {
+            response.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

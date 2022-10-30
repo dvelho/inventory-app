@@ -12,6 +12,7 @@ jobs:
   native_build:
     runs-on: ubuntu-latest
 
+
     name: Deploy Tenant Creation Service
     steps:
         # I only need to declare environment variables once at the beginning
@@ -25,7 +26,7 @@ jobs:
 
       - name: Configuration for master branch
         if: ${{ github.ref == 'refs/heads/master' }}
-        # Side note, I can run any Linux command here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
+        # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
         run: |
           echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
           echo "STACK_NAME=sam-cognito-tenant-minka-tech-dev-config" >> $GITHUB_ENV

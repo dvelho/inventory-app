@@ -1,6 +1,6 @@
 package cloud.minka.cognito.signup.service;
 
-import cloud.minka.cognito.signup.command.CognitoSignupEventConverter;
+import cloud.minka.cognito.signup.converter.CognitoSignupEventConverter;
 import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
@@ -57,10 +57,10 @@ public final class PreSignupProcessingService {
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
         CognitoSignupEvent responseSuccess = cognitoSignupEventConverter.response(input);
-        System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
         if (tenant.item().size() == 0) {
-            System.out.printf("event::cognito::signup::request::tenant::create::table::tenant::%s%n", tenantDomain);
+            System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s%n", tenantDomain);
             tenantRepository.insertTenantIntoTable(tableName, tenantDomain, userEmail);
+            System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
             return responseSuccess;
         }
         //Check if the tenant is in pending configuration
@@ -69,7 +69,10 @@ public final class PreSignupProcessingService {
         return switch (tenantStatus) {
             case PENDING_CONFIGURATION ->
                     throw new IllegalArgumentException("Your domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
-            case ACTIVE -> responseSuccess;
+            case ACTIVE -> {
+                System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
+                yield  responseSuccess;
+            }
             default -> throw new IllegalArgumentException("The tenant is not in a valid state");
         };
     }

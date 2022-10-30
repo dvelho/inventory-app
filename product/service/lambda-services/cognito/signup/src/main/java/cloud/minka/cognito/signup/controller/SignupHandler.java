@@ -28,7 +28,7 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, C
         TriggerSource triggerSource = input.triggerSource();
         try {
             return switch (triggerSource) {
-                case PreSignUp_ExternalProvider, PreSignUp_Registration -> preSignupProcessingService.process(input);
+                case PreSignUp_ExternalProvider,  PreSignUp_SignUp -> preSignupProcessingService.process(input);
                 case PostConfirmation_ConfirmSignUp -> postConfirmationService.process(input);
                 default -> throw new IllegalArgumentException("Unsupported trigger source: " + triggerSource);
             };

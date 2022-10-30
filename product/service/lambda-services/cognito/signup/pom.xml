@@ -18,6 +18,15 @@
       <artifactId>quarkus-amazon-cognito-user-pools</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.quarkiverse.amazonservices</groupId>
+      <artifactId>quarkus-amazon-sns</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>netty-nio-client</artifactId>
+    </dependency>
+    <dependency>
+
       <groupId>io.soabase.record-builder</groupId>
       <artifactId>record-builder-processor</artifactId>
       <version>34</version>

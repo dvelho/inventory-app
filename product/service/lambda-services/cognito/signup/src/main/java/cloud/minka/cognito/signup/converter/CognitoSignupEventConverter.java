@@ -1,11 +1,9 @@
-package cloud.minka.cognito.signup.command;
+package cloud.minka.cognito.signup.converter;
 
 import cloud.minka.cognito.signup.model.cloudformation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

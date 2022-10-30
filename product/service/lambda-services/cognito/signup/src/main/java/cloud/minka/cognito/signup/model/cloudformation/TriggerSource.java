@@ -4,6 +4,7 @@ public enum TriggerSource {
     PreSignUp_ExternalProvider,
     PreSignUp_AdminCreateUser,
     PreSignUp_Registration,
+    PreSignUp_SignUp,
     PostConfirmation_ConfirmSignUp,
     PostConfirmation_ConfirmForgotPassword,
 
