@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CloudFormation template for configuring deployment s3 bucket
+Parameters:
+  TenantAggregatorName:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "minka-cloud" #"minka.tech" #
+Resources:
+  S3BucketDevDeployment:
+    DeletionPolicy: Retain
+    Type: 'AWS::S3::Bucket'
+    Description: Creating Amazon S3 bucket for deployment
+    Properties:
+      BucketName: !Sub ${TenantAggregatorName}-dev-deployment
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+
+  S3BucketProdDeployment:
+    DeletionPolicy: Retain
+    Type: 'AWS::S3::Bucket'
+    Description: Creating Amazon S3 bucket for deployment
+    Properties:
+      BucketName: !Sub ${TenantAggregatorName}-prod-deployment
+      AccessControl: Private
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      #BucketEncryption:
+      #  ServerSideEncryptionConfiguration:
+      #    - ServerSideEncryptionByDefault:
+      #        SSEAlgorithm: AES256
+      VersioningConfiguration:
+        Status: Enabled
+Outputs:
+  S3BucketDevDeployment:
+    Description: Bucket Created for dev deployment
+    Value: !Ref S3BucketDevDeployment
+  S3BucketProdDeployment:
+    Description: Bucket Created for prod deployment
+    Value: !Ref S3BucketProdDeployment

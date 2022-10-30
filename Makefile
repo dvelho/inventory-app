@@ -1,4 +1,20 @@
 # Deploy sam cognito tenant-auth-config.yaml
+cognito-deploy-buckets-minka-cloud:
+	sam build --template-file infrastructure/deployment-s3-buckets.yaml \
+	&& \
+	sam deploy --template-file infrastructure/deployment-s3-buckets.yaml \
+	--stack-name tenant-deployment-buckets \
+	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+	--region eu-west-1 \
+	--resolve-s3 \
+	--parameter-overrides \
+	TenantName=minka-cloud \
+
+cognito-deploy-delete-buckets-minka-cloud:
+	sam delete --stack-name tenant-deployment-buckets
+
+
+
 cognito-deploy-dev-minka-tech:
 	sam build --template-file infrastructure/tenant-auth-config.yaml \
 	&& \

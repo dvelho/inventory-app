@@ -30,11 +30,13 @@ jobs:
         run: |
           echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
           echo "STACK_NAME=sam-cognito-tenant-minka-tech-dev-config" >> $GITHUB_ENV
+            echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
           echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
           echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
 
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/}
@@ -66,18 +68,9 @@ jobs:
             ${{ runner.os }}-
 
 
-      - name: Cache target modules
-        id: cache-target
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-target-modules
-        with:
-          path: product/service/lambda-services/cognito/signup/target
-          key: ${{ runner.os }}-target-${{ hashFiles('product/service/lambda-services/**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Download sources from s3
+        run: aws s3 sync s3://${{ env.S3_BUCKET_NAME }}/lambda-services/cognito/signup/target/ product/service/lambda-services/cognito/signup/target/
+
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
@@ -88,7 +81,10 @@ jobs:
      # - name: Maven Clean and Verify on OrdersApiNative
      #   run: |
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
-
+      - name: Upload native app to S3
+        run: |
+          aws s3 cp product/service/lambda-services/cognito/signup/target/ s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/target/ --recursive
+        ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
           sam build --template infrastructure/tenant-auth-config.yaml
