@@ -22,7 +22,7 @@ public class CognitoTenantRepository {
     public boolean emailExists(String email, String userPoolId) {
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + email);
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + userPoolId);
-
+        //TODO: check if the email exists in the user pool
         ListUsersRequest listUsersRequest = ListUsersRequest.builder()
                 .userPoolId(userPoolId)
                 .filter("email = \"" + email + "\"")
