@@ -34,6 +34,8 @@ public class PostConfirmationService {
     String tableName;
 
     @ConfigProperty(name = "cloud.minka.tenant.sns.topic", defaultValue = "arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud")
+    String topicArn;
+
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
@@ -79,7 +81,7 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::send::sns::message");
 
         CompletableFuture<PublishResponse> response = snsAsyncClient
-                .publish(builder -> builder.topicArn("arn:aws:sns:us-east-1:123456789012:dev-tenant-signup-minka-cloud")
+                .publish(builder -> builder.topicArn(topicArn)
                         .message("New user signup for tenant %s".formatted(input.request().get("userAttributes").get("email").asText()))
                         .messageAttributes(new HashMap<>() {{
                             put("tenant", MessageAttributeValue.builder()
