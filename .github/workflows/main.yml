@@ -41,6 +41,7 @@ jobs:
           echo "STACK_NAME=sam-cognito-tenant-minka-cloud-dev-config" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
           echo "environment=dev1" >> $GITHUB_ENV
+          echo "publishAlias=dev1" >> $GITHUB_ENV
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
@@ -88,7 +89,7 @@ jobs:
         run: |
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
    ## --exclude "*" --include "*.zip"
-
+          echo "publishAlias=new_dev" >> $GITHUB_ENV
       - name: Sam build
         run: |
           sam build --template infrastructure/tenant-auth-config.yaml
@@ -104,7 +105,8 @@ jobs:
             HostedZoneId=${{env.HOSTED_ZONE_ID}} \
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
-            Environment=${{env.environment}} 
+            Environment=${{env.environment}} \
+            PublishAlias=${{env.publish}} \
 
       #- name: Invoke local native app
       #  run: |

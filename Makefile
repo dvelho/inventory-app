@@ -28,7 +28,8 @@ cognito-deploy-dev-minka-tech:
 	HostedZoneId=Z012886125XSYKBOI8V6M \
 	CognitoDomain=auth.minka.tech \
 	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404 \
-	Environment=dev
+	Environment=dev \
+
 cognito-deploy-delete-dev-tech:
 	sam delete --stack-name sam-cognito-tenant-minka-tech-dev-config
 
@@ -68,7 +69,7 @@ cognito-deploy-prod-minka-cloud:
 	CognitoDomain=auth.minka.cloud \
 	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
 	Environment=prod1 \
-	${{ env.CognitoSignupCodeUriKey }}
+	PublishAlias=${{ env.CognitoSignupCodeUriKey }}
 cognito-delete-prod-minka-cloud:
 	sam delete --stack-name sam-cognito-tenant-minka-cloud-prod-config
 
