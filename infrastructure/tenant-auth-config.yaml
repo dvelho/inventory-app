@@ -357,7 +357,7 @@ Resources:
                 AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
 
   PostToSlackLambda:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-PostToSlackLambda-${TenantAggregatorName}
       Description: Post to Slack
@@ -366,8 +366,8 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "nodejs16.x"
       Timeout: 30
-      Code:
-        ZipFile: |
+      Architecture: arm64
+      InlineCode: |
           const https = require('https');
           exports.handler = (event, context, callback) => {
             const payload = JSON.stringify({
