@@ -47,6 +47,10 @@ Parameters:
     Type: String
     Description: The ARN of the certificate
     Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
+  CognitoSignupCodeUriKey:
+    Type: String
+    Description: The URI of the Cognito Signup Code Lambda
+    Default: "product/service/lambda-services/cognito/signup/target/function.zip"
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
@@ -163,7 +167,7 @@ Resources:
       Runtime: provided
       CodeUri:
         Bucket: minka-cloud-dev-deployment
-        Key: product/service/lambda-services/cognito/signup/target/function.zip
+        Key: !Ref CognitoSignupCodeUriKey
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt LambdaExecutionRole.Arn

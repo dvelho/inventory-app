@@ -87,6 +87,7 @@ jobs:
         run: |
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
         ## --exclude "*" --include "*.zip"
+          echo "CognitoSignupCodeUriKey=product/service/lambda-services/cognito/signup/target/function.zip" >> $GITHUB_ENV
       - name: Sam build
         run: |
           sam build --template infrastructure/tenant-auth-config.yaml
@@ -102,7 +103,8 @@ jobs:
             HostedZoneId=${{env.HOSTED_ZONE_ID}} \
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
-            Environment=${{env.environment}}      
+            Environment=${{env.environment}}  
+            ${{ env.CognitoSignupCodeUriKey }} 
 
       #- name: Invoke local native app
       #  run: |
