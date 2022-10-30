@@ -107,7 +107,7 @@ jobs:
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
             Environment=${{env.environment}} \
-            CognitoSignupS3Bucket=${{env.PUBLISH_ALIAS}} \
+            CognitoSignupS3Bucket=${{env.COGNITO_SIGNUP_S3_BUCKET}} \
           
 
       #- name: Invoke local native app
