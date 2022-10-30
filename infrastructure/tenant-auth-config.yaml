@@ -159,7 +159,7 @@ Resources:
   PreSignupTriggerLambda:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${Environment}-signup-native-${TenantAggregatorName} #../product/service/lambda-services/cognito/signup/target/function.zip
+      FunctionName: !Sub ${Environment}-signup-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
       AutoPublishAlias: live
