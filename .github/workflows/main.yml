@@ -27,10 +27,10 @@ jobs:
 
       - name: Create Vars
         run: |  
-          echo "TenantName=minka-cloud"
-          echo "GeneralDomain=minka.cloud"
-          echo "HostedZoneId=Z06530912SIRHBPLWQDWO"
-          echo "CognitoDomain=auth.minka.cloud"
+          echo "TenantName=minka-cloud" >> $GITHUB_ENV
+          echo "GeneralDomain=minka.cloud" >> $GITHUB_ENV
+          echo "HostedZoneId=Z06530912SIRHBPLWQDWO" >> $GITHUB_ENV
+          echo "CognitoDomain=auth.minka.cloud" >> $GITHUB_ENV
 
       - name: Configuration for master branch
         if: ${{ github.ref == 'refs/heads/master' }}
