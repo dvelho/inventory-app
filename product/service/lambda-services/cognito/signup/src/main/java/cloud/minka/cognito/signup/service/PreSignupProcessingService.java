@@ -5,11 +5,15 @@ import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
 import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 
 @ApplicationScoped
@@ -20,10 +24,13 @@ public final class PreSignupProcessingService {
     TenantRepository tenantRepository;
 
     @Inject
+    ObjectMapper objectMapper;
+
+    @Inject
     CognitoTenantRepository cognitoTenantRepository;
     @Inject
     CognitoSignupEventConverter cognitoSignupEventConverter;
-    @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue="dev-tenants-info-minka-cloud")
+    @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
     /**
@@ -39,6 +46,11 @@ public final class PreSignupProcessingService {
         tenantRepository.createTenantTable(tableName);
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
+
+        if (isFreeDomainProvider(tenantDomain)) {
+            throw new IllegalArgumentException("Free Domains are not allowed");
+        }
+
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
 
         // Check if the tenant exists
@@ -62,7 +74,23 @@ public final class PreSignupProcessingService {
         };
     }
 
+    private boolean isFreeDomainProvider(String tenantDomain) {
+        String moduleName = "java.base";
+        String resourcePath = "/free-email-providers.json";
+        Module resource = ModuleLayer.boot().findModule(moduleName).get();
+        try {
+            InputStream ins = PreSignupProcessingService.class.getResourceAsStream(resourcePath);
+            if (ins == null) {
+                System.out.println("module came empty, now trying to load from GreetingResource");
 
+            }
+            List list = objectMapper.readValue(ins, List.class);
+            return list.contains(tenantDomain);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
 
 }

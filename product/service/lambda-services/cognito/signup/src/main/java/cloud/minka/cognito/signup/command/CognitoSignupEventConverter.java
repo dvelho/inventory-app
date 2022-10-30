@@ -16,7 +16,7 @@ public class CognitoSignupEventConverter {
     public   ObjectMapper mapper;
         public  CognitoSignupEvent response(CognitoSignupEvent input) {
             String response = "{\"autoConfirmUser\": \"true\", \"autoVerifyEmail\": \"false\", \"autoVerifyPhone\": \"false\"}";
-            JsonNode responseJson = null;
+            JsonNode responseJson;
             try {
                  responseJson = mapper.readTree(response);
             } catch (JsonProcessingException e) {
