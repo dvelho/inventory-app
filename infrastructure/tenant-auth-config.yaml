@@ -177,6 +177,7 @@ Resources:
           DISABLE_SIGNAL_HANDLERS: true
           TENANT_NAME: !Ref TenantAggregatorName
           TENANT_INFO_TABLE_NAME:  !Ref TenantInfoTable
+          SIGNUP_SNS_TOPIC_ARN: !GetAtt SignupSNSMessages.Arn
 
 
   GetUserPoolClientCFDistribution:
