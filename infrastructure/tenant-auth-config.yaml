@@ -158,10 +158,12 @@ Resources:
   PreSignupTriggerLambda:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${Environment}-signup-native-${TenantAggregatorName}
+      FunctionName: !Sub ${Environment}-signup-native-${TenantAggregatorName} #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      CodeUri: ../product/service/lambda-services/cognito/signup/target/function.zip
+      CodeUri:
+        Bucket: minka-cloud-dev-deployment
+        Key: /lambda-services/cognito/signup/target/function.zip
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt LambdaExecutionRole.Arn
