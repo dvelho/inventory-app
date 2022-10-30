@@ -19,7 +19,16 @@ public class CognitoTenantRepository {
 
 
 
+    public boolean emailExists(String email, String userPoolId) {
+        ListUsersRequest listUsersRequest = ListUsersRequest.builder()
+                .userPoolId(userPoolId)
+                .filter("email = \"" + email + "\"")
+                .build();
 
+        ListUsersResponse listUsersResponse = cognitoClient.listUsers(listUsersRequest);
+
+        return listUsersResponse.users().size() > 0;
+    }
     public void adminAddUserToGroup(String userPoolId, String userName, String user) {
         cognitoClient.adminAddUserToGroup(addGroupRequest(userPoolId, userName, user));
     }

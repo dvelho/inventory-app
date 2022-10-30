@@ -51,6 +51,10 @@ public final class PreSignupProcessingService {
             throw new IllegalArgumentException("Free Domains are not allowed");
         }
 
+        if (cognitoTenantRepository.emailExists(userEmail, input.userPoolId())) {
+            throw new IllegalArgumentException("Email already exists. Maybe you already have an account?");
+        }
+
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
 
         // Check if the tenant exists
