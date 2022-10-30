@@ -108,7 +108,11 @@ jobs:
             CertificateArn=${{env.CERTIFICATE_ARN}} \
             Environment=${{env.environment}} \
             CognitoSignupS3Bucket=${{env.COGNITO_SIGNUP_S3_BUCKET}} \
-          
+
+      - name: Delete Cognito Signup Lambda native app from S3
+        if: steps.filter.outputs.cognito_signup == 'true'
+        run: |
+          aws s3 rm s3://$S3_BUCKET_NAME/$COGNITO_SIGNUP_S3_BUCKET 
 
       #- name: Invoke local native app
       #  run: |
