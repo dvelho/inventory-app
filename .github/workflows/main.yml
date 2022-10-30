@@ -50,8 +50,6 @@ jobs:
           echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
 
-      - name: Branch name
-        run: echo running on branch ${GITHUB_REF##*/}
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -60,12 +58,14 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Config graalvm
+        if: steps.filter.outputs.cognito_signup == 'true'
         uses: graalvm/setup-graalvm@v1
         with:
             version: 'latest'
             java-version: '19'
             components: 'native-image'
       - name: Cache maven modules
+        if: steps.filter.outputs.cognito_signup == 'true'
         id: cache-maven
         uses: actions/cache@v3
         env:
