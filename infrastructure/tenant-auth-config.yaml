@@ -165,7 +165,7 @@ Resources:
       FunctionName: !Sub ${Environment}-signup-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-     # AutoPublishAlias: !Ref PublishAlias
+      AutoPublishAlias: !Ref PublishAlias
       CodeUri:
         Bucket: minka-cloud-dev-deployment
         Key: "product/service/lambda-services/cognito/signup/target/function.zip"
