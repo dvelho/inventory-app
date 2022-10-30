@@ -366,7 +366,8 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "nodejs16.x"
       Timeout: 30
-      Architecture: arm64
+      Architectures:
+        - arm64
       InlineCode: |
           const https = require('https');
           exports.handler = (event, context, callback) => {
