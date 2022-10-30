@@ -32,7 +32,7 @@ jobs:
           echo "HOSTED_ZONE_ID=Z06530912SIRHBPLWQDWO" >> $GITHUB_ENV
           echo "COGNITO_DOMAIN=auth.minka.cloud" >> $GITHUB_ENV
           echo "CERTIFICATE_ARN=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" >> $GITHUB_ENV
-          echo "PUBLISH_ALIAS=live1" >> $GITHUB_ENV
+          echo "PUBLISH_ALIAS=live" >> $GITHUB_ENV
       - name: Configuration for master branch
         if: ${{ github.ref == 'refs/heads/master' }}
         # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
@@ -87,7 +87,7 @@ jobs:
         if: steps.filter.outputs.cognito_signup == 'true'
         run: |
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
-          echo "PUBLISH_ALIAS=new_dev1" >> $GITHUB_ENV
+          echo "PUBLISH_ALIAS=new1" >> $GITHUB_ENV
       ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
