@@ -21,7 +21,7 @@ jobs:
         run: |  
           echo "TenantName=minka-cloud"
           echo "GeneralDomain=minka.cloud"
-          echo "HostedZoneId=Z2FDTNDATAQYW2"
+          echo "HostedZoneId=Z06530912SIRHBPLWQDWO"
           echo "CognitoDomain=auth.minka.cloud"
 
       - name: Configuration for master branch
@@ -29,14 +29,16 @@ jobs:
         # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
         run: |
           echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
-          echo "STACK_NAME=sam-cognito-tenant-minka-tech-dev-config" >> $GITHUB_ENV
-            echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
+          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-dev-config" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
+          echo "environment=dev1" >> $GITHUB_ENV
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
           echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
           echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
+          echo "environment=prod1" >> $GITHUB_ENV
 
       - name: Branch name
         run: echo running on branch ${GITHUB_REF##*/}
@@ -66,22 +68,18 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
-
-     
-
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q install -Dnative -DskipTests
       #- name: Invoke local native app
       #  run: |
-      #    sam local invoke --template target/sam.native.yaml --event payload.json
+      #    sam local invoke --template product/service/lambda-services/cognito/signup/target/sam.native.yaml --event payload.json
      # - name: Maven Clean and Verify on OrdersApiNative
      #   run: |
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
       - name: Upload native app to S3
         run: |
-          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/function.zip --recursive
+          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/function.zip
         ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
@@ -90,11 +88,11 @@ jobs:
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
-            --stack-name sam-cognito-tenant-minka-cloud-dev-config \
+            --stack-name ${{env.STACK_NAME}} \
             --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --parameter-overrides \
-            TenantName=minka-cloud \
-            GeneralDomain=minka.cloud \
-            HostedZoneId=Z06530912SIRHBPLWQDWO \
-            CognitoDomain=auth.minka.cloud \
+            TenantName=${{env.TenantName}} \
+            GeneralDomain=${{env.GeneralDomain}} \
+            HostedZoneId=${{env.HostedZoneId}} \
+            CognitoDomain=${{env.CognitoDomain}} \
             CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
-            Environment=dev1
+            Environment=${{env.environment}}
