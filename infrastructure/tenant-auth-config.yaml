@@ -270,6 +270,14 @@ Resources:
                 Resource: !Sub "*"
               - Effect: Allow
                 Action:
+                  - sns:*
+                Resource: !Sub "*"
+              - Effect: Allow
+                Action:
+                  - sqs:*
+                Resource:  "*"
+              - Effect: Allow
+                Action:
                   - dynamodb:GetItem
                   - dynamodb:PutItem
                   - dynamodb:UpdateItem
@@ -315,14 +323,38 @@ Resources:
       UserPoolId: !Ref UserPool
 
 
-  SubscriptionSNSMessages:
+  SignupSNSMessages:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${Environment}-tenant-sns-messages-${TenantAggregatorName}
-      DisplayName: !Sub ${Environment}-tenant-sns-messages-${TenantAggregatorName}
+      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
+      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
       Subscription:
         - Endpoint: !Ref PostToSlackLambda
           Protocol: lambda
+
+  SignupFunctionInvokePermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref PostToSlackLambda
+      Principal: sns.amazonaws.com
+
+  ExampleTopicPolicy:
+    Type: 'AWS::SNS::TopicPolicy'
+    Properties:
+      Topics:
+        - !Ref SignupSNSMessages
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'sns:Publish'
+            Resource: !Ref SignupSNSMessages
+            Principal:
+              AWS: '*'
+            Condition:
+              ArnLike:
+                AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
 
   PostToSlackLambda:
     Type: AWS::Lambda::Function
@@ -337,7 +369,6 @@ Resources:
       Code:
         ZipFile: |
           const https = require('https');
-  
           exports.handler = (event, context, callback) => {
             const payload = JSON.stringify({
               text: `Message sent by ${event.name} (${event.email}):\n ${event.message}`,
@@ -356,65 +387,7 @@ Resources:
             req.write(payload);
             req.end();
           }
-  #
-  SNSRole:
-    Type: AWS::IAM::Role
-    Properties:
-      RoleName: !Sub ${Environment}-SNSRole-${TenantAggregatorName}
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service:
-                - sns.amazonaws.com
-            Action:
-              - sts:AssumeRole
-      Path: "/"
-      Policies:
-        - PolicyName: root
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: arn:aws:logs:*:*:*
-              - Effect: Allow
-                Action:
-                  - cloudwatch:PutMetricData
-                  - cloudwatch:ListMetrics
-                  - cloudwatch:PutMetricAlarm
-                Resource: "*"
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:UpdateItem
-                  - dynamodb:DeleteItem
-                  - dynamodb:Scan
-                  - dynamodb:Query
-                  - dynamodb:BatchGetItem
-                  - dynamodb:BatchWriteItem
-                  - dynamodb:CreateTable
-                  - dynamodb:DescribeTable
-                  - dynamodb:ListTables
-                  - dynamodb:UpdateTable
-                  - dynamodb:DeleteTable
-                  - dynamodb:DescribeTimeToLive
-                  - dynamodb:UpdateTimeToLive
-                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
-              - Effect: Allow
-                Action:
-                  - cognito-idp:*
-                Resource: !Sub "*"
-              - Effect: Allow
-                Action:
-                  - lambda:InvokeFunction
-                Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}-signup-native-${TenantAggregatorName}"
-
+  
 
 #Creates a role that allows Cognito to send SNS messages
 Outputs:
