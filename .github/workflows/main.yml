@@ -97,14 +97,14 @@ jobs:
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
             --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM \
-            --force-upload
+            --force-upload \
             --parameter-overrides \
             TenantName=${{env.TENANT_NAME}} \
             GeneralDomain=${{env.GENERAL_DOMAIN}} \
             HostedZoneId=${{env.HOSTED_ZONE_ID}} \
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
-            Environment=${{env.environment}} \
+            Environment=${{env.environment}} 
 
       #- name: Invoke local native app
       #  run: |
