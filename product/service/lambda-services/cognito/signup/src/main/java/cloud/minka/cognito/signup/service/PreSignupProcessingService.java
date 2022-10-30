@@ -52,7 +52,7 @@ public final class PreSignupProcessingService {
         }
 
         if (cognitoTenantRepository.emailExists(userEmail, input.userPoolId())) {
-            System.out.println("AAAAAevent::cognito::signup::request::tenant::email::exists:" + userEmail);
+            System.out.println("event::cognito::signup::request::tenant::email::exists:" + userEmail);
             throw new IllegalArgumentException("Email already exists. Maybe you already have an account?");
         }
 

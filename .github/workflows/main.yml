@@ -88,7 +88,7 @@ jobs:
         #duplicate copy to allow next deploy. need to get better#
         run: |
           echo COGNITO_SIGNUP_S3_BUCKET=product/service/lambda-services/cognito/signup/target/function-${{ github.run_id }}.zip >> $GITHUB_ENV
-          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://$S3_BUCKET_NAME/$COGNITO_SIGNUP_S3_BUCKET
+          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/${{env.COGNITO_SIGNUP_S3_BUCKET}}
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
 
       ## --exclude "*" --include "*.zip"
@@ -112,7 +112,7 @@ jobs:
       - name: Delete Cognito Signup Lambda native app from S3
         if: steps.filter.outputs.cognito_signup == 'true'
         run: |
-          aws s3 rm s3://$S3_BUCKET_NAME/$COGNITO_SIGNUP_S3_BUCKET 
+          aws s3 rm s3://${{env.S3_BUCKET_NAME}}/${{env.COGNITO_SIGNUP_S3_BUCKET}} 
 
       #- name: Invoke local native app
       #  run: |
