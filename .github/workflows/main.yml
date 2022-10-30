@@ -68,9 +68,7 @@ jobs:
             ${{ runner.os }}-
 
 
-      - name: Download sources from s3
-        run: aws s3 sync s3://${{ env.S3_BUCKET_NAME }}/lambda-services/cognito/signup/target/ product/service/lambda-services/cognito/signup/target/
-
+     
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         run: |
@@ -83,7 +81,7 @@ jobs:
      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
       - name: Upload native app to S3
         run: |
-          aws s3 cp product/service/lambda-services/cognito/signup/target/ s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/target/ --recursive
+          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/function.zip --recursive
         ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
