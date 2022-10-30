@@ -330,7 +330,7 @@ Resources:
       DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
       Subscription:
         - Endpoint: !GetAtt PostToSlackLambda.Arn
-          Protocol: lambda
+        - Protocol: lambda
 
   SignupFunctionInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -339,7 +339,7 @@ Resources:
       FunctionName: !GetAtt PostToSlackLambda.Arn
       Principal: sns.amazonaws.com
 
-  ExampleTopicPolicy:
+  SignupSNSMessagesTopicPolicy:
     Type: 'AWS::SNS::TopicPolicy'
     Properties:
       Topics:
