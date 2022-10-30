@@ -163,7 +163,7 @@ Resources:
       Runtime: provided
       CodeUri:
         Bucket: minka-cloud-dev-deployment
-        Key: lambda-services/cognito/signup/function.zip
+        Key: product/service/lambda-services/cognito/signup/target/function.zip
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt LambdaExecutionRole.Arn

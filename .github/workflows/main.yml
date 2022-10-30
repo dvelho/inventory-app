@@ -11,12 +11,19 @@ permissions:
 jobs:
   native_build:
     runs-on: ubuntu-latest
-
-
     name: Deploy Tenant Creation Service
     steps:
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            cognito.signup:
+              - 'product/service/lambda-services/cognito/signup/**'
+        #frontend:
+        #- 'frontend/**'
         # I only need to declare environment variables once at the beginning
         # The subsequent steps can access the variables by default
+
       - name: Create Vars
         run: |  
           echo "TenantName=minka-cloud"
@@ -68,31 +75,34 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
       - name: Maven Clean and Verify on Cognito Signup Lambda
+        if: steps.filter.outputs.cognito.signup == 'true'
         run: |
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q install -Dnative -DskipTests
-      #- name: Invoke local native app
-      #  run: |
-      #    sam local invoke --template product/service/lambda-services/cognito/signup/target/sam.native.yaml --event payload.json
-     # - name: Maven Clean and Verify on OrdersApiNative
-     #   run: |
-     #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
-      - name: Upload native app to S3
+      - name: Upload Cognito Signup Lambda native app to S3
+        if: steps.filter.outputs.cognito.signup == 'true'
         run: |
-          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/lambda-services/cognito/signup/function.zip
+          aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
         ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
           sam build --template infrastructure/tenant-auth-config.yaml
-        #--base-dir product/service/lambda-services/cognito/signup
       - name: Sam deploy
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
             --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --parameter-overrides \
-            TenantName=${{env.TenantName}} \
-            GeneralDomain=${{env.GeneralDomain}} \
-            HostedZoneId=${{env.HostedZoneId}} \
-            CognitoDomain=${{env.CognitoDomain}} \
+            TenantName= ${{env.TenantName}} \
+            GeneralDomain= ${{env.GeneralDomain}} \
+            HostedZoneId= ${{env.HostedZoneId}} \
+            CognitoDomain= ${{env.CognitoDomain}} \
             CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
-            Environment=${{env.environment}}
+            Environment= ${{env.environment}}      
+
+      #- name: Invoke local native app
+      #  run: |
+      #    sam local invoke --template product/service/lambda-services/cognito/signup/target/sam.native.yaml --event payload.json
+      # - name: Maven Clean and Verify on OrdersApiNative
+      #   run: |
+      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests
