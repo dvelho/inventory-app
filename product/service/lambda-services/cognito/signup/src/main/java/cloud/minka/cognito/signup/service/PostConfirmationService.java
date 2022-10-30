@@ -59,7 +59,7 @@ public class PostConfirmationService {
         System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
         cognitoTenantRepository.adminAddUserToGroup(input.userPoolId(), input.userName(), "tenant.%s.users".formatted(tenantDomain));
         setUserCognitoAttributes(input, tenantDomain);
-      //  sendSNSMessage(input);
+        sendSNSMessage(input);
         return cognitoSignupEventConverter.responsePostSignup(input);
     }
 

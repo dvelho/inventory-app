@@ -41,7 +41,7 @@ jobs:
           echo "STACK_NAME=sam-cognito-tenant-minka-cloud-dev-config" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
           echo "environment=dev1" >> $GITHUB_ENV
-          echo "publishAlias=dev1" >> $GITHUB_ENV
+
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
@@ -49,6 +49,7 @@ jobs:
           echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
+          
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -83,12 +84,12 @@ jobs:
         if: steps.filter.outputs.cognito_signup == 'true'
         run: |
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q install -Dnative -DskipTests
-          echo COGNITO_SIGNUP_S3_BUCKET=product/service/lambda-services/cognito/signup/target/function-${{ github.run_id }}.zip >> $GITHUB_ENV
+
       - name: Upload Cognito Signup Lambda native app to S3
         if: steps.filter.outputs.cognito_signup == 'true'
         #duplicate copy to allow next deploy. need to get better#
         run: |
-        
+          echo "COGNITO_SIGNUP_S3_BUCKET=product/service/lambda-services/cognito/signup/target/function-"+${{ github.run_id }}+".zip" >> $GITHUB_ENV
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/${{env.COGNITO_SIGNUP_S3_BUCKET}}
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
 
