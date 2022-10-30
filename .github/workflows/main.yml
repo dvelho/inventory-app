@@ -94,7 +94,9 @@ jobs:
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
-            --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM --parameter-overrides \
+            --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM \
+            --force-upload
+            --parameter-overrides \
             TenantName=${{env.TENANT_NAME}} \
             GeneralDomain=${{env.GENERAL_DOMAIN}} \
             HostedZoneId=${{env.HOSTED_ZONE_ID}} \
