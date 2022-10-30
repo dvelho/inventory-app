@@ -87,7 +87,7 @@ jobs:
         if: steps.filter.outputs.cognito_signup == 'true'
         run: |
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
-          echo "PUBLISH_ALIAS=new_dev" >> $GITHUB_ENV
+          echo "PUBLISH_ALIAS=new_dev1" >> $GITHUB_ENV
       ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |

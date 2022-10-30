@@ -17,9 +17,10 @@ public class ExampleResourceTest {
     CognitoIdentityProviderClient cognitoClient;
 
     @Test
-    public void testHelloEndpoinHit() {
+    public void testHelloEndpoint() {
      //create a user pool
-    /*    CreateUserPoolRequest createUserPoolRequest = CreateUserPoolRequest.builder()
+
+      /*  CreateUserPoolRequest createUserPoolRequest = CreateUserPoolRequest.builder()
                 .poolName("test-pool")
                 .build();
         CreateUserPoolResponse response = cognitoClient.createUserPool(createUserPoolRequest);
@@ -42,8 +43,8 @@ public class ExampleResourceTest {
                 .build();
         ListUsersResponse listUsersResponse = cognitoClient.listUsers(listUsersRequest);
         System.out.println(listUsersResponse.users().size());
+*/
 
-        */
     }
 
 }
