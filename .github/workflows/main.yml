@@ -85,9 +85,11 @@ jobs:
           mvn -f product/service/lambda-services/cognito/signup/pom.xml -q install -Dnative -DskipTests
       - name: Upload Cognito Signup Lambda native app to S3
         if: steps.filter.outputs.cognito_signup == 'true'
+        env:
+          FOO: foobar-${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
-          echo "PUBLISH_ALIAS=new1" >> $GITHUB_ENV
+          echo PUBLISH_ALIAS=${{ github.run_id }}${{ github.run_attempt }} >> $GITHUB_ENV
       ## --exclude "*" --include "*.zip"
       - name: Sam build
         run: |
