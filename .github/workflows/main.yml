@@ -86,7 +86,6 @@ jobs:
       - name: Upload Cognito Signup Lambda native app to S3
         if: steps.filter.outputs.cognito_signup == 'true'
         run: |
-          echo "CognitoSignupCodeUriKey=product/service/lambda-services/cognito/signup/target/function.zip" >> $GITHUB_ENV
           aws s3 cp product/service/lambda-services/cognito/signup/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/cognito/signup/target/function.zip
    ## --exclude "*" --include "*.zip"
 
@@ -106,7 +105,6 @@ jobs:
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
             Environment=${{env.environment}} \
-            ${{ env.CognitoSignupCodeUriKey }} 
 
       #- name: Invoke local native app
       #  run: |
