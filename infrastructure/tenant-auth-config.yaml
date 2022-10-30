@@ -175,7 +175,7 @@ Resources:
 
 
   GetUserPoolClientCFDistribution:
-    Type: AWS::Lambda::Function
+    Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-GetUserPoolClientCFDistribution-${TenantAggregatorName}
       Description: Look up CloudFrontDistribution of UserPoolDomain
@@ -184,8 +184,9 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "python3.7"
       Timeout: 30
-      Code:
-        ZipFile: |
+      Architectures:
+        - arm64
+      InlineCode: |
           import json
           import boto3
           import cfnresponse
@@ -231,6 +232,7 @@ Resources:
             # Ship off the reponse
             response_status = cfnresponse.SUCCESS
             cfnresponse.send(event, context, response_status, response_data, noEcho=True)
+
   
 
   LambdaExecutionRole:
@@ -328,9 +330,6 @@ Resources:
     Properties:
       TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
       DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
-      Subscription:
-        - Endpoint: !GetAtt PostToSlackLambda.Arn
-          Protocol: lambda
 
   SignupFunctionInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -366,28 +365,34 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: "nodejs16.x"
       Timeout: 30
-      Architectures: [arm64]
+      Architectures:
+        - arm64
+      Events:
+        PostToSlack:
+          Type: SNS
+          Properties:
+            Topic: !Ref SignupSNSMessages
       InlineCode: |
-          const https = require('https');
-          exports.handler = (event, context, callback) => {
-            const payload = JSON.stringify({
-              text: `Message sent by ${event.name} (${event.email}):\n ${event.message}`,
-            });
-              
-            const options = {
-              hostname: "hooks.slack.com",
-              method: "POST",
-              path: "/services/T01TU5SKFL6/B04931U5C7K/gDRZ4AQkkxim6h8FdRUNDkt3",
-            };
-              
-            const req = https.request(options,
-              (res) => res.on("data", () => callback(null, "OK"))
-            );
-            req.on("error", (error) => callback(JSON.stringify(error)));
-            req.write(payload);
-            req.end();
-          }
-  
+        const https = require('https');
+        exports.handler = (event, context, callback) => {
+          const payload = JSON.stringify({
+            text: `Message sent by ${event.name} (${event.email}):\n ${event.message}`,
+          });
+        
+          const options = {
+            hostname: "hooks.slack.com",
+            method: "POST",
+            path: "/services/T01TU5SKFL6/B04931U5C7K/gDRZ4AQkkxim6h8FdRUNDkt3",
+          };
+        
+          const req = https.request(options,
+            (res) => res.on("data", () => callback(null, "OK"))
+          );
+          req.on("error", (error) => callback(JSON.stringify(error)));
+          req.write(JSON.stringify(event));
+          req.end();
+        }
+
 
 #Creates a role that allows Cognito to send SNS messages
 Outputs:
