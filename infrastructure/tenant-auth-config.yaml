@@ -314,7 +314,113 @@ Resources:
       Description: Tenant admins that can manage the tenant
       UserPoolId: !Ref UserPool
 
-  # Creates a role that allows Cognito to send SNS messages
+
+  SubscriptionSNSMessages:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub ${Environment}-tenant-sns-messages-${TenantAggregatorName}
+      DisplayName: !Sub ${Environment}-tenant-sns-messages-${TenantAggregatorName}
+      Subscription:
+        - Endpoint: !Ref PostToSlackLambda
+          Protocol: lambda
+
+  PostToSlackLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${Environment}-PostToSlackLambda-${TenantAggregatorName}
+      Description: Post to Slack
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Runtime: "nodejs16.x"
+      Timeout: 30
+      Code:
+        ZipFile: |
+          const https = require('https');
+  
+          exports.handler = (event, context, callback) => {
+            const payload = JSON.stringify({
+              text: `Message sent by ${event.name} (${event.email}):\n ${event.message}`,
+            });
+              
+            const options = {
+              hostname: "hooks.slack.com",
+              method: "POST",
+              path: "/services/T01TU5SKFL6/B04931U5C7K/gDRZ4AQkkxim6h8FdRUNDkt3",
+            };
+              
+            const req = https.request(options,
+              (res) => res.on("data", () => callback(null, "OK"))
+            );
+            req.on("error", (error) => callback(JSON.stringify(error)));
+            req.write(payload);
+            req.end();
+          }
+
+ 
+ 
+ 
+
+  SNSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${Environment}-SNSRole-${TenantAggregatorName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - sns.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                  - cloudwatch:ListMetrics
+                  - cloudwatch:PutMetricAlarm
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:CreateTable
+                  - dynamodb:DescribeTable
+                  - dynamodb:ListTables
+                  - dynamodb:UpdateTable
+                  - dynamodb:DeleteTable
+                  - dynamodb:DescribeTimeToLive
+                  - dynamodb:UpdateTimeToLive
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+              - Effect: Allow
+                Action:
+                  - cognito-idp:*
+                Resource: !Sub "*"
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !Sub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Environment}-signup-native-${TenantAggregatorName}"
+
+
+#Creates a role that allows Cognito to send SNS messages
 Outputs:
   CognitoUserPoolID:
     Value: !Ref UserPool
