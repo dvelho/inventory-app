@@ -29,6 +29,15 @@ public class CognitoTenantRepository {
                 .build();
 
         ListUsersResponse listUsersResponse = cognitoClient.listUsers(listUsersRequest);
+        System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
+        listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
+        System.out.println("event::cognito::signup::request::tenant::email::DEBUG:");
+         listUsersRequest = ListUsersRequest.builder()
+                .userPoolId(userPoolId)
+                .build();
+         listUsersResponse = cognitoClient.listUsers(listUsersRequest);
+        System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
+        listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
 
         return listUsersResponse.users().size() > 0;
     }
