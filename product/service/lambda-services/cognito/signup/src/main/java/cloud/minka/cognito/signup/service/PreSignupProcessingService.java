@@ -75,14 +75,13 @@ public final class PreSignupProcessingService {
     }
 
     private boolean isFreeDomainProvider(String tenantDomain) {
-        String moduleName = "java.base";
         String resourcePath = "/free-email-providers.json";
-        Module resource = ModuleLayer.boot().findModule(moduleName).get();
+        System.out.println("event::cognito::signup::request::tenant::domain::free::provider::check");
         try {
             InputStream ins = PreSignupProcessingService.class.getResourceAsStream(resourcePath);
             if (ins == null) {
                 System.out.println("module came empty, now trying to load from GreetingResource");
-
+                return false;
             }
             List list = objectMapper.readValue(ins, List.class);
             return list.contains(tenantDomain);
