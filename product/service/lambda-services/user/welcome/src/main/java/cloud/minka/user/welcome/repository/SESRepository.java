@@ -23,7 +23,7 @@ public class SESRepository {
                                 .subject(subject -> subject.data("Hello, world!")))
                         .source("info@minka.cloud")
         );
-
+        //test
 
     }
 }

@@ -121,6 +121,10 @@ Resources:
                 Resource: "*"
               - Effect: Allow
                 Action:
+                  - ses:*
+                Resource: "*"
+              - Effect: Allow
+                Action:
                   - dynamodb:GetItem
                   - dynamodb:PutItem
                   - dynamodb:UpdateItem
