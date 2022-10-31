@@ -18,9 +18,6 @@ public class SESRepository {
     }
 
     public void sendEmail(String email) {
-        //read html template
-
-
         sesClient.sendEmail(
                 builder -> builder.destination(
                                 destination -> destination.toAddresses(email))
@@ -30,7 +27,7 @@ public class SESRepository {
                                 .subject(subject -> subject.data("\uD83D\uDCE6 \uD83C\uDF1F ☁ Welcome to minka.cloud ☁ \uD83C\uDF1F \uD83D\uDCE6")))
                         .source("info@minka.cloud")
         );
-        //test
+
 
     }
 
@@ -38,16 +35,13 @@ public class SESRepository {
 
         String resourcePath = "/welcome-email.html";
         System.out.println("event::cognito::signup::request::tenant::domain::free::provider::check");
-        String content = null;
         try {
             InputStream ins = SESRepository.class.getResourceAsStream(resourcePath);
             assert ins != null;
-
-            content = new String(ins.readAllBytes());
+            return new String(ins.readAllBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        return content;
     }
 }
