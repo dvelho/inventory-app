@@ -68,6 +68,7 @@ public final class PreSignupProcessingService {
             System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
             return responseSuccess;
         }
+
         //Check if the tenant is in pending configuration
         System.out.println("event::cognito::signup::request::tenant::exists");
         TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
@@ -94,7 +95,6 @@ public final class PreSignupProcessingService {
         }
 
     }
-
 
 }
 

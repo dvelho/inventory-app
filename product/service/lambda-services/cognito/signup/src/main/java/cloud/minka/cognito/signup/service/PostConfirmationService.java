@@ -7,19 +7,12 @@ import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
-import software.amazon.awssdk.services.sns.SnsAsyncClient;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
-import software.amazon.awssdk.services.sns.model.PublishResponse;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.net.ssl.SSLContext;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+
 
 @ApplicationScoped
 public class PostConfirmationService {
@@ -43,7 +36,6 @@ public class PostConfirmationService {
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
-
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
         GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
@@ -81,11 +73,11 @@ public class PostConfirmationService {
     }
 
     private void sendSNSMessage(CognitoSignupEvent input) {
-
         System.out.println("event::cognito::signup::request::tenant::send::sns::message");
         snsClient
                 .publish(builder -> builder.topicArn(topicArn)
                         .message("New user signup for tenant %s".formatted(input.request().get("userAttributes").get("email").asText()))
+                        .subject("NEW_USER_SIGNUP")
                         .messageAttributes(new HashMap<>() {{
                             put("tenant", MessageAttributeValue.builder()
                                     .dataType("String").stringValue(input.request()
@@ -99,9 +91,6 @@ public class PostConfirmationService {
                                     .build());
                         }})
                         .build());
-
-
-
     }
 
 }

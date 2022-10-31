@@ -380,24 +380,58 @@ Resources:
             Topic: !Ref SignupSNSMessages
       InlineCode: |
         const https = require('https');
-        exports.handler = (event, context, callback) => {
-          const payload = JSON.stringify({
-            text: `Message sent by ${event.name} (${event.email}):\n ${event.message}`,
-          });
+        const postRequest = (a) => {
+          const payload = { "text": `${a}` };
+        
+          const data = JSON.stringify(payload);
         
           const options = {
-            hostname: "hooks.slack.com",
-            method: "POST",
-            path: "/services/T01TU5SKFL6/B04931U5C7K/gDRZ4AQkkxim6h8FdRUNDkt3",
+            hostname: 'hooks.slack.com',
+            path: '/services/T01TU5SKFL6/B04931U5C7K/gDRZ4AQkkxim6h8FdRUNDkt3',
+            port: 443,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              'Content-Length': data.length
+            }
           };
         
-          const req = https.request(options,
-            (res) => res.on("data", () => callback(null, "OK"))
-          );
-          req.on("error", (error) => callback(JSON.stringify(error)));
-          req.write(JSON.stringify(event));
-          req.end();
-        }
+          return new Promise((resolve, reject) => {
+            const req = https.request(options, res => {
+              let rawData = '';
+            
+              res.on('data', chunk => {
+                rawData += chunk;
+              });
+            
+              res.on('end', () => {
+                resolve({
+                  statusCode: 200,
+                  body: `${rawData}`
+                });
+              });
+        
+            });
+        
+            req.on('error', err => {
+              reject(new Error(err));
+            });
+      
+            req.write(data);
+            req.end();
+          });
+        };
+        
+        exports.handler = async (event) => {
+          const result = await postRequest(JSON.stringify(event) );
+        
+          const response = {
+            statusCode: 200,
+            body: result,
+          };
+          return response;
+        };
+
 
 
 #Creates a role that allows Cognito to send SNS messages
