@@ -789,9 +789,9 @@ public class SESRepository {
                                         "                                                            role='presentation'>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td align='center' style='font-size: 0px'><a\n" +
-                                        "                                                                        href='https://dev1.auth.minka.cloud/ALL/20221031214518/assets/images/image.jpg'\n" +
+                                        "                                                                        href='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/minkav21.png'\n" +
                                         "                                                                        target='_blank'>\n" +
-                                        "                                                                        <amp-img src='https://dev1.auth.minka.cloud/ALL/20221031214518/assets/images/image.jpg' alt\n" +
+                                        "                                                                        <amp-img src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/minkav21.png' alt\n" +
                                         "                                                                            style='display: block' width='262'\n" +
                                         "                                                                            height='61'></amp-img>\n" +
                                         "                                                                    </a></td>\n" +
@@ -813,7 +813,7 @@ public class SESRepository {
                                         "                                    cellspacing='0' cellpadding='0' bgcolor='#3d85c6' align='center'>\n" +
                                         "                                    <tr>\n" +
                                         "                                        <td class='es-p40t es-p40b es-p40r es-p40l'\n" +
-                                        "                                            style='background-image: url(https://cdn2.vectorstock.com/i/1000x1000/32/46/flat-design-cute-blue-sky-with-clouds-pattern-vector-8833246.jpg);background-repeat: no-repeat;background-position: center top'\n" +
+                                        "                                            style='background-image: url(https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/background.jpeg);background-repeat: no-repeat;background-position: center top'\n" +
                                         "                                            align='left'>\n" +
                                         "                                            <table width='100%' cellspacing='0' cellpadding='0'>\n" +
                                         "                                                <tr>\n" +
@@ -884,7 +884,7 @@ public class SESRepository {
                                         "                                                                    <p>If you have any questions, our customer support\n" +
                                         "                                                                        team is always here to help. You can reach us by\n" +
                                         "                                                                        email at support@minka.com or by phone\n" +
-                                        "                                                                        at1-800-123-4567..<br></p>\n" +
+                                        "                                                                        at 1-800-123-4567.<br></p>\n" +
                                         "                                                                </td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                            <tr>\n" +
@@ -909,7 +909,7 @@ public class SESRepository {
                                         "                                                            role='presentation'>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td align='left' style='font-size:0'>\n" +
-                                        "                                                                    <amp-img src='https://media-exp1.licdn.com/dms/image/C5603AQHXbOO4SC2spw/profile-displayphoto-shrink_100_100/0/1522331231073?e=1672876800&v=beta&t=Upv_aFiWWuOUYrmtIqy1rfOXBmdaIUBaZq9aN8xLpto' alt\n" +
+                                        "                                                                    <amp-img src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/dv.jpeg' alt\n" +
                                         "                                                                        style='display: block' width='40' height='40'>\n" +
                                         "                                                                    </amp-img>\n" +
                                         "                                                                </td>\n" +
@@ -1015,27 +1015,27 @@ public class SESRepository {
                                         "                                                                            <td class='es-p10r' valign='top'\n" +
                                         "                                                                                align='center'>\n" +
                                         "                                                                                <amp-img title='Facebook'\n" +
-                                        "                                                                                    src='images/facebook-circle-white.png'\n" +
+                                        "                                                                                    src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/facebook-circle-white.png'\n" +
                                         "                                                                                    alt='Fb' width='24' height='24'>\n" +
                                         "                                                                                </amp-img>\n" +
                                         "                                                                            </td>\n" +
                                         "                                                                            <td class='es-p10r' valign='top'\n" +
                                         "                                                                                align='center'>\n" +
                                         "                                                                                <amp-img title='Twitter'\n" +
-                                        "                                                                                    src='images/twitter-circle-white.png'\n" +
+                                        "                                                                                    src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/twitter-circle-white.png'\n" +
                                         "                                                                                    alt='Tw' width='24' height='24'>\n" +
                                         "                                                                                </amp-img>\n" +
                                         "                                                                            </td>\n" +
                                         "                                                                            <td class='es-p10r' valign='top'\n" +
                                         "                                                                                align='center'>\n" +
                                         "                                                                                <amp-img title='Instagram'\n" +
-                                        "                                                                                    src='images/instagram-circle-white.png'\n" +
+                                        "                                                                                    src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/instagram-circle-white.png'\n" +
                                         "                                                                                    alt='Inst' width='24' height='24'>\n" +
                                         "                                                                                </amp-img>\n" +
                                         "                                                                            </td>\n" +
                                         "                                                                            <td valign='top' align='center'>\n" +
                                         "                                                                                <amp-img title='Linkedin'\n" +
-                                        "                                                                                    src='images/linkedin-circle-white.png'\n" +
+                                        "                                                                                    src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/linkedin-circle-white.png'\n" +
                                         "                                                                                    alt='In' width='24' height='24'>\n" +
                                         "                                                                                </amp-img>\n" +
                                         "                                                                            </td>\n" +
