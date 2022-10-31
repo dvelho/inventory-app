@@ -11,7 +11,7 @@ permissions:
 jobs:
   native_build:
     runs-on: ubuntu-latest
-    name: Deploy Tenant Creation Service
+    name: Deploy User Services
     steps:
       - uses: actions/checkout@master
       - uses: dorny/paths-filter@master
@@ -28,6 +28,7 @@ jobs:
           echo "COGNITO_DOMAIN=auth.minka.cloud" >> $GITHUB_ENV
           echo "CERTIFICATE_ARN=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" >> $GITHUB_ENV
           echo "USER_WELCOME_S3_BUCKET=product/service/lambda-services/user/welcome/target/function.zip" >> $GITHUB_ENV
+          echo "DEPLOY_SAM=false" >> $GITHUB_ENV
       - name: Configuration for master branch
         if: ${{ github.ref == 'refs/heads/master' }}
         # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
@@ -37,6 +38,7 @@ jobs:
           echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
           echo "environment=dev1" >> $GITHUB_ENV
 
+
       - name: Configuration for dev branch
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
@@ -44,14 +46,6 @@ jobs:
           echo "STACK_NAME=user-minka-cloud-dev" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
-
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          role-session-name: "GitHubActions"
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Config graalvm
         if: steps.filter.outputs.user_welcome == 'true'
@@ -80,19 +74,30 @@ jobs:
         run: |
           mvn -f product/service/lambda-services/user/welcome/pom.xml -q install -Dnative -DskipTests
           echo "USER_WELCOME_S3_BUCKET=product/service/lambda-services/user/welcome/target/function"${{ github.run_id }}".zip" >> $GITHUB_ENV
+          echo "DEPLOY_SAM=true" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        if: ${{ env.DEPLOY_SAM == 'true' }}
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: "GitHubActions"
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Upload User Welcome Lambda native app to S3
         if: steps.filter.outputs.user_welcome == 'true'
         #duplicate copy to allow next deploy. need to get better#
         run: |
           aws s3 cp product/service/lambda-services/user/welcome/target/function.zip s3://${{env.S3_BUCKET_NAME}}/${{env.USER_WELCOME_S3_BUCKET}}
-          aws s3 cp product/service/lambda-services/user/welcome/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/tenant/signup/target/function.zip
+        #aws s3 cp product/service/lambda-services/user/welcome/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/tenant/signup/target/function.zip
 
       ## --exclude "*" --include "*.zip"
       - name: Sam build
+        if: ${{ env.DEPLOY_SAM == 'true' }}
         run: |
           sam build --template infrastructure/service-user.yaml
       - name: Sam deploy
+        if: ${{ env.DEPLOY_SAM == 'true' }}
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
@@ -109,4 +114,4 @@ jobs:
       - name: Delete User Welcome Lambda native app from S3
         if: steps.filter.outputs.user_welcome == 'true'
         run: |
-          aws s3 rm s3://${{env.S3_BUCKET_NAME}}/${{env.USER_WELCOME_S3_BUCKET}} 
+          aws s3 mv s3://${{env.S3_BUCKET_NAME}}/${{env.USER_WELCOME_S3_BUCKET}} s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/user/welcome/target/function.zip
