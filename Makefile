@@ -1,5 +1,5 @@
-# Deploy sam cognito tenant-auth-config.yaml
-cognito-deploy-buckets-minka-cloud:
+# Deploy sam cognito service-tenant.yaml
+tenant-deploy-buckets-minka-cloud:
 	sam build --template-file infrastructure/deployment-s3-buckets.yaml \
 	&& \
 	sam deploy --template-file infrastructure/deployment-s3-buckets.yaml \
@@ -10,36 +10,16 @@ cognito-deploy-buckets-minka-cloud:
 	--parameter-overrides \
 	TenantName=minka-cloud \
 
-cognito-deploy-delete-buckets-minka-cloud:
+tenant-deploy-delete-buckets-minka-cloud:
 	sam delete --stack-name tenant-deployment-buckets
 
+tenant-deploy-dev-minka-cloud-validade:
+	sam validate --template-file infrastructure/service-tenant.yaml \
 
-
-cognito-deploy-dev-minka-tech:
-	sam build --template-file infrastructure/tenant-auth-config.yaml \
+tenant-deploy-dev-minka-cloud:
+	sam build --template-file infrastructure/service-tenant.yaml \
 	&& \
-	sam deploy --template-file infrastructure/tenant-auth-config.yaml \
-	--stack-name sam-cognito-tenant-minka-tech-dev-config \
-	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-	--region eu-west-1 \
-	--parameter-overrides \
-	TenantName=minka-tech \
-	GeneralDomain=minka.tech \
-	HostedZoneId=Z012886125XSYKBOI8V6M \
-	CognitoDomain=auth.minka.tech \
-	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404 \
-	Environment=dev \
-
-cognito-deploy-delete-dev-tech:
-	sam delete --stack-name sam-cognito-tenant-minka-tech-dev-config
-
-cognito-deploy-dev-minka-cloud-validade:
-	sam validate --template-file infrastructure/tenant-auth-config.yaml \
-
-cognito-deploy-dev-minka-cloud:
-	sam build --template-file infrastructure/tenant-auth-config.yaml \
-	&& \
-	sam deploy --template-file infrastructure/tenant-auth-config.yaml \
+	sam deploy --template-file infrastructure/service-tenant.yaml \
 	--stack-name sam-cognito-tenant-minka-cloud-dev-config \
 	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
 	--region eu-west-1 \
@@ -51,13 +31,13 @@ cognito-deploy-dev-minka-cloud:
 	CognitoDomain=auth.minka.cloud \
 	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
 	Environment=dev1
-cognito-delete-dev-minka-cloud:
+tenant-delete-dev-minka-cloud:
 	sam delete --stack-name sam-cognito-tenant-minka-cloud-dev-config
 
-cognito-deploy-prod-minka-cloud:
-	sam build --template-file infrastructure/tenant-auth-config.yaml \
+tenant-deploy-prod-minka-cloud:
+	sam build --template-file infrastructure/service-tenant.yaml \
 	&& \
-	sam deploy --template-file infrastructure/tenant-auth-config.yaml \
+	sam deploy --template-file infrastructure/service-tenant.yaml \
 	--stack-name sam-cognito-tenant-minka-cloud-prod-config \
 	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
 	--region eu-west-1 \
@@ -70,12 +50,11 @@ cognito-deploy-prod-minka-cloud:
 	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
 	Environment=prod1 \
 	PublishAlias=${{ env.CognitoSignupCodeUriKey }}
-cognito-delete-prod-minka-cloud:
+tenant-delete-prod-minka-cloud:
 	sam delete --stack-name sam-cognito-tenant-minka-cloud-prod-config
 
 
-
-cognito-deploy-delete-test:
+tenant-deploy-delete-test:
 	sam delete --stack-name sam-cognito-tenant-config
 
 maven-release:
@@ -87,4 +66,26 @@ install-nx:
 	yarn global add nx
 
 build-presignup:
-	 mvn -f product/service/lambda-services/cognito/signup/pom.xml -q  install -Dnative -DskipTests
+	 mvn -f product/service/lambda-services/tenant/signup/pom.xml -q  install -Dnative -DskipTests
+
+
+
+build-user-welcome:
+	 mvn -f product/service/lambda-services/user/welcome/pom.xml -q  install -Dnative -DskipTests
+
+# Deploy sam cognito service-tenant.yaml
+user-deploy-buckets-minka-cloud-dev:
+	sam build --template-file infrastructure/service-user.yaml \
+	&& \
+	sam deploy --template-file infrastructure/service-user.yaml \
+	--stack-name user-minka-cloud-dev \
+	--capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
+	--region eu-west-1 \
+	--resolve-s3 \
+	--parameter-overrides \
+	Environment=dev1 \
+	TenantName=minka-cloud \
+
+user-deploy-delete-user-minka-cloud:
+	sam delete --stack-name user-minka-cloud-dev-config
+

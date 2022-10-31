@@ -1,0 +1,140 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Shared Tenant setup auth service
+#This is the template for the Cognito User Pool for the tenant
+# Create a Cognito User Pool
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html
+# Create a Cognito User Pool Client
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html
+# Create a Cognito User Pool Domain
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html
+# Create a Cognito Identity Provider from Google
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identityprovider.html
+
+
+
+Parameters:
+  TenantAggregatorName:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "minka-cloud" #"minka.tech" #
+  GeneralDomain:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "minka.cloud" #"minka.tech" #
+  HostedZoneId:
+    Type: String
+    Description: The ID of the Hosted Zone for the domain
+    Default: "Z06530912SIRHBPLWQDWO" #"Z012886125XSYKBOI8V6M" #
+  CognitoDomain:
+    Type: String
+    MinLength: 3
+    MaxLength: 63
+    #AllowedPattern: ^[a-z0-9](?:[a-z0-9\-]{0,61}[a-z0-9])?$
+    Description: Enter a string. Must be alpha numeric 3-63 in length.
+    Default: "auth.minka.cloud" #"auth.minka.tech"  #
+  Environment:
+    Type: String
+    Description: The environment name
+    Default: "dev1"
+  CertificateArn:
+    Type: String
+    Description: The ARN of the certificate
+    Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
+  WelcomeS3Bucket:
+    Type: String
+    Description: The s3 key to publish the function.zip to
+    Default: ../product/service/lambda-services/user/welcome/target/function.zip #"auth.minka.tech" #
+
+Conditions:
+  IsProd: !Equals [ !Ref Environment, "prod" ]
+
+Resources:
+  WelcomeTriggerLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
+      Handler: not.used.in.provided.runtime
+      Runtime: provided
+      CodeUri: ../product/service/lambda-services/user/welcome/target/function.zip
+      # Bucket: minka-cloud-dev-deployment
+      # Key: !Ref WelcomeS3Bucket
+      MemorySize: 128
+      Timeout: 15
+      Role: !GetAtt UserExecutionRole.Arn
+      Environment:
+        Variables:
+          DISABLE_SIGNAL_HANDLERS: true
+          #TENANT_NAME: !Ref TenantAggregatorName
+          #TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
+          #SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
+
+
+  UserExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${Environment}-user-execution-role-${TenantAggregatorName}
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: "/"
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - cloudwatch:PutMetricData
+                  - cloudwatch:ListMetrics
+                  - cloudwatch:PutMetricAlarm
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - cognito-idp:*
+                Resource: !Sub "*"
+              - Effect: Allow
+                Action:
+                  - sns:*
+                Resource: !Sub "*"
+              - Effect: Allow
+                Action:
+                  - sqs:*
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:Scan
+                  - dynamodb:Query
+                  - dynamodb:BatchGetItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:CreateTable
+                  - dynamodb:DescribeTable
+                  - dynamodb:ListTables
+                  - dynamodb:UpdateTable
+                  - dynamodb:DeleteTable
+                  - dynamodb:DescribeTimeToLive
+                  - dynamodb:UpdateTimeToLive
+                Resource: !Sub "arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/*"
+

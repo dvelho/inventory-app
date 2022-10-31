@@ -8,7 +8,6 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -22,13 +21,14 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, C
     PostConfirmationService postConfirmationService;
 
     ObjectMapper mapper = new ObjectMapper();
+
     @Override
     public CognitoSignupEvent handleRequest(CognitoSignupEvent input, Context context) {
         System.out.println("event::cognito::signup::request:" + mapper.valueToTree(input));
         TriggerSource triggerSource = input.triggerSource();
         try {
             return switch (triggerSource) {
-                case PreSignUp_ExternalProvider,  PreSignUp_SignUp -> preSignupProcessingService.process(input);
+                case PreSignUp_ExternalProvider, PreSignUp_SignUp -> preSignupProcessingService.process(input);
                 case PostConfirmation_ConfirmSignUp -> postConfirmationService.process(input);
                 default -> throw new IllegalArgumentException("Unsupported trigger source: " + triggerSource);
             };

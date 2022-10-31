@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>cloud.minka.product.service</groupId>
@@ -7,11 +8,11 @@
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../../pom.xml</relativePath>
   </parent>
-  <groupId>cloud.minka.product.service.authorizer</groupId>
-  <artifactId>signup</artifactId>
+  <groupId>cloud.minka.product.service.user</groupId>
+  <artifactId>welcome</artifactId>
   <version>0.0.2-SNAPSHOT</version>
-  <name>Product Services Lambda Tenant Signup flows</name>
-  <description>Product Services Lambda Tenant Signup flows</description>
+  <name>Product Services Lambda Tenant Activate flows</name>
+  <description>Product Services Lambda Tenant Activate flows</description>
   <dependencies>
     <dependency>
       <groupId>io.quarkiverse.amazonservices</groupId>
@@ -26,12 +27,10 @@
       <artifactId>netty-nio-client</artifactId>
     </dependency>
     <dependency>
-
-      <groupId>io.soabase.record-builder</groupId>
-      <artifactId>record-builder-processor</artifactId>
-      <version>34</version>
-      <scope>provided</scope>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-joda</artifactId>
     </dependency>
+
   </dependencies>
   <build>
     <plugins>

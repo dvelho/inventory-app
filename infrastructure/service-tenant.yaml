@@ -49,8 +49,8 @@ Parameters:
     Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
   CognitoSignupS3Bucket:
     Type: String
-    Description: The alias to publish the buckets to
-    Default: "live" #"auth.minka.tech" #
+    Description: The s3 key to publish the function.zip to
+    Default: "/" #"auth.minka.tech" #
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
@@ -67,7 +67,7 @@ Resources:
       LambdaConfig:
         PreSignUp: !GetAtt  PreSignupTriggerLambda.Arn
         PostConfirmation: !GetAtt  PreSignupTriggerLambda.Arn
-       # PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
+        # PreAuthentication: !GetAtt PreAuthenticationTriggerLambda.Arn
       Schema:
         - Name: email
           AttributeDataType: String
@@ -149,7 +149,7 @@ Resources:
       # This is the lambda that will get the created cognito domain
       ServiceToken: !GetAtt GetUserPoolClientCFDistribution.Arn
       # This becomes a ResourceProperty of the event passed to lambda
-      UserPoolDomain:  !Ref UserPoolDomain
+      UserPoolDomain: !Ref UserPoolDomain
 
   PreSignupTriggerLambdaPermission:
     Type: 'AWS::Lambda::Permission'
@@ -176,7 +176,7 @@ Resources:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
           TENANT_NAME: !Ref TenantAggregatorName
-          TENANT_INFO_TABLE_NAME:  !Ref TenantInfoTable
+          TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
 
 
@@ -193,52 +193,52 @@ Resources:
       Architectures:
         - arm64
       InlineCode: |
-          import json
-          import boto3
-          import cfnresponse
-          import logging
-          
-          def handler(event, context):
-            logger = logging.getLogger()
-            logger.setLevel(logging.INFO)
-          
-            # initialize our responses, assume failure by default
-            response_data = {}
-            response_status = cfnresponse.FAILED
-          
-            logger.info('Received event: {}'.format(json.dumps(event))) #'
-          
-            # When you get deleted, congratulate the deleter.
-            if event['RequestType'] == 'Delete':
-              response_status = cfnresponse.SUCCESS
-              cfnresponse.send(event, context, response_status, response_data)
-              return None
-          
-            # Make ourselves a cognito api client
-            try:
-              cognito=boto3.client('cognito-idp')
-            except Exception as e:
-              logger.info('boto3.client failure: {}'.format(e)) #'
-              cfnresponse.send(event, context, response_status, response_data)
-              return None
-          
-            # Look up the properties of the user pool domain
-            # UserPoolDomain is passed in via the event
-            user_pool_domain = event['ResourceProperties']['UserPoolDomain']
-            try:
-              user_pool_domain_info = cognito.describe_user_pool_domain(Domain=user_pool_domain)
-            except Exception as e:
-              logger.info('cognito.describe_user_pool_client failure: {}'.format(e)) # appease yaml highlighting'
-              cfnresponse.send(event, context, response_status, response_data)
-              return None
-            # Extract the pertient information
-            cloudfront_distribution = user_pool_domain_info['DomainDescription']['CloudFrontDistribution']
-            # Stuff the information into the response
-            response_data['CloudFrontDistribution'] = cloudfront_distribution
-            # Ship off the reponse
+        import json
+        import boto3
+        import cfnresponse
+        import logging
+        
+        def handler(event, context):
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+        
+          # initialize our responses, assume failure by default
+          response_data = {}
+          response_status = cfnresponse.FAILED
+        
+          logger.info('Received event: {}'.format(json.dumps(event))) #'
+        
+          # When you get deleted, congratulate the deleter.
+          if event['RequestType'] == 'Delete':
             response_status = cfnresponse.SUCCESS
-            cfnresponse.send(event, context, response_status, response_data, noEcho=True)
-
+            cfnresponse.send(event, context, response_status, response_data)
+            return None
+        
+          # Make ourselves a cognito api client
+          try:
+            cognito=boto3.client('cognito-idp')
+          except Exception as e:
+            logger.info('boto3.client failure: {}'.format(e)) #'
+            cfnresponse.send(event, context, response_status, response_data)
+            return None
+        
+          # Look up the properties of the user pool domain
+          # UserPoolDomain is passed in via the event
+          user_pool_domain = event['ResourceProperties']['UserPoolDomain']
+          try:
+            user_pool_domain_info = cognito.describe_user_pool_domain(Domain=user_pool_domain)
+          except Exception as e:
+            logger.info('cognito.describe_user_pool_client failure: {}'.format(e)) # appease yaml highlighting'
+            cfnresponse.send(event, context, response_status, response_data)
+            return None
+          # Extract the pertient information
+          cloudfront_distribution = user_pool_domain_info['DomainDescription']['CloudFrontDistribution']
+          # Stuff the information into the response
+          response_data['CloudFrontDistribution'] = cloudfront_distribution
+          # Ship off the reponse
+          response_status = cfnresponse.SUCCESS
+          cfnresponse.send(event, context, response_status, response_data, noEcho=True)
+  
   
 
   LambdaExecutionRole:
@@ -283,7 +283,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - sqs:*
-                Resource:  "*"
+                Resource: "*"
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
@@ -399,11 +399,11 @@ Resources:
           return new Promise((resolve, reject) => {
             const req = https.request(options, res => {
               let rawData = '';
-            
+        
               res.on('data', chunk => {
                 rawData += chunk;
               });
-            
+        
               res.on('end', () => {
                 resolve({
                   statusCode: 200,
@@ -416,7 +416,7 @@ Resources:
             req.on('error', err => {
               reject(new Error(err));
             });
-      
+        
             req.write(data);
             req.end();
           });

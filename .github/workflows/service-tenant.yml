@@ -1,0 +1,123 @@
+on:
+  push:
+    branches:
+      - main
+      - master
+      - dev
+      - stage
+permissions:
+  id-token: write
+  contents: read #This is required for actions/checkout@v2
+jobs:
+  native_build:
+    runs-on: ubuntu-latest
+    name: Deploy Tenant Creation Service
+    steps:
+      - uses: actions/checkout@master
+      - uses: dorny/paths-filter@master
+        id: filter
+        with:
+          filters: |
+            cognito_signup:
+              - 'product/service/lambda-services/tenant/**'
+        #frontend:
+        #- 'frontend/**'
+        # I only need to declare environment variables once at the beginning
+        # The subsequent steps can access the variables by default
+
+      - name: Create Vars
+        run: |
+          echo "TENANT_NAME=minka-cloud" >> $GITHUB_ENV
+          echo "GENERAL_DOMAIN=minka.cloud" >> $GITHUB_ENV
+          echo "HOSTED_ZONE_ID=Z06530912SIRHBPLWQDWO" >> $GITHUB_ENV
+          echo "COGNITO_DOMAIN=auth.minka.cloud" >> $GITHUB_ENV
+          echo "CERTIFICATE_ARN=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" >> $GITHUB_ENV
+          echo "COGNITO_SIGNUP_S3_BUCKET=product/service/lambda-services/tenant/signup/target/function.zip" >> $GITHUB_ENV
+      - name: Configuration for master branch
+        if: ${{ github.ref == 'refs/heads/master' }}
+        # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
+        run: |
+          echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
+          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-dev-config" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
+          echo "environment=dev1" >> $GITHUB_ENV
+
+      - name: Configuration for dev branch
+        if: ${{ github.ref == 'refs/heads/dev' }}
+        run: |
+          echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
+          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
+          echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
+          echo "environment=prod1" >> $GITHUB_ENV
+
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          role-session-name: "GitHubActions"
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: Config graalvm
+        if: steps.filter.outputs.cognito_signup == 'true'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '19'
+          components: 'native-image'
+
+      - name: Cache maven modules
+        if: steps.filter.outputs.cognito_signup == 'true'
+        id: cache-maven
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-maven-modules
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Maven Clean and Verify on Cognito Signup Lambda
+        if: steps.filter.outputs.cognito_signup == 'true'
+        run: |
+          mvn -f product/service/lambda-services/cognito/tenant/pom.xml -q install -Dnative -DskipTests
+          echo "COGNITO_SIGNUP_S3_BUCKET=product/service/lambda-services/cognito/tenant/target/function"${{ github.run_id }}".zip" >> $GITHUB_ENV
+      - name: Upload Cognito Signup Lambda native app to S3
+        if: steps.filter.outputs.cognito_signup == 'true'
+        #duplicate copy to allow next deploy. need to get better#
+        run: |
+          aws s3 cp product/service/lambda-services/cognito/tenant/target/function.zip s3://${{env.S3_BUCKET_NAME}}/${{env.COGNITO_SIGNUP_S3_BUCKET}}
+          aws s3 cp product/service/lambda-services/cognito/tenant/target/function.zip s3://${{env.S3_BUCKET_NAME}}/product/service/lambda-services/tenant/signup/target/function.zip
+
+      ## --exclude "*" --include "*.zip"
+      - name: Sam build
+        run: |
+          sam build --template infrastructure/service-tenant.yaml
+      - name: Sam deploy
+        run: |
+          sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
+            --stack-name ${{env.STACK_NAME}} \
+            --capabilities CAPABILITY_IAM CAPABILITY_AUTO_EXPAND CAPABILITY_NAMED_IAM \
+            --parameter-overrides \
+            TenantName=${{env.TENANT_NAME}} \
+            GeneralDomain=${{env.GENERAL_DOMAIN}} \
+            HostedZoneId=${{env.HOSTED_ZONE_ID}} \
+            CognitoDomain=${{env.COGNITO_DOMAIN}} \
+            CertificateArn=${{env.CERTIFICATE_ARN}} \
+            Environment=${{env.environment}} \
+            CognitoSignupS3Bucket=${{env.COGNITO_SIGNUP_S3_BUCKET}} \
+
+      - name: Delete Cognito Signup Lambda native app from S3
+        if: steps.filter.outputs.cognito_signup == 'true'
+        run: |
+          aws s3 rm s3://${{env.S3_BUCKET_NAME}}/${{env.COGNITO_SIGNUP_S3_BUCKET}} 
+
+      #- name: Invoke local native app
+      #  run: |
+      #    sam local invoke --template product/service/lambda-services/cognito/signup/target/sam.native.yaml --event payload.json
+      # - name: Maven Clean and Verify on OrdersApiNative
+      #   run: |
+      #     mvn -f product/service/api-services/orders-api/pom.xml -q clean verify -Dnative -DskipTests

@@ -4,7 +4,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.util.function.Consumer;
 
 @ApplicationScoped
@@ -16,7 +15,6 @@ public class CognitoTenantRepository {
     public CognitoTenantRepository(CognitoIdentityProviderClient cognitoClient) {
         this.cognitoClient = cognitoClient;
     }
-
 
 
     public boolean emailExists(String email, String userPoolId) {
@@ -32,15 +30,16 @@ public class CognitoTenantRepository {
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
         listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
         System.out.println("event::cognito::signup::request::tenant::email::DEBUG:");
-         listUsersRequest = ListUsersRequest.builder()
+        listUsersRequest = ListUsersRequest.builder()
                 .userPoolId(userPoolId)
                 .build();
-         listUsersResponse = cognitoClient.listUsers(listUsersRequest);
+        listUsersResponse = cognitoClient.listUsers(listUsersRequest);
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
         listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
 
         return listUsersResponse.users().size() > 0;
     }
+
     public void adminAddUserToGroup(String userPoolId, String userName, String user) {
         cognitoClient.adminAddUserToGroup(addGroupRequest(userPoolId, userName, user));
     }
@@ -85,6 +84,7 @@ public class CognitoTenantRepository {
         return builder -> builder
                 .poolName(userPoolName);
     }
+
     //Create UserPoolClient
     public void createUserPoolClient(String userPoolId, String clientName) {
         cognitoClient.createUserPoolClient(createUserPoolClientRequest(userPoolId, clientName));

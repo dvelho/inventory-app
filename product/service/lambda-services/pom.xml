@@ -14,6 +14,7 @@
   <name>Product Services Lambdas Aggregator</name>
   <description>Aggregator only pom, should not contain any configuration beyond the modules that should be built.</description>
   <modules>
-    <module>cognito/signup</module>
+      <module>tenant/signup</module>
+      <module>user/welcome</module>
   </modules>
 </project>

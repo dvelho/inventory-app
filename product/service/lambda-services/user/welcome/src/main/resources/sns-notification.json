@@ -1,0 +1,31 @@
+{
+  "Records": [
+    {
+      "EventSource": "aws:sns",
+      "EventVersion": "1.0",
+      "EventSubscriptionArn": "arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud:3a9a71f7-b146-47b7-a2be-039a453ed45f",
+      "Sns": {
+        "Type": "Notification",
+        "MessageId": "64ced557-2eda-5e43-94b8-8e8e310d7979",
+        "TopicArn": "arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud",
+        "Subject": null,
+        "Message": "New user signup for tenant diogo.velho@mindera.com",
+        "Timestamp": "2022-10-31T00:57:59.084Z",
+        "SignatureVersion": "1",
+        "Signature": "oFfEncs+dH4rDYMED2hKDtcFl9vwk3yghY160JzYebMaCYez9EVLgjOyrt+VNtDfT3tC2Ip8yEouw2NpY3ixozq7x31YQ89ltA4PhFU+P4N/Md5ymReQ8zB0/vc4IFUJlbzZqWQf2X7MP9PtEwn8XLP/xI4VmiAJP3QXSgckcnEFrFOHZb5ylNzLoaNjpIYgu8b/JWdayKCzQqew2JwBxDyHObLfOAMFuUPrcUEgamZyM5jsltq4KfYzJ5O1BV8Hu2DiKDyVlRs5kDjyW/hJucquwio2VkMF/czSBqIhqONt44X8dMwMIdUJEVvA1blWC7LD+zkVv91ZZS0mWVcVmg==",
+        "SigningCertUrl": "https://sns.eu-west-1.amazonaws.com/SimpleNotificationService-56e67fcb41f6fec09b0196692625d385.pem",
+        "UnsubscribeUrl": "https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud:3a9a71f7-b146-47b7-a2be-039a453ed45f",
+        "MessageAttributes": {
+          "user": {
+            "Type": "String",
+            "Value": "diogo.velho@mindera.com"
+          },
+          "tenant": {
+            "Type": "String",
+            "Value": "mindera.com"
+          }
+        }
+      }
+    }
+  ]
+}
