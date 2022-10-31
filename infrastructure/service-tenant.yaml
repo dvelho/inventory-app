@@ -50,7 +50,7 @@ Parameters:
   CognitoSignupS3Bucket:
     Type: String
     Description: The s3 key to publish the function.zip to
-    Default: "/" #"auth.minka.tech" #
+    Default: "../product/service/lambda-services/user/welcome/target/function.zip" #"auth.minka.tech" #
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]

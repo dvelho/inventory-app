@@ -17,6 +17,7 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
 
     @Override
     public JsonNode handleRequest(SNSEvent input, Context context) {
+        //
         System.out.println("event::cognito::signup::request:" + mapper.valueToTree(input));
         return mapper.valueToTree(input);
     }

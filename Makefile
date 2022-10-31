@@ -49,7 +49,6 @@ tenant-deploy-prod-minka-cloud:
 	CognitoDomain=auth.minka.cloud \
 	CertificateArn=arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2 \
 	Environment=prod1 \
-	PublishAlias=${{ env.CognitoSignupCodeUriKey }}
 tenant-delete-prod-minka-cloud:
 	sam delete --stack-name sam-cognito-tenant-minka-cloud-prod-config
 

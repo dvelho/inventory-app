@@ -50,7 +50,7 @@ Parameters:
   WelcomeS3Bucket:
     Type: String
     Description: The s3 key to publish the function.zip to
-    Default: ../product/service/lambda-services/user/welcome/target/function.zip #"auth.minka.tech" #
+    Default: "../product/service/lambda-services/user/welcome/target/function.zip" #"auth.minka.tech" #
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
@@ -62,9 +62,9 @@ Resources:
       FunctionName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      CodeUri: ../product/service/lambda-services/user/welcome/target/function.zip
-      # Bucket: minka-cloud-dev-deployment
-      # Key: !Ref WelcomeS3Bucket
+      CodeUri: #!Ref WelcomeS3Bucket
+        Bucket: minka-cloud-dev-deployment
+        Key: !Ref WelcomeS3Bucket
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt UserExecutionRole.Arn
