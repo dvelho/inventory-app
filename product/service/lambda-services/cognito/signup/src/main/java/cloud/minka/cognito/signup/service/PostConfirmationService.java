@@ -14,6 +14,9 @@ import software.amazon.awssdk.services.sns.model.PublishResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.net.ssl.SSLContext;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -78,9 +81,16 @@ public class PostConfirmationService {
     }
 
     private void sendSNSMessage(CognitoSignupEvent input) {
-        //TODO: send SNS
+
         System.out.println("event::cognito::signup::request::tenant::send::sns::message");
-        snsClient
+        try {
+            System.out.println(Arrays.toString(SSLContext.getDefault().getSupportedSSLParameters().getProtocols()));
+            System.out.println(Arrays.toString(SSLContext.getDefault().getSupportedSSLParameters().getCipherSuites()));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        PublishResponse response = snsClient
                 .publish(builder -> builder.topicArn(topicArn)
                         .message("New user signup for tenant %s".formatted(input.request().get("userAttributes").get("email").asText()))
                         .messageAttributes(new HashMap<>() {{
@@ -95,6 +105,9 @@ public class PostConfirmationService {
                                             .get("email").asText())
                                     .build());
                         }}).build());
+        System.out.println("event::cognito::signup::request::tenant::send::sns::message::response::" + response.messageId());
+        System.out.println("event::cognito::signup::request::tenant::send::sns::message::response::" + response);
+
 
     }
 
