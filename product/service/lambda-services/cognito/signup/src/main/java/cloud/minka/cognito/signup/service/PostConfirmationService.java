@@ -77,7 +77,7 @@ public class PostConfirmationService {
     }
 
     private void sendSNSMessage(CognitoSignupEvent input) {
-        //TODO: send SNS message
+        //TODO: send SNS
         System.out.println("event::cognito::signup::request::tenant::send::sns::message");
 
         CompletableFuture<PublishResponse> response = snsAsyncClient
