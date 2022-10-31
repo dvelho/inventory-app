@@ -789,11 +789,11 @@ public class SESRepository {
                                         "                                                            role='presentation'>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td align='center' style='font-size: 0px'><a\n" +
-                                        "                                                                        href='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/minkav21.png'\n" +
+                                        "                                                                        href='https://minka.com'\n" +
                                         "                                                                        target='_blank'>\n" +
-                                        "                                                                        <amp-img src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/minkav21.png' alt\n" +
+                                        "                                                                        <img src='https://email-assets-minka-cloud.s3.eu-west-1.amazonaws.com/minkav21.png' alt\n" +
                                         "                                                                            style='display: block' width='262'\n" +
-                                        "                                                                            height='61'></amp-img>\n" +
+                                        "                                                                            height='61'/>\n" +
                                         "                                                                    </a></td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                        </table>\n" +
