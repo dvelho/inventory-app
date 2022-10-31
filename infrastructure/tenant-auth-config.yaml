@@ -364,7 +364,7 @@ Resources:
   PostToSlackLambda:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${Environment}-PostToSlackLambda-${TenantAggregatorName}
+      FunctionName: !Sub ${Environment}-post-to-slack-be-${TenantAggregatorName}
       Description: Post to Slack
       Handler: index.handler
       MemorySize: 128

@@ -9,10 +9,10 @@
   <description>Aggregator only pom, should not contain any configuration beyond the modules that should be built.</description>
   <modules>
 
+    <module>common-api</module>
     <module>parent-lambda-api</module>
     <module>parent-lambda-function</module>
     <module>api-services</module>
-
     <module>lambda-services</module>
   </modules>
 </project>

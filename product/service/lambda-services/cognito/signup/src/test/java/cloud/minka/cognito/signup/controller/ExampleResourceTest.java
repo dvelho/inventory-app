@@ -1,24 +1,14 @@
 package cloud.minka.cognito.signup.controller;
 
-import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.Test;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
-
-import javax.inject.Inject;
-
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-
-@QuarkusTest
+//@QuarkusTest
 public class ExampleResourceTest {
 
-    @Inject
-    CognitoIdentityProviderClient cognitoClient;
+  // @Inject
+  // CognitoIdentityProviderClient cognitoClient;
 
-    @Test
-    public void testHelloEndpoint() {
-     //create a user pool
+  //  @Test
+  public void testHelloEndpoint() {
+    //create a user pool
 
       /*  CreateUserPoolRequest createUserPoolRequest = CreateUserPoolRequest.builder()
                 .poolName("test-pool")

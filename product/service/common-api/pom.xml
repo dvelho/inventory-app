@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>cloud.minka.product.service</groupId>
+    <version>0.0.2-SNAPSHOT</version>
+    <artifactId>parent-lambda-api</artifactId>
+    <relativePath>../parent-lambda-api</relativePath>
+  </parent>
+  <groupId>cloud.minka.product.service</groupId>
+  <artifactId>common-api</artifactId>
+  <version>0.0.2-SNAPSHOT</version>
+  <name>Product Services Common</name>
+  <build>
+    <plugins>
+      <plugin>
+        <!-- Required as this common module contains CDI beans that will be inherited by quarkus service modules -->
+        <!-- https://quarkus.io/guides/cdi-reference#how-to-generate-a-jandex-index -->
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>${jandex-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
