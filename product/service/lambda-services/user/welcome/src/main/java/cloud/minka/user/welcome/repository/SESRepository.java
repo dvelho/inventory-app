@@ -1067,31 +1067,30 @@ public class SESRepository {
                                         "                                                            role='presentation'>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td class='es-p10b' align='center'>\n" +
-                                        "                                                                    <p>Company Address</p>\n" +
+                                        "                                                                    <p>minka.cloud, with love from Portugal</p>\n" +
                                         "                                                                </td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td class='es-p10b' align='center'>\n" +
-                                        "                                                                    <p>This email was sent to you from Company Email\n" +
-                                        "                                                                        Address</p>\n" +
+                                        "                                                                    <p>This email was sent to you from info@minka.cloud</p>\n" +
                                         "                                                                </td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td align='center' class='es-p10b'>\n" +
                                         "                                                                    <p><a target='_blank'\n" +
-                                        "                                                                            href='https://viewstripo.email/'>Preferences</a>\n" +
+                                        "                                                                            href='https://minka.cloud/'>Preferences</a>\n" +
                                         "                                                                        | <a target='_blank'\n" +
-                                        "                                                                            href='https://viewstripo.email/'>Browser</a>\n" +
+                                        "                                                                            href='https://minka.cloud/'>Browser</a>\n" +
                                         "                                                                        | <a target='_blank'\n" +
-                                        "                                                                            href='https://viewstripo.email/'>Forward</a>\n" +
+                                        "                                                                            href='https://minka.cloud/'>Forward</a>\n" +
                                         "                                                                        | <a target='_blank' class='unsubscribe'\n" +
                                         "                                                                            href=''>Unsubscribe</a></p>\n" +
                                         "                                                                </td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                            <tr>\n" +
                                         "                                                                <td align='center'>\n" +
-                                        "                                                                    <p>Copyright © 2015-2018 <strong>Company\n" +
-                                        "                                                                            Name</strong>, All Rights Reserved.</p>\n" +
+                                        "                                                                    <p>Copyright © 2022 <strong>minka.cloud</strong>, " +
+                                        "                                                                       All Rights Reserved.</p>\n" +
                                         "                                                                </td>\n" +
                                         "                                                            </tr>\n" +
                                         "                                                        </table>\n" +
@@ -1113,7 +1112,7 @@ public class SESRepository {
                                         "\n" +
                                         "</html>")))
 
-                                .subject(subject -> subject.data("Welcome to minka.cloud ☁\uD83C\uDF1F")))
+                                .subject(subject -> subject.data("Welcome to minka.cloud ☁ \uD83C\uDF1F \uD83D\uDCE6")))
                         .source("info@minka.cloud")
         );
         //test
