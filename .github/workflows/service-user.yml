@@ -33,7 +33,7 @@ jobs:
         # Side note, I can run any Linux converter here, not just 'echo' original -> echo "GCP_WIP=${{ secrets.MAIN_WIP }}" >> $GITHUB_ENV
         run: |
           echo "AWS_DEFAULT_REGION=eu-west-1" >> $GITHUB_ENV
-          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-dev-config" >> $GITHUB_ENV
+          echo "STACK_NAME=user-minka-cloud-dev" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-dev-deployment" >> $GITHUB_ENV
           echo "environment=dev1" >> $GITHUB_ENV
 
@@ -41,7 +41,7 @@ jobs:
         if: ${{ github.ref == 'refs/heads/dev' }}
         run: |
           echo "AWS_DEFAULT_REGION=us-east-1" >> $GITHUB_ENV
-          echo "STACK_NAME=sam-cognito-tenant-minka-cloud-prod-config" >> $GITHUB_ENV
+          echo "STACK_NAME=user-minka-cloud-dev" >> $GITHUB_ENV
           echo "S3_BUCKET_NAME=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
 

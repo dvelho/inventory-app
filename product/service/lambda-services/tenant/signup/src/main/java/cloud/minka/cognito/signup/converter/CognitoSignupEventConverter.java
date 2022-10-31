@@ -36,7 +36,7 @@ public class CognitoSignupEventConverter {
     }
 
     public CognitoSignupEvent responsePostSignup(CognitoSignupEvent input) {
-        //
+
         return CognitoSignupEventBuilder.builder()
                 .version(input.version())
                 .region(input.region())
