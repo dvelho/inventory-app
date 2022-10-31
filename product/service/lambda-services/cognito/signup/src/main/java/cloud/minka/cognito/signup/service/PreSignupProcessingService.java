@@ -43,7 +43,7 @@ public final class PreSignupProcessingService {
      */
     public CognitoSignupEvent process(CognitoSignupEvent input) {
 
-        tenantRepository.createTenantTable(tableName);
+       //tenantRepository.createTenantTable(tableName);
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
 
