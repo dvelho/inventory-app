@@ -8,6 +8,7 @@ import cloud.minka.cognito.signup.repository.TenantRepository;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sns.model.PublishResponse;
 
@@ -29,7 +30,7 @@ public class PostConfirmationService {
     CognitoSignupEventConverter cognitoSignupEventConverter;
 
     @Inject
-    SnsAsyncClient snsAsyncClient;
+    SnsClient snsClient;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -79,8 +80,7 @@ public class PostConfirmationService {
     private void sendSNSMessage(CognitoSignupEvent input) {
         //TODO: send SNS
         System.out.println("event::cognito::signup::request::tenant::send::sns::message");
-
-        CompletableFuture<PublishResponse> response = snsAsyncClient
+        snsClient
                 .publish(builder -> builder.topicArn(topicArn)
                         .message("New user signup for tenant %s".formatted(input.request().get("userAttributes").get("email").asText()))
                         .messageAttributes(new HashMap<>() {{
@@ -95,14 +95,6 @@ public class PostConfirmationService {
                                             .get("email").asText())
                                     .build());
                         }}).build());
-        // .messageAttributes();
-
-        //Not really async, trying out
-        try {
-            response.get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
 
     }
 
