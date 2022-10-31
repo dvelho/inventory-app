@@ -20,7 +20,10 @@ public class SESRepository {
                 builder -> builder.destination(
                                 destination -> destination.toAddresses("diogo.velho@mindera.com"))
                         .message(message -> message.body(body -> body.text(text -> text.data("Hello, world!")))
-                                .subject(subject -> subject.data("Hello, world!"))));
+                                .subject(subject -> subject.data("Hello, world!")))
+                        .source("info@minka.cloud")
+        );
+
 
     }
 }
