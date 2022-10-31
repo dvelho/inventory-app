@@ -1113,7 +1113,7 @@ public class SESRepository {
                                         "\n" +
                                         "</html>")))
 
-                                .subject(subject -> subject.data("Welcome to minka.cloud &#127752;")))
+                                .subject(subject -> subject.data("Welcome to minka.cloud ☁\uD83C\uDF1F")))
                         .source("info@minka.cloud")
         );
         //test
