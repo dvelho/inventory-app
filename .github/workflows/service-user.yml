@@ -74,7 +74,7 @@ jobs:
             ~/**/user/**/target
             ~/product/service/lambda-services/user/welcome/target/
             ~/product/service/lambda-services/user/welcome/target/function.zip
-          key: ${{ env.environment }}-artifacts-${{ hashFiles('**/*.zip') }}
+          key: ${{ env.environment }}-artifacts-${{ env.cache-name }}
           restore-keys: |
             ${{ env.environment }}-artifacts-${{ env.cache-name }}
 
