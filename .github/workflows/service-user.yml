@@ -48,14 +48,6 @@ jobs:
           echo "USER_WELCOME_PATH=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
 
-      - name: Config graalvm
-        if: steps.filter.outputs.user_welcome == 'true'
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: 'latest'
-          java-version: '19'
-          components: 'native-image'
-
       - name: Cache maven modules
         if: steps.filter.outputs.user_welcome == 'true'
         id: cache-maven
@@ -70,6 +62,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+
       - name: Cache artifacts
         if: steps.filter.outputs.user_welcome == 'true'
         id: cache-artifacts
@@ -81,8 +74,17 @@ jobs:
             product/service/lambda-services/user/welcome/target/function.zip
           key: ${{ env.environment }}-artifacts-${{ hashFiles('**/function.zip') }}
 
+
+      - name: Config graalvm
+        if: steps.filter.outputs.user_welcome == 'true'  || steps.cache-artifacts.outputs.cache-hit != 'true'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '19'
+          components: 'native-image'
+
       - name: Maven Clean and Verify on User Welcome Lambda
-        if: steps.filter.outputs.user_welcome == 'true' || steps.cache-maven.outputs.cache-hit != 'true'
+        if: steps.filter.outputs.user_welcome == 'true' || steps.cache-artifacts.outputs.cache-hit != 'true'
         run: |
           mvn -f product/service/lambda-services/user/welcome/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
