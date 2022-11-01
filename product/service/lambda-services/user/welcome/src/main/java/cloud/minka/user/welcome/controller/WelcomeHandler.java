@@ -23,7 +23,7 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
     @Override
     public JsonNode handleRequest(SNSEvent input, Context context) {
 
-        System.out.println("event::cognito::signup::request:" + mapper.valueToTree(input));
+        System.out.println("event::user::welcome::request:" + mapper.valueToTree(input));
         input.getRecords().stream().map(SNSEvent.SNSRecord::getSNS).forEach(sns -> {
             String message = sns.getMessage();
             String subject = sns.getSubject();
