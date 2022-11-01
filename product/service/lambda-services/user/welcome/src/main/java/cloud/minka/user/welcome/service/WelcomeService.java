@@ -31,15 +31,20 @@ public class WelcomeService {
     @ConfigProperty(name = "cloud.minka.email.welcome.subject")
     String emailSubject;
 
+    @ConfigProperty(name = "cloud.minka.email.welcome.text")
+    String emailText;
+
+    @ConfigProperty(name = "cloud.minka.email.welcome.html")
+    String emailHtml;
+
     public void sendWelcomeEmail(String email) {
-        sesEmailerService.sendEmail(email, getHtmlTemplate(), emailSubject, emailFrom);
+        sesEmailerService.sendEmail(email, getHtmlTemplate(), emailText, emailSubject, emailFrom);
     }
 
     private String getHtmlTemplate() {
-        String resourcePath = "/welcome-email.html";
-        System.out.println("event::cognito::signup::request::tenant::domain::free::provider::check");
+        // String resourcePath = "/welcome-email.html";
         try {
-            InputStream ins = SesEmailerService.class.getResourceAsStream(resourcePath);
+            InputStream ins = SesEmailerService.class.getResourceAsStream(emailHtml);
             assert ins != null;
             return new String(ins.readAllBytes());
         } catch (IOException e) {
