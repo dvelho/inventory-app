@@ -53,7 +53,7 @@ public class WelcomeService {
     }
 
     private String getSubject() {
-        return "";
+        return "\\uD83D\\uDCE6 \\uD83C\\uDF1F ☁ Welcome! ☁ \\uD83C\\uDF1F \\uD83D\\uDCE6";
     }
 
 }
