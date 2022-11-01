@@ -64,7 +64,7 @@ jobs:
 
       #Cache target folder zip files
       - name: Cache target folder
-        if: steps.filter.outputs.user_welcome == 'true' || steps.filter.outputs.sam_build == 'true'
+        #if: steps.filter.outputs.user_welcome == 'true' || steps.filter.outputs.sam_build == 'true'
         id: cache-target
         uses: actions/cache@v3
         env:
