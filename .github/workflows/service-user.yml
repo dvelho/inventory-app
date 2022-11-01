@@ -68,14 +68,16 @@ jobs:
         id: cache-artifacts
         uses: actions/cache@v3
         env:
-          cache-name: cache-artifacts
+          cache-name: cache-artifacts-user
         with:
           path: |
             ~/**/user/**/target
             ~/product/service/lambda-services/user/welcome/target/
             ~/product/service/lambda-services/user/welcome/target/function.zip
-
           key: ${{ env.environment }}-artifacts-${{ hashFiles('**/*.zip') }}
+          restore-keys: |
+            ${{ env.environment }}-artifacts-${{ env.cache-name }}
+
 
 
       - name: Config graalvm
