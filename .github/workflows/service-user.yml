@@ -48,20 +48,6 @@ jobs:
           echo "USER_WELCOME_PATH=minka-cloud-prod-deployment" >> $GITHUB_ENV
           echo "environment=prod1" >> $GITHUB_ENV
 
-      - name: Cache maven modules
-        if: steps.filter.outputs.user_welcome == 'true'
-        id: cache-maven
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-maven-modules
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
       #Cache target folder zip files
       - name: Cache target folder
         #if: steps.filter.outputs.user_welcome == 'true' || steps.filter.outputs.sam_build == 'true'
@@ -73,6 +59,31 @@ jobs:
           path: |
             **/user/**/target
           key: ${{ runner.os }}-target-user-${{ env.environment }}-${{ hashFiles('**/function.zip') }}
+
+      - name: check cache
+        run: |
+          echo "Cache hit: ${{ steps.cache-target.outputs.cache-hit }}"
+          echo "Cache name: ${{ env.cache-name }}"
+          echo "Cache path: ${{ env.cache-path }}"
+          echo "Cache key: ${{ env.cache-key }}"
+          echo "Cache restore keys: ${{ env.cache-restore-keys }}"
+          echo "Cache hash: ${{ hashFiles('**/function.zip') }}"
+          echo "Cache hash: ${{ hashFiles('**/target/**/function.zip') }}"
+          echo ls -la **/target
+
+      - name: Cache maven modules
+        if: steps.filter.outputs.user_welcome == 'true' || steps.cache-artifacts.outputs.cache-hit != 'true'
+        id: cache-maven
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-maven-modules
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
 
       - name: Config graalvm
         if: steps.filter.outputs.user_welcome == 'true'  || steps.cache-artifacts.outputs.cache-hit != 'true'
