@@ -96,7 +96,7 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Sam build
-        if: ${{ env.DEPLOY_SAM == 'true' }}
+        if: ${{ env.DEPLOY_SAM == 'true' }}  || ${{ steps.filter.outputs.sam_build == 'true' }}
         run: |
           sam build --template infrastructure/service-user.yaml || ${{ steps.filter.outputs.sam_build == 'true' }}
       - name: Sam deploy
