@@ -78,7 +78,7 @@ Resources:
         SnsFromCognito:
           Type: SNS
           Properties:
-            Topic: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
+            Topic: !Sub arn:aws:sns:eu-west-1:631674088803:${Environment}-tenant-signup-messages-${TenantAggregatorName}
 
   WelcomeTriggerSNSMessagesPermission:
     Type: AWS::Lambda::Permission
