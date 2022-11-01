@@ -71,7 +71,7 @@ jobs:
           cache-name: cache-artifacts
         with:
           path: |
-            **/user/**/target
+            **/target/**.zip
           key: ${{ env.environment }}-artifacts-${{ hashFiles('**/function.zip') }}
 
 
