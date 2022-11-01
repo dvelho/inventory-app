@@ -62,7 +62,7 @@ Resources:
       FunctionName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      Code: !Ref WelcomeFilePath
+      CodeUri: ../product/service/lambda-services/user/welcome/target/function.zip
       #Bucket: minka-cloud-dev-deployment
       #Key: !Ref WelcomeFilePath
       MemorySize: 128
