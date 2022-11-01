@@ -62,7 +62,7 @@ Resources:
       FunctionName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      CodeUri: !Ref WelcomeFilePath
+      Code: !Ref WelcomeFilePath
       #Bucket: minka-cloud-dev-deployment
       #Key: !Ref WelcomeFilePath
       MemorySize: 128
@@ -75,7 +75,7 @@ Resources:
           #TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           #SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
       Events:
-        SnS:
+        SnsFromCognito:
           Type: SNS
           Properties:
             Topic: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
