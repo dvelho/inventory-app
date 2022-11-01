@@ -62,6 +62,21 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
+      #Cache target folder zip files
+      - name: Cache target folder
+        # if: steps.filter.outputs.user_welcome == 'true'
+        id: cache-target
+        uses: actions/cache@v3
+        env:
+        cache-name: cache-target-folder
+        with:
+        path: |
+          **/user/**/target
+        key: ${{ runner.os }}-target-user-${{ hashFiles('**/function.zip') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
 
       - name: Cache artifacts
         #   if: steps.filter.outputs.user_welcome == 'true'
@@ -74,10 +89,9 @@ jobs:
             ~/**/user/**/target
             ~/product/service/lambda-services/user/welcome/target/
             ~/product/service/lambda-services/user/welcome/target/function.zip
-          key: ${{ env.environment }}-artifacts-${{ env.cache-name }}
+          key: ${{ env.environment }}-artifacts-${{ env.cache-name }}-${{ hashFiles('**/function.zip') }}
           restore-keys: |
             ${{ env.environment }}-artifacts-${{ env.cache-name }}
-
 
 
       - name: Config graalvm
@@ -93,6 +107,7 @@ jobs:
         run: |
           mvn -f product/service/lambda-services/user/welcome/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
+
 
       - name: Configure AWS credentials
         if: ${{ env.DEPLOY_SAM == 'true' }}  || ${{ steps.filter.outputs.sam_build == 'true' }}
