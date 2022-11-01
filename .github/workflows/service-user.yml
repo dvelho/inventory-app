@@ -49,7 +49,7 @@ jobs:
           echo "environment=prod1" >> $GITHUB_ENV
 
       - name: Cache maven modules
-        # if: steps.filter.outputs.user_welcome == 'true'
+        if: steps.filter.outputs.user_welcome == 'true'
         id: cache-maven
         uses: actions/cache@v3
         env:
@@ -64,7 +64,7 @@ jobs:
 
       #Cache target folder zip files
       - name: Cache target folder
-        # if: steps.filter.outputs.user_welcome == 'true'
+        if: steps.filter.outputs.user_welcome == 'true' || steps.filter.outputs.sam_build == 'true'
         id: cache-target
         uses: actions/cache@v3
         env:
