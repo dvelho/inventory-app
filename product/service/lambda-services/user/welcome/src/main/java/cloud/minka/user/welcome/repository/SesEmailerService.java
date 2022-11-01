@@ -1,5 +1,6 @@
 package cloud.minka.user.welcome.repository;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.ses.SesClient;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,6 +10,9 @@ import javax.inject.Inject;
 public class SesEmailerService {
 
     SesClient sesClient;
+
+    @ConfigProperty(name = "cloud.minka.email.welcome.from")
+    String emailFrom;
 
     @Inject
     public SesEmailerService(SesClient sesClient) {
@@ -23,7 +27,8 @@ public class SesEmailerService {
                                 .body(body -> body.text(text -> text.data("Welcome to minka cloud!")))
                                 .body(body -> body.html(html -> html.data(htmlTemplate)))
                                 .subject(subject -> subject.data(emailSubject)))
-                        .source("info@minka.cloud")
+                        .source(emailFrom)
+
         );
     }
 
