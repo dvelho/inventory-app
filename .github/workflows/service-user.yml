@@ -71,10 +71,11 @@ jobs:
           cache-name: cache-artifacts
         with:
           path: |
-            **/user/**/target
-            product/service/lambda-services/user/welcome/target/
-            product/service/lambda-services/user/welcome/target/function.zip
-          key: ${{ env.environment }}-artifacts-${{ hashFiles('**/user/**/**/function.zip') }}
+            ~/**/user/**/target
+            ~/product/service/lambda-services/user/welcome/target/
+            ~/product/service/lambda-services/user/welcome/target/function.zip
+
+          key: ${{ env.environment }}-artifacts-${{ hashFiles('**/*.zip') }}
 
 
       - name: Config graalvm
