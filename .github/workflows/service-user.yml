@@ -49,7 +49,7 @@ jobs:
           echo "environment=prod1" >> $GITHUB_ENV
 
       - name: Cache maven modules
-        if: steps.filter.outputs.user_welcome == 'true'
+        # if: steps.filter.outputs.user_welcome == 'true'
         id: cache-maven
         uses: actions/cache@v3
         env:
@@ -64,7 +64,7 @@ jobs:
 
 
       - name: Cache artifacts
-        if: steps.filter.outputs.user_welcome == 'true'
+        #   if: steps.filter.outputs.user_welcome == 'true'
         id: cache-artifacts
         uses: actions/cache@v3
         env:
