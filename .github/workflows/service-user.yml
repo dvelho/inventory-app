@@ -68,31 +68,11 @@ jobs:
         id: cache-target
         uses: actions/cache@v3
         env:
-        cache-name: cache-target-folder
-        with:
-        path: |
-          **/user/**/target
-        key: ${{ runner.os }}-target-user-${{ hashFiles('**/function.zip') }}
-        restore-keys: |
-          ${{ runner.os }}-build-${{ env.cache-name }}-
-          ${{ runner.os }}-build-
-          ${{ runner.os }}-
-
-      - name: Cache artifacts
-        #   if: steps.filter.outputs.user_welcome == 'true'
-        id: cache-artifacts
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-artifacts-user
+          cache-name: cache-target-folder
         with:
           path: |
-            ~/**/user/**/target
-            ~/product/service/lambda-services/user/welcome/target/
-            ~/product/service/lambda-services/user/welcome/target/function.zip
-          key: ${{ env.environment }}-artifacts-${{ env.cache-name }}-${{ hashFiles('**/function.zip') }}
-          restore-keys: |
-            ${{ env.environment }}-artifacts-${{ env.cache-name }}
-
+            **/user/**/target
+          key: ${{ runner.os }}-target-user-${{ env.environment }}-${{ hashFiles('**/function.zip') }}
 
       - name: Config graalvm
         if: steps.filter.outputs.user_welcome == 'true'  || steps.cache-artifacts.outputs.cache-hit != 'true'
