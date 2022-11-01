@@ -17,8 +17,14 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
 
 
     ObjectMapper mapper = new ObjectMapper().registerModule(new JodaModule());
-    @Inject
+
     WelcomeService welcomeService;
+
+    @Inject
+    public WelcomeHandler(WelcomeService welcomeService) {
+        this.welcomeService = welcomeService;
+    }
+
 
     @Override
     public JsonNode handleRequest(SNSEvent input, Context context) {

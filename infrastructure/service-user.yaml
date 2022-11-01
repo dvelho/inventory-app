@@ -47,7 +47,7 @@ Parameters:
     Type: String
     Description: The ARN of the certificate
     Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
-  WelcomeS3Bucket:
+  WelcomeFilePath:
     Type: String
     Description: The s3 key to publish the function.zip to
     Default: "../product/service/lambda-services/user/welcome/target/function.zip" #"auth.minka.tech" #
@@ -62,9 +62,9 @@ Resources:
       FunctionName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}  #../product/service/lambda-services/cognito/signup/target/function.zip
       Handler: not.used.in.provided.runtime
       Runtime: provided
-      CodeUri: #!Ref WelcomeS3Bucket
-        Bucket: minka-cloud-dev-deployment
-        Key: !Ref WelcomeS3Bucket
+      CodeUri: !Ref WelcomeFilePath
+      #Bucket: minka-cloud-dev-deployment
+      #Key: !Ref WelcomeFilePath
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt UserExecutionRole.Arn
@@ -74,7 +74,18 @@ Resources:
           #TENANT_NAME: !Ref TenantAggregatorName
           #TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           #SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
+      Events:
+        SnS:
+          Type: SNS
+          Properties:
+            Topic: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
 
+  WelcomeTriggerSNSMessagesPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !GetAtt WelcomeTriggerLambda.Arn
+      Principal: sns.amazonaws.com
 
   UserExecutionRole:
     Type: AWS::IAM::Role

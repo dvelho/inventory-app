@@ -12,7 +12,6 @@ Description: Shared Tenant setup auth service
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identityprovider.html
 
 
-
 Parameters:
   TenantAggregatorName:
     Type: String
@@ -452,5 +451,8 @@ Outputs:
   UserPoolDomainTarget:
     Description: "The CloudFront distribution target for A and AAAA aliases."
     Value: !GetAtt UPDomain.CloudFrontDistribution
+  SignupSNSMessages:
+    Value: !Ref SignupSNSMessages
+    Description: The SNS topic for user signup messages
 
 

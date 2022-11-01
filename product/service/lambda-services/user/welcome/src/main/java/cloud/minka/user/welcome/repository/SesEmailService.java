@@ -6,13 +6,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 @ApplicationScoped
-public class SesEmailerService {
+public class SesEmailService {
 
     SesClient sesClient;
 
-
     @Inject
-    public SesEmailerService(SesClient sesClient) {
+    public SesEmailService(SesClient sesClient) {
         this.sesClient = sesClient;
     }
 
