@@ -25,9 +25,14 @@ public class WelcomeService {
     @ConfigProperty(name = "cloud.minka.tenant.sns.topic", defaultValue = "arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud")
     String topicArn;
 
+    @ConfigProperty(name = "cloud.minka.email.welcome.from")
+    String emailFrom;
+
+    @ConfigProperty(name = "cloud.minka.email.welcome.subject")
+    String emailSubject;
 
     public void sendWelcomeEmail(String email) {
-        sesEmailerService.sendEmail(email, getHtmlTemplate(), getSubject());
+        sesEmailerService.sendEmail(email, getHtmlTemplate(), emailSubject, emailFrom);
     }
 
     private String getHtmlTemplate() {
@@ -43,7 +48,7 @@ public class WelcomeService {
     }
 
     private String getSubject() {
-        return "\uD83D\uDCE6 \uD83C\uDF1F ☁ Welcome to minka.cloud ☁ \uD83C\uDF1F \uD83D\uDCE6";
+        return "";
     }
 
 }
