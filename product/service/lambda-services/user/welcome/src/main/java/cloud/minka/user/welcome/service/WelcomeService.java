@@ -24,7 +24,7 @@ public class WelcomeService {
     String topicArn;
 
 
-    public void sendEmail(String email) {
+    public void sendWelcomeEmail(String email) {
         sesRepository.sendEmail(email);
     }
 

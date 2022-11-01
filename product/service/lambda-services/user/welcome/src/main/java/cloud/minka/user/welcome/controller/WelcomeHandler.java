@@ -24,17 +24,15 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
     public JsonNode handleRequest(SNSEvent input, Context context) {
 
         System.out.println("event::cognito::signup::request:" + mapper.valueToTree(input));
-        String message = input.getRecords().get(0).getSNS().getMessage();
-        String subject = input.getRecords().get(0).getSNS().getSubject();
-        System.out.println("event::cognito::signup::message:" + message);
-        System.out.println("event::cognito::signup::subject:" + subject);
-        Map<String, SNSEvent.MessageAttribute> messageAttributes = input.getRecords().get(0).getSNS().getMessageAttributes();
-        System.out.println("event::cognito::signup::messageAttributes:" + messageAttributes);
-        String tenantId = messageAttributes.get("tenantId").getValue();
-        System.out.println("event::cognito::signup::tenantId:" + tenantId);
-        String user = messageAttributes.get("user").getValue();
-        System.out.println("event::cognito::signup::user:" + user);
-        welcomeService.sendEmail(user);
+        input.getRecords().stream().map(SNSEvent.SNSRecord::getSNS).forEach(sns -> {
+            String message = sns.getMessage();
+            String subject = sns.getSubject();
+            Map<String, SNSEvent.MessageAttribute> messageAttributes = sns.getMessageAttributes();
+            String tenantId = messageAttributes.get("tenantId").getValue();
+            String user = messageAttributes.get("user").getValue();
+            welcomeService.sendWelcomeEmail(user);
+        });
+
         return mapper.valueToTree(input);
     }
 
