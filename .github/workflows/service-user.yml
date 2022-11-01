@@ -71,7 +71,7 @@ jobs:
           cache-name: cache-artifacts
         with:
           path: |
-            product/service/lambda-services/user/welcome/target/function.zip
+            **/user/**/target
           key: ${{ env.environment }}-artifacts-${{ hashFiles('**/function.zip') }}
 
 
