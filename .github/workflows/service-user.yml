@@ -60,17 +60,6 @@ jobs:
             **/user/**/target
           key: ${{ runner.os }}-target-user-${{ env.environment }}-${{ hashFiles('**/user/**/target/**/function.zip') }}
 
-      - name: check cache
-        run: |
-          echo "Cache hit: ${{ steps.cache-target-user.outputs.cache-hit }}"
-          echo "Cache name: ${{ env.cache-name }}"
-          echo "Cache path: ${{ env.cache-path }}"
-          echo "Cache key: ${{ env.cache-key }}"
-          echo "Cache restore keys: ${{ env.cache-restore-keys }}"
-          echo "Cache hash: ${{ hashFiles('**/function.zip') }}"
-          echo "Cache hash: ${{ hashFiles('**/target/**/function.zip') }}"
-          ls -la **/target
-
       - name: Cache maven modules
         if: steps.filter.outputs.user_welcome == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
         id: cache-maven
