@@ -9,8 +9,26 @@ permissions:
   id-token: write
   contents: read #This is required for actions/checkout@v2 tes
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      users: ${{ steps.filter.outputs.users }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: dorny/paths-filter@master
+        id: filter
+        with:
+          filters: |
+            users:
+              - 'product/service/**/user/**'
+
   native_build:
     runs-on: ubuntu-latest
+    if: needs.changes.outputs.users == 'true'
     name: Deploy User Services
     steps:
       - uses: actions/checkout@master
