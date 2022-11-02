@@ -52,7 +52,7 @@ jobs:
 
       #Cache target folder zip files
       - name: Cache target folder
-        #if: steps.filter.outputs.user_welcome == 'true' || steps.filter.outputs.sam_build == 'true'
+        #if: steps.filter.outputs.tenant_signup == 'true' || steps.filter.outputs.sam_build == 'true'
         id: cache-target-user
         uses: actions/cache@v3
         env:
@@ -78,7 +78,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Config graalvm
-        if: steps.filter.outputs.tenant_signup == 'true'
+        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-user.outputs.cache-hit != 'true'
         uses: graalvm/setup-graalvm@v1
         with:
           version: 'latest'
@@ -91,22 +91,29 @@ jobs:
           mvn -f product/service/lambda-services/tenant/signup/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
+      - name: Debug filter
+        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
+        run: |
+        echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
+        echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
+        echo "Cache hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
+        echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
 
       - name: Configure AWS credentials
-        if: ${{ env.DEPLOY_SAM == 'true' }}
+        if: env.DEPLOY_SAM == 'true'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
           role-session-name: "GitHubActions"
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
-      ## --exclude "*" --include "*.zip"
       - name: Sam build
-        if: ${{ env.DEPLOY_SAM == 'true' }} || ${{ steps.filter.outputs.sam_build == 'true' }}
+        if: env.DEPLOY_SAM == 'true'  || steps.filter.outputs.sam_build == 'true'
         run: |
           sam build --template infrastructure/service-tenant.yaml
+
       - name: Sam deploy
-        if: ${{ env.DEPLOY_SAM == 'true' }}  || ${{ steps.filter.outputs.sam_build == 'true' }}
+        if: env.DEPLOY_SAM == 'true'   || steps.filter.outputs.sam_build == 'true'
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
