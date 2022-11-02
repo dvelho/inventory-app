@@ -14,11 +14,12 @@ import static cloud.minka.cognito.signup.model.cloudformation.TenantStatus.PENDI
 public class TenantRepository {
     @Inject
     DynamoDbClient client;
+
     public void createTenantTable(String tenantTable) {
         //Create the tenant on dynamodb
         try {
             //Create the table with primary key PK and SK as partition and sort key
-           client.createTable(createTenantTableRequest(tenantTable));
+            client.createTable(createTenantTableRequest(tenantTable));
         } catch (ResourceInUseException e) {
             System.out.println("event::cognito::signup::request::tenant::table::exists:" + e.getMessage());
         }
@@ -61,12 +62,12 @@ public class TenantRepository {
     public void insertTenantIntoTable(String tenantTable, String tenantDomain, String userEmail) {
         //Insert the tenant on dynamodb
         AttributeValue pk = AttributeValue.builder().s(tenantDomain).build();
-        AttributeValue sk = AttributeValue.builder().s("tenant").build();
+        AttributeValue sk = AttributeValue.builder().s(tenantDomain).build();
         AttributeValue adminEmail = AttributeValue.builder().s(userEmail).build();
         AttributeValue status = AttributeValue.builder().s(String.valueOf(PENDING_CONFIGURATION)).build();
         PutItemRequest request = PutItemRequest.builder()
                 .tableName(tenantTable)
-                .item(Map.of("PK", pk, "SK", sk, "adminEmail",adminEmail, "status", status))
+                .item(Map.of("PK", pk, "SK", sk, "adminEmail", adminEmail, "status", status))
                 .build();
         client.putItem(request);
     }
@@ -74,7 +75,7 @@ public class TenantRepository {
     public GetItemResponse getTenantFromTable(String tenantTable, String tenantDomain) {
         //Get the tenant from dynamodb
         AttributeValue pk = AttributeValue.builder().s(tenantDomain).build();
-        AttributeValue sk = AttributeValue.builder().s("tenant").build();
+        AttributeValue sk = AttributeValue.builder().s(tenantDomain).build();
         GetItemRequest request = GetItemRequest.builder()
                 .tableName(tenantTable)
                 .key(Map.of("PK", pk, "SK", sk))
