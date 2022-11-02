@@ -89,7 +89,7 @@ jobs:
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
       - name: Debug filter
-        if: steps.filter.outputs.user_welcome == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
+        #   if: steps.filter.outputs.user_welcome == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
         run: |
           echo "Filter user_welcome: ${{ steps.filter.outputs.user_welcome }}"
           echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
@@ -97,7 +97,7 @@ jobs:
           echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
 
       - name: Configure AWS credentials
-        if: ${{ env.DEPLOY_SAM == 'true' }}  || ${{ steps.filter.outputs.sam_build == 'true' }}
+        if: env.DEPLOY_SAM == 'true'  || steps.filter.outputs.sam_build == 'true'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -105,11 +105,12 @@ jobs:
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Sam build
-        if: ${{ env.DEPLOY_SAM == 'true' }}  || ${{ steps.filter.outputs.sam_build == 'true' }}
+        if: env.DEPLOY_SAM == 'true'  || steps.filter.outputs.sam_build == 'true'
         run: |
-          sam build --template infrastructure/service-user.yaml || ${{ steps.filter.outputs.sam_build == 'true' }}
+          sam build --template infrastructure/service-user.yaml
+
       - name: Sam deploy
-        if: ${{ env.DEPLOY_SAM == 'true' }} || ${{ steps.filter.outputs.sam_build == 'true' }}
+        if: env.DEPLOY_SAM == 'true' || steps.filter.outputs.sam_build == 'true'
         run: |
           sam deploy --template-file .aws-sam/build/template.yaml --resolve-s3 \
             --stack-name ${{env.STACK_NAME}} \
