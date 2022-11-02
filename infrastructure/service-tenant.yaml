@@ -182,7 +182,7 @@ Resources:
       # Explicit retention time
       RetentionInDays: 7
 
-  GetUserPoolClientCFDistribution: # This is the lambda that will get the created cognito domain
+  GetUserPoolClientCFDistribution: # This is the lambda that will get the created cognito domain and create a cloudfront distribution
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-GetUserPoolClientCFDistribution-${TenantAggregatorName}

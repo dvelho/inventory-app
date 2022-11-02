@@ -84,6 +84,14 @@ jobs:
           key: ${{ runner.os }}-target-tenant-${{ env.environment }}-${{ hashFiles('**/user/**/target/**/function.zip') }}
 
 
+      - name: Config graalvm
+        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-user.outputs.cache-hit != 'true'
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: 'latest'
+          java-version: '19'
+          components: 'native-image'
+
       - name: Cache maven modules
         if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
         id: cache-maven
@@ -98,13 +106,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Config graalvm
-        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-user.outputs.cache-hit != 'true'
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: 'latest'
-          java-version: '19'
-          components: 'native-image'
 
       - name: Maven Clean and Verify on Cognito Signup Lambda
         if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
