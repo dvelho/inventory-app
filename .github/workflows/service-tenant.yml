@@ -9,7 +9,28 @@ permissions:
   id-token: write
   contents: read #This is required for actions/checkout@v2
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    # Required permissions
+    permissions:
+      pull-requests: read
+    # Set job outputs to values from filter step
+    outputs:
+      tenant: ${{ steps.filter.outputs.tenant }}
+    steps:
+      # For pull requests it's not necessary to checkout the code
+      - uses: actions/checkout@master
+      - uses: dorny/paths-filter@master
+        id: filter
+        with:
+          filters: |
+            tenant:
+              - 'product/service/**/tenant/**'
+              - 'infrastructure/service-tenant.yaml'
+
   native_build:
+    needs: changes
+    if: needs.changes.outputs.tenant == 'true'
     runs-on: ubuntu-latest
     name: Deploy Tenant Services
     steps:
