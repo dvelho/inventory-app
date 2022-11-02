@@ -96,7 +96,7 @@ jobs:
         run: |
           echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
           echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
-          echo "Cache hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
+          echo "Cache a hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
           echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
 
       - name: Configure AWS credentials
