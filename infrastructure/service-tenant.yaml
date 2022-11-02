@@ -194,7 +194,6 @@ Resources:
       Timeout: 30
       Architectures:
         - arm64
-
       InlineCode: |
         import json
         import boto3
@@ -244,7 +243,7 @@ Resources:
   
   
   
-
+  
   LogGroupGetUserPoolClientCFDistribution:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -331,7 +330,15 @@ Resources:
       BillingMode: PAY_PER_REQUEST
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
-
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+      TimeToLiveSpecification:
+        AttributeName: TTL
+        Enabled: true
+  
   CognitoTenantAdminGroup:
     Type: AWS::Cognito::UserPoolGroup
     Properties:
