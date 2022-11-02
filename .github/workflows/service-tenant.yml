@@ -74,7 +74,7 @@ jobs:
       #Cache target folder zip files
       - name: Cache target folder
         #if: steps.filter.outputs.tenant_signup == 'true' || steps.filter.outputs.sam_build == 'true'
-        id: cache-target-user
+        id: cache-target-tenant
         uses: actions/cache@v3
         env:
           cache-name: cache-target-tenant-folder
