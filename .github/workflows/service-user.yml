@@ -19,6 +19,7 @@ jobs:
       users: ${{ steps.filter.outputs.users }}
     steps:
       # For pull requests it's not necessary to checkout the code
+      - uses: actions/checkout@master
       - uses: dorny/paths-filter@master
         id: filter
         with:
