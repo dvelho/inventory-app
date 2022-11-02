@@ -94,10 +94,10 @@ jobs:
       - name: Debug filter
         if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
         run: |
-        echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
-        echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
-        echo "Cache hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
-        echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
+          echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
+          echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
+          echo "Cache hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
+          echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
 
       - name: Configure AWS credentials
         if: env.DEPLOY_SAM == 'true'
