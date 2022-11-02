@@ -85,7 +85,7 @@ jobs:
 
 
       - name: Config graalvm
-        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-user.outputs.cache-hit != 'true'
+        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-tenant.outputs.cache-hit != 'true'
         uses: graalvm/setup-graalvm@v1
         with:
           version: 'latest'
@@ -114,7 +114,7 @@ jobs:
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
       - name: Debug filter
-        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
+        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
         run: |
           echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
           echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
