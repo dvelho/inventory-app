@@ -125,7 +125,7 @@ jobs:
             CognitoDomain=${{env.COGNITO_DOMAIN}} \
             CertificateArn=${{env.CERTIFICATE_ARN}} \
             Environment=${{env.environment}} \
-            TenantSignupPath=${{env.TENANT_SIGNUP_PATH}.} \
+            TenantSignupPath=${{env.TENANT_SIGNUP_PATH}.}} \
 
         #- name: Invoke local native app
       #  run: |
