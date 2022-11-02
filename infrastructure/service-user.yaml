@@ -68,6 +68,7 @@ Resources:
       MemorySize: 128
       Timeout: 15
       Role: !GetAtt UserExecutionRole.Arn
+      Tracing: Active
       Environment:
         Variables:
           DISABLE_SIGNAL_HANDLERS: true
