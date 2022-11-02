@@ -175,12 +175,12 @@ Resources:
           TENANT_NAME: !Ref TenantAggregatorName
           TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
-      LogGroup:
-        Type: AWS::Logs::LogGroup
-        Properties:
-          LogGroupName: !Sub "/aws/lambda/${Function}"
-          # Explicit retention time
-          RetentionInDays: 7
+  LogGroupSignupTriggerLambda:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${PreSignupTriggerLambda}"
+      # Explicit retention time
+      RetentionInDays: 7
 
   GetUserPoolClientCFDistribution: # This is the lambda that will get the created cognito domain
     Type: AWS::Serverless::Function
@@ -194,12 +194,7 @@ Resources:
       Timeout: 30
       Architectures:
         - arm64
-      LogGroup:
-        Type: AWS::Logs::LogGroup
-        Properties:
-          LogGroupName: !Sub "/aws/lambda/${Function}"
-          # Explicit retention time
-          RetentionInDays: 7
+
       InlineCode: |
         import json
         import boto3
@@ -248,6 +243,14 @@ Resources:
           cfnresponse.send(event, context, response_status, response_data, noEcho=True)
   
   
+  
+
+  LogGroupGetUserPoolClientCFDistribution:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${GetUserPoolClientCFDistribution}"
+      # Explicit retention time
+      RetentionInDays: 7
 
   LambdaExecutionRole:
     Type: AWS::IAM::Role
@@ -325,9 +328,6 @@ Resources:
           KeyType: HASH
         - AttributeName: SK
           KeyType: RANGE
-      ProvisionedThroughput:
-        ReadCapacityUnits: 1
-        WriteCapacityUnits: 1
       StreamSpecification:
         StreamViewType: NEW_AND_OLD_IMAGES
 
@@ -442,6 +442,13 @@ Resources:
 
 
 
+
+  LogGroupPostToSlackLambda:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${PostToSlackLambda}"
+      # Explicit retention time
+      RetentionInDays: 7
 #Creates a role that allows Cognito to send SNS messages
 Outputs:
   CognitoUserPoolID:
