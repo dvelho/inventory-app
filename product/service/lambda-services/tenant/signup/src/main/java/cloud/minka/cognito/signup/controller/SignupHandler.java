@@ -26,7 +26,6 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, C
     @Override
     public CognitoSignupEvent handleRequest(CognitoSignupEvent input, Context context) {
         System.out.println("event::cognito::signup::request:" + mapper.valueToTree(input));
-
         TriggerSource triggerSource = input.triggerSource();
         try {
             return switch (triggerSource) {
