@@ -371,7 +371,7 @@ Resources:
   SignupSQSQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
+      QueueName: !Sub ${Environment}-tenant-slack-messages-${TenantAggregatorName}.fifo
       FifoQueue: true
       ContentBasedDeduplication: true
 
