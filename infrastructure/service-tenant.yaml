@@ -385,7 +385,7 @@ Resources:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: 'lambda:InvokeFunction'
-      FunctionName: !GetAtt PostToSlackLambdaBe.Arn
+      FunctionName: !GetAtt PostSlackLambdaBe.Arn
       Principal: sns.amazonaws.com
 
   SignupSNSMessagesFifoTopicPolicy:
@@ -405,10 +405,10 @@ Resources:
               ArnLike:
                 AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
 
-  PostToSlackLambdaBe:
+  PostSlackLambdaBe:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: !Sub ${Environment}-post-to-slack-be-${TenantAggregatorName}
+      FunctionName: !Sub ${Environment}-post-slack-be-${TenantAggregatorName}
       Description: Post to Slack
       Handler: index.handler
       MemorySize: 128
@@ -481,10 +481,11 @@ Resources:
           return response;
         };
 
-  LogGroupPostToSlackLambdaBe:
+
+  LogGroupPostSlackLambdaBe:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${PostToSlackLambdaBe}"
+      LogGroupName: !Sub "/aws/lambda/${PostSlackLambdaBe}"
       # Explicit retention time
       RetentionInDays: 7
 
