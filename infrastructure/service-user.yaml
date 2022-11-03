@@ -99,7 +99,7 @@ Resources:
   WelcomeSqsQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${Environment}-welcome-queue-${TenantAggregatorName}
+      QueueName: !Sub ${Environment}-welcome-queue-${TenantAggregatorName}.fifo
       DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600
@@ -125,13 +125,6 @@ Resources:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${Environment}-welcome-dl_queue-${TenantAggregatorName}
-      DelaySeconds: 0
-      MaximumMessageSize: 262144
-      MessageRetentionPeriod: 345600
-      ReceiveMessageWaitTimeSeconds: 0
-      VisibilityTimeout: 30
-      FifoQueue: true
-      ContentBasedDeduplication: true
       Tags:
         - Key: Environment
           Value: !Ref Environment
