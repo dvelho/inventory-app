@@ -93,7 +93,7 @@ Resources:
     Properties:
       Endpoint: !GetAtt WelcomeSqsQueue.Arn
       Protocol: sqs
-      TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${Environment}-tenant-signup-messages-${TenantAggregatorName}
+      TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
 
 
   WelcomeSqsQueue:
