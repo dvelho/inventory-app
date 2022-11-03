@@ -110,7 +110,7 @@ jobs:
       - name: Maven Clean and Verify on Cognito Signup Lambda
         if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
         run: |
-          mvn -f product/service/model/pom.xml -q install
+          mvn -f product/pom.xml -q install -DskipTests
           mvn -f product/service/lambda-services/tenant/signup/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
