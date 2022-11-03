@@ -124,7 +124,10 @@ Resources:
   WelcomeDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${Environment}-welcome-dl_queue-${TenantAggregatorName}
+      QueueName: !Sub ${Environment}-welcome-dl_queue-${TenantAggregatorName}.fifo
+      DelaySeconds: 0
+      MaximumMessageSize: 262144
+      FifoQueue: true
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -135,12 +138,13 @@ Resources:
         - Key: Type
           Value: "dead_queue"
 
-  WelcomeTriggerSNSMessagesPermission:
+  WelcomeTriggerSQSMessagesPermission:
     Type: AWS::Lambda::Permission
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !GetAtt WelcomeTriggerLambda.Arn
-      Principal: sns.amazonaws.com
+      Principal: sqs.amazonaws.com
+      SourceArn: !GetAtt WelcomeSqsQueue.Arn
 
   UserExecutionRole:
     Type: AWS::IAM::Role
