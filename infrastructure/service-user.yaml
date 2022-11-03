@@ -83,7 +83,7 @@ Resources:
             BatchSize: 1
       Tags:
         Environment: !Ref Environment
-        Tenant: !Ref TenantAggregatorName
+        TenantAggregatorName: !Ref TenantAggregatorName
         Service: "user"
         Type: "lambda"
         Name: "welcome"
@@ -94,6 +94,7 @@ Resources:
       Endpoint: !GetAtt WelcomeSqsQueue.Arn
       Protocol: sqs
       TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${Environment}-tenant-signup-messages-${TenantAggregatorName}
+
 
   WelcomeSqsQueue:
     Type: AWS::SQS::Queue
@@ -109,12 +110,16 @@ Resources:
         maxReceiveCount: 5
       FifoQueue: true
       ContentBasedDeduplication: true
-
       Tags:
-        Environment: !Ref Environment
-        TenantAggregatorName: !Ref TenantAggregatorName
-        Service: "user"
-        Type: "queue"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "queue"
+
 
   WelcomeDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -128,10 +133,14 @@ Resources:
       FifoQueue: true
       ContentBasedDeduplication: true
       Tags:
-        Environment: !Ref Environment
-        TenantAggregatorName: !Ref TenantAggregatorName
-        Service: "user"
-        Type: "dead-queue"
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "dead_queue"
 
   WelcomeTriggerSNSMessagesPermission:
     Type: AWS::Lambda::Permission
@@ -153,12 +162,6 @@ Resources:
                 - lambda.amazonaws.com
             Action:
               - sts:AssumeRole
-      Tags:
-        Environment: !Ref Environment
-        TenantAggregatorName: !Ref TenantAggregatorName
-        Service: "user"
-        Type: "role"
-        Name: "execution"
       Path: "/"
       Policies:
         - PolicyName: root
