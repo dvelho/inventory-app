@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>cloud.minka.product.service</groupId>
-    <artifactId>api-services</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cloud.minka.product.service</groupId>
+        <artifactId>api-services</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <groupId>cloud.minka.product.service.orders</groupId>
+    <artifactId>tenants-api</artifactId>
     <version>0.0.2-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
-  <groupId>cloud.minka.product.service.orders</groupId>
-  <artifactId>tenants-api</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
-  <name>Product Services Lambda Orders Api</name>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+    <name>Product Services Lambda Orders Api</name>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
