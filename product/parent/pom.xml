@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>cloud.minka.product</groupId>
   <artifactId>parent</artifactId>
@@ -9,18 +10,18 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-      <maven.compiler.release>19</maven.compiler.release>
-      <surefire-plugin.version>2.22.1</surefire-plugin.version>
-      <maven-pmd.version>3.12.0</maven-pmd.version>
-      <maven-checkstyle.version>3.1.0</maven-checkstyle.version>
-      <maven-jxr.version>3.3.0</maven-jxr.version>
-      <junit.jupiter.version>5.9.1</junit.jupiter.version>
-      <junit.platform.version>1.9.1</junit.platform.version>
-      <sortpom-maven.version>2.10.0</sortpom-maven.version>
-      <maven-enforce.version>3.0.0-M3</maven-enforce.version>
-      <dependency-check.version>7.2.0</dependency-check.version>
-      <maven.compiler.source>19</maven.compiler.source>
-      <maven.compiler.target>19</maven.compiler.target>
+    <maven.compiler.release>19</maven.compiler.release>
+    <surefire-plugin.version>2.22.1</surefire-plugin.version>
+    <maven-pmd.version>3.12.0</maven-pmd.version>
+    <maven-checkstyle.version>3.1.0</maven-checkstyle.version>
+    <maven-jxr.version>3.3.0</maven-jxr.version>
+    <junit.jupiter.version>5.9.1</junit.jupiter.version>
+    <junit.platform.version>1.9.1</junit.platform.version>
+    <sortpom-maven.version>2.10.0</sortpom-maven.version>
+    <maven-enforce.version>3.0.0-M3</maven-enforce.version>
+    <dependency-check.version>7.2.0</dependency-check.version>
+    <maven.compiler.source>19</maven.compiler.source>
+    <maven.compiler.target>19</maven.compiler.target>
   </properties>
   <dependencies>
     <dependency>
@@ -72,53 +73,53 @@
           <createBackupFile>false</createBackupFile>
         </configuration>
       </plugin>
-        <!-- <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>${maven-checkstyle.version}</version>
-                <executions>
-                  <execution>
-                    <goals>
-                      <goal>check</goal>
-                    </goals>
-                  </execution>
-                </executions>
-                <dependencies>
-                  <dependency>
-                    <groupId>cloud.minka.product</groupId>
-                    <artifactId>build-tools</artifactId>
-                    <version>0.0.2-SNAPSHOT</version>
-                  </dependency>
-                </dependencies>
-                <configuration>
-                  <configLocation>product/checkstyle.xml</configLocation>
-                </configuration>
-              </plugin>
-              <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-pmd-plugin</artifactId>
-                <version>${maven-pmd.version}</version>
-                <executions>
-                  <execution>
-                    <goals>
-                      <goal>check</goal>
-                    </goals>
-                  </execution>
-                </executions>
-                <dependencies>
-                  <dependency>
-                    <groupId>cloud.minka.product</groupId>
-                    <artifactId>build-tools</artifactId>
-                    <version>0.0.2-SNAPSHOT</version>
-                  </dependency>
-                </dependencies>
-                <configuration>
-                  <rulesets>
-                    <ruleset>product/pmd-ruleset.xml</ruleset>
-                  </rulesets>
-                  <printFailingErrors>true</printFailingErrors>
-                </configuration>
-              </plugin>-->
+      <!-- <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>${maven-checkstyle.version}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <dependencies>
+                <dependency>
+                  <groupId>cloud.minka.product</groupId>
+                  <artifactId>build-tools</artifactId>
+                  <version>0.0.2-SNAPSHOT</version>
+                </dependency>
+              </dependencies>
+              <configuration>
+                <configLocation>product/checkstyle.xml</configLocation>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-pmd-plugin</artifactId>
+              <version>${maven-pmd.version}</version>
+              <executions>
+                <execution>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                </execution>
+              </executions>
+              <dependencies>
+                <dependency>
+                  <groupId>cloud.minka.product</groupId>
+                  <artifactId>build-tools</artifactId>
+                  <version>0.0.2-SNAPSHOT</version>
+                </dependency>
+              </dependencies>
+              <configuration>
+                <rulesets>
+                  <ruleset>product/pmd-ruleset.xml</ruleset>
+                </rulesets>
+                <printFailingErrors>true</printFailingErrors>
+              </configuration>
+            </plugin>-->
     </plugins>
   </build>
   <reporting>

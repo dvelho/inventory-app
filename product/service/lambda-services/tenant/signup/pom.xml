@@ -1,57 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>cloud.minka.product.service</groupId>
-    <artifactId>lambda-services</artifactId>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cloud.minka.product.service</groupId>
+        <artifactId>lambda-services</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <groupId>cloud.minka.product.service.tenant</groupId>
+    <artifactId>signup</artifactId>
     <version>0.0.2-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
-  </parent>
-  <groupId>cloud.minka.product.service.tenant</groupId>
-  <artifactId>signup</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
-  <name>Product Services Lambda Tenant Signup flows</name>
-  <description>Product Services Lambda Tenant Signup flows</description>
-  <dependencies>
-    <dependency>
-      <groupId>io.quarkiverse.amazonservices</groupId>
-      <artifactId>quarkus-amazon-cognito-user-pools</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkiverse.amazonservices</groupId>
-      <artifactId>quarkus-amazon-sns</artifactId>
-    </dependency>
-      <dependency>
-          <groupId>software.amazon.awssdk</groupId>
-          <artifactId>netty-nio-client</artifactId>
-      </dependency>
-      <dependency>
-          <groupId>io.soabase.record-builder</groupId>
-          <artifactId>record-builder-processor</artifactId>
-          <version>34</version>
-          <scope>provided</scope>
-      </dependency>
-      <dependency>
-          <groupId>cloud.minka.product.service.model</groupId>
-          <artifactId>cognito</artifactId>
-          <version>0.0.2-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-          <groupId>cloud.minka.product.service.model</groupId>
-          <artifactId>tenant</artifactId>
-          <version>0.0.2-SNAPSHOT</version>
-      </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>pl.project13.maven</groupId>
-        <artifactId>git-commit-id-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
+    <name>Product Services Lambda Tenant Signup flows</name>
+    <description>Product Services Lambda Tenant Signup flows</description>
+    <dependencies>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-cognito-user-pools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.quarkiverse.amazonservices</groupId>
+            <artifactId>quarkus-amazon-sns</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>netty-nio-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.soabase.record-builder</groupId>
+            <artifactId>record-builder-processor</artifactId>
+            <version>34</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>cloud.minka.product.service.model</groupId>
+            <artifactId>cognito</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.minka.product.service.model</groupId>
+            <artifactId>tenant</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.quarkus</groupId>
+                <artifactId>quarkus-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>
