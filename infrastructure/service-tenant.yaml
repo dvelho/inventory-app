@@ -350,8 +350,25 @@ Resources:
   SignupSNSMessages:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
-      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
+      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
+      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}-fifo
+      FifoTopic: true
+      ContentBasedDeduplication: true
+      Subscription:
+        - Endpoint: !GetAtt  SignupSQSQueue.Arn
+          Protocol: sqs
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+
+
+  SignupSQSQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
+      FifoQueue: true
       ContentBasedDeduplication: true
       Tags:
         - Key: Environment
@@ -397,7 +414,7 @@ Resources:
         - arm64
       Events:
         PostToSlack:
-          Type: SNS
+          Type: SQS
           Properties:
             Topic: !Ref SignupSNSMessages
       InlineCode: |
