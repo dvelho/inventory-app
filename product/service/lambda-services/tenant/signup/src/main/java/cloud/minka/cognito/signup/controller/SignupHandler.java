@@ -21,7 +21,8 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, C
     @Inject
     PostConfirmationService postConfirmationService;
 
-    ObjectMapper mapper = new ObjectMapper();
+    @Inject
+    ObjectMapper mapper;
 
     @Override
     public CognitoSignupEvent handleRequest(CognitoSignupEvent input, Context context) {
