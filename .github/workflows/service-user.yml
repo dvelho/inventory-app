@@ -106,6 +106,7 @@ jobs:
       - name: Maven Clean and Verify on User Welcome Lambda
         if: steps.filter.outputs.user_welcome == 'true' || steps.cache-target-user.outputs.cache-hit != 'true'
         run: |
+          mvn -f product/service/model/pom.xml -q install
           mvn -f product/service/lambda-services/user/welcome/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
