@@ -360,7 +360,7 @@ Resources:
         - Key: TenantAggregatorName
           Value: !Ref TenantAggregatorName
 
-  SignupSQSSNSSubscription:
+  SlackSQSSNSSubscription:
     Type: AWS::SNS::Subscription
     Properties:
       Endpoint: !GetAtt SlackQueue.Arn
