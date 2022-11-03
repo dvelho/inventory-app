@@ -367,12 +367,14 @@ Resources:
       Protocol: sqs
       TopicArn: !Ref SignupSNSMessages
 
+  
   SignupSQSQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
       FifoQueue: true
       ContentBasedDeduplication: true
+
       Tags:
         - Key: Environment
           Value: !Ref Environment
@@ -419,7 +421,12 @@ Resources:
         PostToSlack:
           Type: SQS
           Properties:
-            Topic: !Ref SignupSNSMessages
+            Queue: !Ref SignupSQSQueue
+            BatchSize: 1
+        Environment:
+          Variables:
+            SLACK_WEBHOOK_URL: "!Ref SlackWebhookUrl"
+
       InlineCode: |
         const https = require('https');
         const postRequest = (a) => {
