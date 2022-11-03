@@ -174,7 +174,7 @@ Resources:
           DISABLE_SIGNAL_HANDLERS: true
           TENANT_NAME: !Ref TenantAggregatorName
           TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
-          SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
+          SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessagesFifo
   LogGroupSignupTriggerLambda:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -347,7 +347,7 @@ Resources:
       UserPoolId: !Ref UserPool
 
 
-  SignupSNSMessages:
+  SignupSNSMessagesFifo:
     Type: AWS::SNS::Topic
     Properties:
       TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
@@ -365,7 +365,7 @@ Resources:
     Properties:
       Endpoint: !GetAtt SignupSQSQueue.Arn
       Protocol: sqs
-      TopicArn: !Ref SignupSNSMessages
+      TopicArn: !Ref SignupSNSMessagesFifo
 
   
   SignupSQSQueue:
@@ -385,27 +385,27 @@ Resources:
     Type: 'AWS::Lambda::Permission'
     Properties:
       Action: 'lambda:InvokeFunction'
-      FunctionName: !GetAtt PostToSlackLambda.Arn
+      FunctionName: !GetAtt PostToSlackLambdaBe.Arn
       Principal: sns.amazonaws.com
 
-  SignupSNSMessagesTopicPolicy:
+  SignupSNSMessagesFifoTopicPolicy:
     Type: 'AWS::SNS::TopicPolicy'
     Properties:
       Topics:
-        - !Ref SignupSNSMessages
+        - !Ref SignupSNSMessagesFifo
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
             Action: 'sns:Publish'
-            Resource: !Ref SignupSNSMessages
+            Resource: !Ref SignupSNSMessagesFifo
             Principal:
               AWS: '*'
             Condition:
               ArnLike:
                 AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
 
-  PostToSlackLambda:
+  PostToSlackLambdaBe:
     Type: AWS::Serverless::Function
     Properties:
       FunctionName: !Sub ${Environment}-post-to-slack-be-${TenantAggregatorName}
@@ -481,10 +481,10 @@ Resources:
           return response;
         };
 
-  LogGroupPostToSlackLambda:
+  LogGroupPostToSlackLambdaBe:
     Type: AWS::Logs::LogGroup
     Properties:
-      LogGroupName: !Sub "/aws/lambda/${PostToSlackLambda}"
+      LogGroupName: !Sub "/aws/lambda/${PostToSlackLambdaBe}"
       # Explicit retention time
       RetentionInDays: 7
 
@@ -507,8 +507,8 @@ Outputs:
   UserPoolDomainTarget:
     Description: "The CloudFront distribution target for A and AAAA aliases."
     Value: !GetAtt UPDomain.CloudFrontDistribution
-  SignupSNSMessages:
-    Value: !Ref SignupSNSMessages
+  SignupSNSMessagesFifo:
+    Value: !Ref SignupSNSMessagesFifo
     Description: The SNS topic for user signup messages
 
 
