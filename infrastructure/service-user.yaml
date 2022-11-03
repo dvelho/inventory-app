@@ -82,16 +82,11 @@ Resources:
             Queue: !GetAtt WelcomeSqsQueue.Arn
             BatchSize: 1
       Tags:
-        - Key: Environment
-          Value: !Ref Environment
-        - Key: Tenant
-          Value: !Ref TenantAggregatorName
-        - Key: Service
-          Value: "user"
-        - Key: Type
-          Value: "lambda"
-        - Key: Name
-          Value: "welcome"
+        Environment: !Ref Environment
+        Tenant: !Ref TenantAggregatorName
+        Service: "user"
+        Type: "lambda"
+        Name: "welcome"
 
   WelcomeQueueSnsWelcomeSubscription: #WelcomeSnsMessages
     Type: AWS::SNS::Subscription
@@ -116,14 +111,10 @@ Resources:
       ContentBasedDeduplication: true
 
       Tags:
-        - Key: Environment
-          Value: !Ref Environment
-        - Key: TenantAggregatorName
-          Value: !Ref TenantAggregatorName
-        - Key: Service
-          Value: "user"
-        - Key: Type
-          Value: "queue"
+        Environment: !Ref Environment
+        TenantAggregatorName: !Ref TenantAggregatorName
+        Service: "user"
+        Type: "queue"
 
   WelcomeDeadLetterQueue:
     Type: AWS::SQS::Queue
@@ -137,14 +128,10 @@ Resources:
       FifoQueue: true
       ContentBasedDeduplication: true
       Tags:
-        - Key: Environment
-          Value: !Ref Environment
-        - Key: TenantAggregatorName
-          Value: !Ref TenantAggregatorName
-        - Key: Service
-          Value: "user"
-        - Key: Type
-          Value: "dead-queue"
+        Environment: !Ref Environment
+        TenantAggregatorName: !Ref TenantAggregatorName
+        Service: "user"
+        Type: "dead-queue"
 
   WelcomeTriggerSNSMessagesPermission:
     Type: AWS::Lambda::Permission
@@ -167,16 +154,11 @@ Resources:
             Action:
               - sts:AssumeRole
       Tags:
-        - Key: Environment
-          Value: !Ref Environment
-        - Key: TenantAggregatorName
-          Value: !Ref TenantAggregatorName
-        - Key: Service
-          Value: "user"
-        - Key: Type
-          Value: "role"
-        - Key: Name
-          Value: "execution"
+        Environment: !Ref Environment
+        TenantAggregatorName: !Ref TenantAggregatorName
+        Service: "user"
+        Type: "role"
+        Name: "execution"
       Path: "/"
       Policies:
         - PolicyName: root

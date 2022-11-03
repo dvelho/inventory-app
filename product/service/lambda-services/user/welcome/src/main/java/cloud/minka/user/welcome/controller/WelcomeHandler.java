@@ -30,6 +30,7 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
     @Override
     public JsonNode handleRequest(SNSEvent input, Context context) {
 
+        //test
         System.out.println("event::user::welcome::request:" + mapper.valueToTree(input));
         if (true) {
             return mapper.createObjectNode().put("message", "Welcome to Minka");
