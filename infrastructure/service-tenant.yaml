@@ -423,9 +423,9 @@ Resources:
           Properties:
             Queue: !Ref SignupSQSQueue
             BatchSize: 1
-        Environment:
-          Variables:
-            SLACK_WEBHOOK_URL: "!Ref SlackWebhookUrl"
+      Environment:
+        Variables:
+          SLACK_WEBHOOK_URL: "!Ref SlackWebhookUrl"
 
       InlineCode: |
         const https = require('https');
