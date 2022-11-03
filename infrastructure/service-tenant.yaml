@@ -363,12 +363,12 @@ Resources:
   SignupSQSSNSSubscription:
     Type: AWS::SNS::Subscription
     Properties:
-      Endpoint: !GetAtt SignupSQSQueue.Arn
+      Endpoint: !GetAtt SlackQueue.Arn
       Protocol: sqs
       TopicArn: !Ref SignupSNSMessagesFifo
 
   
-  SignupSQSQueue:
+  SlackQueue:
     Type: AWS::SQS::Queue
     Properties:
       QueueName: !Sub ${Environment}-tenant-slack-messages-${TenantAggregatorName}.fifo
@@ -421,7 +421,7 @@ Resources:
         PostToSlack:
           Type: SQS
           Properties:
-            Queue: !GetAtt SignupSQSQueue.Arn
+            Queue: !GetAtt SlackQueue.Arn
             BatchSize: 1
       Environment:
         Variables:
