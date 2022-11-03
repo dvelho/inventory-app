@@ -21,17 +21,26 @@
       <groupId>io.quarkiverse.amazonservices</groupId>
       <artifactId>quarkus-amazon-sns</artifactId>
     </dependency>
-    <dependency>
-      <groupId>software.amazon.awssdk</groupId>
-      <artifactId>netty-nio-client</artifactId>
-    </dependency>
-    <dependency>
-
-      <groupId>io.soabase.record-builder</groupId>
-      <artifactId>record-builder-processor</artifactId>
-      <version>34</version>
-      <scope>provided</scope>
-    </dependency>
+      <dependency>
+          <groupId>software.amazon.awssdk</groupId>
+          <artifactId>netty-nio-client</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>io.soabase.record-builder</groupId>
+          <artifactId>record-builder-processor</artifactId>
+          <version>34</version>
+          <scope>provided</scope>
+      </dependency>
+      <dependency>
+          <groupId>cloud.minka.product.service.model</groupId>
+          <artifactId>cognito</artifactId>
+          <version>0.0.2-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+          <groupId>cloud.minka.product.service.model</groupId>
+          <artifactId>tenant</artifactId>
+          <version>0.0.2-SNAPSHOT</version>
+      </dependency>
   </dependencies>
   <build>
     <plugins>

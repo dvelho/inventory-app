@@ -1,4 +1,4 @@
-package cloud.minka.cognito.signup.model.cloudformation;
+package cloud.minka.service.model.tenant;
 
 public enum TenantRegion {
     EU_WEST_1,

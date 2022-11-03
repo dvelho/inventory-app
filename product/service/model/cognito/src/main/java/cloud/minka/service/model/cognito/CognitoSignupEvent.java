@@ -1,10 +1,8 @@
-package cloud.minka.cognito.signup.model.cloudformation;
+package cloud.minka.service.model.cognito;
 
 
 import com.fasterxml.jackson.databind.JsonNode;
-import io.soabase.recordbuilder.core.RecordBuilder;
 
-@RecordBuilder
 public record CognitoSignupEvent(
         String version,
         String region,

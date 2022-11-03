@@ -1,9 +1,10 @@
 package cloud.minka.cognito.signup.controller;
 
-import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
-import cloud.minka.cognito.signup.model.cloudformation.TriggerSource;
+
 import cloud.minka.cognito.signup.service.PostConfirmationService;
 import cloud.minka.cognito.signup.service.PreSignupProcessingService;
+import cloud.minka.service.model.cognito.CognitoSignupEvent;
+import cloud.minka.service.model.cognito.TriggerSource;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,5 +38,5 @@ public final class SignupHandler implements RequestHandler<CognitoSignupEvent, C
             throw e;
         }
     }
-    //testing git actio
+
 }

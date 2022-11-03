@@ -15,5 +15,6 @@
   <description>Aggregator only pom, should not contain any configuration beyond the modules that should be built.</description>
   <modules>
     <module>tenants-api</module>
+    <module>common-api</module>
   </modules>
 </project>

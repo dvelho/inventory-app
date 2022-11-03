@@ -1,13 +1,21 @@
 package cloud.minka.cognito.signup.converter;
 
-import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
-import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEventBuilder;
+
+import cloud.minka.service.model.cognito.CognitoSignupEvent;
+import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantStatus;
+import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.soabase.recordbuilder.core.RecordBuilder;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+
+@RecordBuilder.Include({
+        CognitoSignupEvent.class    // generates a record builder for ImportedRecord
+})
 
 @ApplicationScoped
 public class CognitoSignupEventConverter {
@@ -47,5 +55,16 @@ public class CognitoSignupEventConverter {
                 .request(input.request())
                 .response(mapper.createObjectNode())
                 .build();
+    }
+
+    public Tenant toTenant(CognitoSignupEvent input) {
+        return new Tenant(
+                input.userName(),
+                input.userName(),
+                input.userName(),
+                input.userName(),
+                TenantStatus.ACTIVE,
+                TenantType.HOSTED
+        );
     }
 }

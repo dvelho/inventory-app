@@ -1,10 +1,10 @@
 package cloud.minka.cognito.signup.service;
 
 import cloud.minka.cognito.signup.converter.CognitoSignupEventConverter;
-import cloud.minka.cognito.signup.model.cloudformation.CognitoSignupEvent;
-import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
+import cloud.minka.service.model.cognito.CognitoSignupEvent;
+import cloud.minka.service.model.tenant.TenantStatus;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -43,7 +43,7 @@ public final class PreSignupProcessingService {
      */
     public CognitoSignupEvent process(CognitoSignupEvent input) {
 
-       //tenantRepository.createTenantTable(tableName);
+        //tenantRepository.createTenantTable(tableName);
         String userEmail = input.request().get("userAttributes").get("email").asText();
         String tenantDomain = userEmail.split("@")[1];
 
@@ -63,7 +63,7 @@ public final class PreSignupProcessingService {
         System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
         CognitoSignupEvent responseSuccess = cognitoSignupEventConverter.response(input);
         if (tenant.item().size() == 0) {
-            System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s%n", tenantDomain);
+            System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s", tenantDomain);
             tenantRepository.insertTenantIntoTable(tableName, tenantDomain, userEmail);
             System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
             return responseSuccess;
@@ -77,7 +77,7 @@ public final class PreSignupProcessingService {
                     throw new IllegalArgumentException("Your domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
             case ACTIVE -> {
                 System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
-                yield  responseSuccess;
+                yield responseSuccess;
             }
             default -> throw new IllegalArgumentException("The tenant is not in a valid state");
         };

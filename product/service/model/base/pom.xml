@@ -3,14 +3,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>cloud.minka.product.service</groupId>
+        <groupId>cloud.minka.product</groupId>
+        <artifactId>parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <artifactId>model</artifactId>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../../parent</relativePath>
     </parent>
     <groupId>cloud.minka.product.service.model</groupId>
     <artifactId>base</artifactId>
     <version>0.0.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>Product Services Model Base</name>
-
 </project>

@@ -76,10 +76,75 @@ Resources:
           #TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           #SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessages
       Events:
-        SnsFromCognito:
-          Type: SNS
+        SqsEvent:
+          Type: SQS
           Properties:
-            Topic: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${Environment}-tenant-signup-messages-${TenantAggregatorName}
+            Queue: !GetAtt WelcomeSqsQueue.Arn
+            BatchSize: 1
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Tenant
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "lambda"
+        - Key: Name
+          Value: "welcome"
+
+  WelcomeQueueSnsWelcomeSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Endpoint: !GetAtt WelcomeSqsQueue.Arn
+      Protocol: sqs
+      TopicArn: !Sub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:${Environment}-tenant-signup-messages-${TenantAggregatorName}
+
+  WelcomeSqsQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}
+      DelaySeconds: 0
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 0
+      VisibilityTimeout: 30
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt WelcomeDeadLetterQueue.Arn
+        maxReceiveCount: 5
+      FifoQueue: true
+      ContentBasedDeduplication: true
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "queue"
+
+  WelcomeDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}-dead-letter
+      DelaySeconds: 0
+      MaximumMessageSize: 262144
+      MessageRetentionPeriod: 345600
+      ReceiveMessageWaitTimeSeconds: 0
+      VisibilityTimeout: 30
+      FifoQueue: true
+      ContentBasedDeduplication: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "dead-queue"
 
   WelcomeTriggerSNSMessagesPermission:
     Type: AWS::Lambda::Permission
@@ -101,6 +166,17 @@ Resources:
                 - lambda.amazonaws.com
             Action:
               - sts:AssumeRole
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+        - Key: Service
+          Value: "user"
+        - Key: Type
+          Value: "role"
+        - Key: Name
+          Value: "execution"
       Path: "/"
       Policies:
         - PolicyName: root

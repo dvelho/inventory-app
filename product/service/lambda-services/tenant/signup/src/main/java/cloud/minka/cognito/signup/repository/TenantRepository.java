@@ -1,6 +1,7 @@
 package cloud.minka.cognito.signup.repository;
 
-import cloud.minka.cognito.signup.model.cloudformation.TenantStatus;
+
+import cloud.minka.service.model.tenant.TenantStatus;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 
@@ -8,7 +9,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Map;
 
-import static cloud.minka.cognito.signup.model.cloudformation.TenantStatus.PENDING_CONFIGURATION;
+import static cloud.minka.service.model.tenant.TenantStatus.PENDING_CONFIGURATION;
+
 
 @ApplicationScoped
 public class TenantRepository {

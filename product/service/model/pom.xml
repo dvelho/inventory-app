@@ -2,13 +2,23 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <packaging>pom</packaging>
+    <parent>
+        <groupId>cloud.minka.product</groupId>
+        <artifactId>parent</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../../parent</relativePath>
+    </parent>
     <groupId>cloud.minka.product.service</groupId>
     <artifactId>model</artifactId>
     <version>0.0.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
     <name>Product Services Model</name>
+    <description>Aggregator only pom, should not contain any configuration beyond the modules that should be built.
+    </description>
     <modules>
         <module>user</module>
         <module>base</module>
+        <module>cognito</module>
+        <module>tenant</module>
     </modules>
 </project>

@@ -1,4 +1,4 @@
-package cloud.minka.cognito.signup.model.cloudformation;
+package cloud.minka.service.model.cognito;
 
 public enum TriggerSource {
     PreSignUp_ExternalProvider,
