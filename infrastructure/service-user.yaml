@@ -99,7 +99,7 @@ Resources:
   WelcomeSqsQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}
+      QueueName: !Sub ${Environment}-welcome-queue-${TenantAggregatorName}
       DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600
@@ -124,7 +124,7 @@ Resources:
   WelcomeDeadLetterQueue:
     Type: AWS::SQS::Queue
     Properties:
-      QueueName: !Sub ${Environment}-welcome-native-${TenantAggregatorName}-dead-letter
+      QueueName: !Sub ${Environment}-welcome-dl_queue-${TenantAggregatorName}
       DelaySeconds: 0
       MaximumMessageSize: 262144
       MessageRetentionPeriod: 345600
