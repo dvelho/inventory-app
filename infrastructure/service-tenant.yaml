@@ -339,7 +339,7 @@ Resources:
         AttributeName: TTL
         Enabled: true
   
-  CognitoTenantAdminGroup:
+  CognitoTenantAdminGroup: # This is the group that will be created in the tenant's user pool
     Type: AWS::Cognito::UserPoolGroup
     Properties:
       GroupName: tenant.main.admin

@@ -93,7 +93,7 @@ Resources:
         - Key: Name
           Value: "welcome"
 
-  WelcomeQueueSnsWelcomeSubscription:
+  WelcomeQueueSnsWelcomeSubscription: #WelcomeSnsMessages
     Type: AWS::SNS::Subscription
     Properties:
       Endpoint: !GetAtt WelcomeSqsQueue.Arn
