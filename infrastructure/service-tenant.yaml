@@ -350,9 +350,8 @@ Resources:
   SignupSNSMessages:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
-      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}-fifo
-      FifoTopic: true
+      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
+      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
       ContentBasedDeduplication: true
       Tags:
         - Key: Environment
