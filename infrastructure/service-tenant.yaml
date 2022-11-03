@@ -388,22 +388,23 @@ Resources:
       FunctionName: !GetAtt PostSlackLambdaBe.Arn
       Principal: sns.amazonaws.com
 
-  SignupSNSMessagesFifoTopicPolicy:
-    Type: 'AWS::SNS::TopicPolicy'
+  SlackSQSMessagesFifoTopicPolicy:
+    Type: AWS::SQS::QueuePolicy
     Properties:
-      Topics:
-        - !Ref SignupSNSMessagesFifo
       PolicyDocument:
         Version: '2012-10-17'
         Statement:
           - Effect: Allow
-            Action: 'sns:Publish'
-            Resource: !Ref SignupSNSMessagesFifo
             Principal:
-              AWS: '*'
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt SlackQueue.Arn
             Condition:
-              ArnLike:
-                AWS:SourceArn: !Sub 'arn:aws:*:*:${AWS::AccountId}:*'
+              ArnEquals:
+                aws:SourceArn: !Ref SignupSNSMessagesFifo
+      Queues:
+        - !Ref SlackQueue
+
 
   PostSlackLambdaBe:
     Type: AWS::Serverless::Function
