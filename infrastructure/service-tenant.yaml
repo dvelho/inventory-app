@@ -421,7 +421,7 @@ Resources:
         PostToSlack:
           Type: SQS
           Properties:
-            Queue: !Ref SignupSQSQueue
+            Queue: !GetAtt SignupSQSQueue.Arn
             BatchSize: 1
       Environment:
         Variables:
