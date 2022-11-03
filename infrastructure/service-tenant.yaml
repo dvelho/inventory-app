@@ -350,8 +350,15 @@ Resources:
   SignupSNSMessages:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
-      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}
+      TopicName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}.fifo
+      DisplayName: !Sub ${Environment}-tenant-signup-messages-${TenantAggregatorName}-fifo
+      FifoTopic: true
+      ContentBasedDeduplication: true
+      Tags:
+        - Key: Environment
+        Value: !Ref Environment
+                 - Key: TenantAggregatorName
+        Value: !Ref TenantAggregatorName
 
   SignupFunctionInvokePermission:
     Type: 'AWS::Lambda::Permission'
@@ -448,15 +455,14 @@ Resources:
           return response;
         };
 
-
-
-
   LogGroupPostToSlackLambda:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub "/aws/lambda/${PostToSlackLambda}"
       # Explicit retention time
       RetentionInDays: 7
+
+
 #Creates a role that allows Cognito to send SNS messages
 Outputs:
   CognitoUserPoolID:
