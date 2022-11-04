@@ -1,7 +1,6 @@
 package cloud.minka.cognito.signup.repository;
 
 
-import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.service.model.tenant.TenantStatus;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
@@ -9,8 +8,6 @@ import software.amazon.awssdk.services.dynamodb.model.*;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Map;
-
-import static cloud.minka.service.model.tenant.TenantStatus.PENDING_CONFIGURATION;
 
 
 @ApplicationScoped
@@ -62,26 +59,7 @@ public class TenantRepository {
                 .build();
     }
 
-    public void insertTenantIntoTable(String tenantTable, Tenant tenant) {
-
-        //Insert the tenant on dynamodb
-        AttributeValue PK = AttributeValue.builder().s(tenant.PK()).build();
-        AttributeValue SK = AttributeValue.builder().s(tenant.SK()).build();
-        AttributeValue adminEmail = AttributeValue.builder().s(tenant.adminEmail()).build();
-        AttributeValue status = AttributeValue.builder().s(String.valueOf(PENDING_CONFIGURATION)).build();
-        AttributeValue type = AttributeValue.builder().s(String.valueOf(tenant.type())).build();
-        AttributeValue userPoolId = AttributeValue.builder().s(tenant.userPoolId()).build();
-        PutItemRequest request = PutItemRequest.builder()
-                .tableName(tenantTable)
-                .item(Map.of(
-                        "PK", PK,
-                        "SK", SK,
-                        "adminEmail",
-                        adminEmail,
-                        "status", status,
-                        "type", type,
-                        "userPoolId", userPoolId))
-                .build();
+    public void insertTenantIntoTable(PutItemRequest request) {
         client.putItem(request);
     }
 

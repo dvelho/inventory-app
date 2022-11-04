@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -20,7 +21,6 @@ import java.util.Map;
 @RecordBuilder.Include({
         CognitoSignupEvent.class, Tenant.class    // generates a record builder for ImportedRecord
 })
-
 @ApplicationScoped
 public class Converter {
     @Inject
@@ -72,6 +72,20 @@ public class Converter {
                 TenantType.valueOf(tenantMap.get("type").s()),
                 tenantMap.get("userPoolId").s()
         );
+    }
+
+    public PutItemRequest convertTenantToPutItemRequest(String table, Tenant tenant) {
+        return PutItemRequest.builder()
+                .tableName(table)
+                .item(Map.of(
+                        "PK", AttributeValue.builder().s(tenant.PK()).build(),
+                        "SK", AttributeValue.builder().s(tenant.SK()).build(),
+                        "adminEmail", AttributeValue.builder().s(tenant.adminEmail()).build(),
+                        "status", AttributeValue.builder().s(tenant.status().name()).build(),
+                        "type", AttributeValue.builder().s(tenant.type().name()).build(),
+                        "userPoolId", AttributeValue.builder().s(tenant.userPoolId()).build()
+                ))
+                .build();
     }
 
     public SignupUser convertCognitoSignupEventToSignupUser(CognitoSignupEvent input, boolean isTenantAdmin) {

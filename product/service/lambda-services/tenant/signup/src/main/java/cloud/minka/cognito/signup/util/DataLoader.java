@@ -1,5 +1,6 @@
 package cloud.minka.cognito.signup.util;
 
+import cloud.minka.cognito.signup.converter.Converter;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.tenant.Tenant;
@@ -26,6 +27,9 @@ public class DataLoader {
     @Inject
     CognitoTenantRepository cognitoTenantRepository;
 
+    @Inject
+    Converter converter;
+
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -50,7 +54,8 @@ public class DataLoader {
                 HOSTED,
                 "user-pool-id");
         tenantRepository.createTenantTable(tableName);
-        tenantRepository.insertTenantIntoTable(tableName, tenant);
+
+        tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenant));
       /*   CreateUserPoolResponse response = cognitoTenantRepository.createUSerPool(tenantDomain);
         LOGGER.info("User pool created: " + response.userPool().id());*/
     }

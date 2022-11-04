@@ -1,6 +1,7 @@
 package cloud.minka.cognito.signup.service;
 
 import cloud.minka.cognito.signup.converter.Converter;
+import cloud.minka.cognito.signup.converter.TenantBuilder;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
@@ -8,6 +9,7 @@ import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.service.model.tenant.TenantStatus;
 import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.soabase.recordbuilder.core.RecordBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
@@ -19,6 +21,7 @@ import java.util.List;
 
 
 @ApplicationScoped
+@RecordBuilder.Include({Tenant.class})// generates a record builder for ImportedRecord
 public final class PreSignupProcessingService {
 
 
@@ -64,25 +67,24 @@ public final class PreSignupProcessingService {
         GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         CognitoSignupEvent responseSuccess = converter.response(input);
         Tenant tenant;
-        if (tenantDb.item().size() == 0) {
-            tenant = new Tenant(
-                    tenantDomain,
-                    tenantDomain,
-                    userEmail,
-                    TenantStatus.PENDING_CONFIGURATION,
-                    TenantType.HOSTED,
-                    input.userPoolId());
+        if (tenantDb.item().size() == 0) { // tenant does not exist
+            tenant = TenantBuilder.builder()
+                    .PK(tenantDomain)
+                    .SK(tenantDomain)
+                    .adminEmail(userEmail)
+                    .status(TenantStatus.PENDING_CONFIGURATION)
+                    .type(TenantType.HOSTED)
+                    .userPoolId(input.userPoolId())
+                    .build();
 
             System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s", tenantDomain);
-            tenantRepository.insertTenantIntoTable(tableName, tenant);
+            tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenant));
             System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
             return responseSuccess;
         }
 
         tenant = converter.convertGetItemResponseToTenant(tenantDb);
-
         //Check if the tenant is in pending configuration
-
         return switch (tenant.status()) {
             case PENDING_CONFIGURATION ->
                     throw new IllegalArgumentException("Your domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
@@ -99,8 +101,7 @@ public final class PreSignupProcessingService {
         System.out.println("event::cognito::signup::request::tenant::domain::free::provider::check");
         try {
             InputStream ins = PreSignupProcessingService.class.getResourceAsStream(resourcePath);
-            List list = objectMapper.readValue(ins, List.class);
-            return list.contains(tenantDomain);
+            return objectMapper.readValue(ins, List.class).contains(tenantDomain);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
