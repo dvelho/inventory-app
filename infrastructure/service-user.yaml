@@ -146,6 +146,23 @@ Resources:
       Principal: sqs.amazonaws.com
       SourceArn: !GetAtt WelcomeSqsQueue.Arn
 
+  SlackSQSMessagesFifoTopicPolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt WelcomeSqsQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref WelcomeQueueSnsWelcomeSubscription
+      Queues:
+        - !Ref WelcomeSqsQueue
+
   UserExecutionRole:
     Type: AWS::IAM::Role
     Properties:
