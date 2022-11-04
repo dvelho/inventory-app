@@ -15,6 +15,7 @@ import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.HashMap;
+import java.util.UUID;
 
 
 @ApplicationScoped
@@ -99,6 +100,8 @@ public class PostConfirmationService {
                                     .dataType("String").stringValue(String.valueOf(signupUser.isTenantAdmin()))
                                     .build());
                         }})
+                        .messageDeduplicationId(UUID.randomUUID().toString())
+                        .messageGroupId(signupUser.userName())
                         .build());
     }
 
