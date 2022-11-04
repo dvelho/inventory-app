@@ -17,7 +17,6 @@ public class TenantRepository {
 
     public void createTenantTable(String tenantTable) {
         try {
-            //Create the table with primary key PK and SK as partition and sort key
             client.createTable(createTenantTableRequest(tenantTable));
         } catch (ResourceInUseException e) {
             System.out.println("event::cognito::signup::request::tenant::table::exists:" + e.getMessage());
