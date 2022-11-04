@@ -2,7 +2,7 @@ package cloud.minka.cognito.signup.converter;
 
 
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
-import cloud.minka.service.model.tenant.SignupUser;
+import cloud.minka.service.model.cognito.SignupUser;
 import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.service.model.tenant.TenantStatus;
 import cloud.minka.service.model.tenant.TenantType;

@@ -4,7 +4,7 @@ import cloud.minka.cognito.signup.converter.Converter;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
-import cloud.minka.service.model.tenant.SignupUser;
+import cloud.minka.service.model.cognito.SignupUser;
 import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.service.model.tenant.TenantStatus;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
