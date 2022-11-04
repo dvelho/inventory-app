@@ -16,14 +16,12 @@ public class TenantRepository {
     DynamoDbClient client;
 
     public void createTenantTable(String tenantTable) {
-        //Create the tenant on dynamodb
         try {
             //Create the table with primary key PK and SK as partition and sort key
             client.createTable(createTenantTableRequest(tenantTable));
         } catch (ResourceInUseException e) {
             System.out.println("event::cognito::signup::request::tenant::table::exists:" + e.getMessage());
         }
-
     }
 
     private CreateTableRequest createTenantTableRequest(String tenantTable) {
