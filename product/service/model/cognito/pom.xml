@@ -12,5 +12,4 @@
     <artifactId>cognito</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>Product Services Model Cognito</name>
-
 </project>
