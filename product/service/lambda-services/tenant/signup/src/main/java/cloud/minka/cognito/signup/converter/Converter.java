@@ -9,6 +9,7 @@ import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.soabase.recordbuilder.core.RecordBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -21,6 +22,7 @@ import java.util.Map;
 @RecordBuilder.Include({
         CognitoSignupEvent.class, Tenant.class    // generates a record builder for ImportedRecord
 })
+@RegisterForReflection(targets = {CognitoSignupEvent.class, Tenant.class, SignupUser.class})
 @ApplicationScoped
 public class Converter {
     @Inject
