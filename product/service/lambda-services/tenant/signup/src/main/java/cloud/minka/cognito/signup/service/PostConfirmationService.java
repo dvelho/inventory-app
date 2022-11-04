@@ -1,6 +1,8 @@
 package cloud.minka.cognito.signup.service;
 
 import cloud.minka.cognito.signup.converter.Converter;
+import cloud.minka.cognito.signup.exception.TenantNotFoundException;
+import cloud.minka.cognito.signup.exception.TentantStatusInvalidException;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
@@ -38,24 +40,48 @@ public class PostConfirmationService {
     String topicArn;
 
     public CognitoSignupEvent process(CognitoSignupEvent input) {
-        String tenantDomain = input.request().get("userAttributes").get("email").asText().split("@")[1];
-        System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
-        GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
-        if (!tenant.hasItem()) {
-            throw new IllegalArgumentException("Tenant not found");
+        try {
+            String tenantDomain = input.request().get("userAttributes").get("email").asText().split("@")[1];
+            System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
+            GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
+            if (!tenant.hasItem()) {
+                throw new TenantNotFoundException("Tenant not found");
+            }
+            Tenant tenantModel = converter.convertGetItemResponseToTenant(tenant);
+            boolean isTenantAdmin = tenantModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
+            SignupUser signupUser = converter.convertCognitoSignupEventToSignupUser(input, isTenantAdmin);
+            switch (tenantModel.status()) {
+                case PENDING_CONFIGURATION -> finishTenantAdminSetup(tenantModel, signupUser);
+                case ACTIVE -> finishTenantUserSetup(tenantModel, signupUser);
+                default -> throw new TentantStatusInvalidException("The tenant is not in a valid state");
+            }
+            sendSNSMessage(tenantModel, signupUser);
+            return converter.responsePostSignup(input);
+        } catch (TenantNotFoundException e) {
+            System.out.println("event::cognito::signup::request::error:" + e.getMessage());
+            deleteCognitoUser(input, true);
+            throw e;
+        } catch (TentantStatusInvalidException e) {
+            System.out.println("event::cognito::signup::request::error:" + e.getMessage());
+            deleteCognitoUser(input, false);
+            throw e;
+        } catch (Exception e) {
+            System.out.println("event::cognito::signup::request::error:" + e.getMessage());
+            deleteCognitoUser(input, false);
+            throw e;
         }
-        Tenant tenantModel = converter.convertGetItemResponseToTenant(tenant);
-        boolean isTenantAdmin = tenantModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
-        SignupUser signupUser = converter.convertCognitoSignupEventToSignupUser(input, isTenantAdmin);
-        sendSNSMessage(tenantModel, signupUser);
-        switch (tenantModel.status()) {
-            case PENDING_CONFIGURATION -> finishTenantAdminSetup(tenantModel, signupUser);
-            case ACTIVE -> finishTenantUserSetup(tenantModel, signupUser);
-            default -> throw new IllegalArgumentException("The tenant is not in a valid state");
+    }
+
+    private void deleteCognitoUser(CognitoSignupEvent input, boolean deleteGroup) {
+        System.out.println("event::cognito::signup::request::delete::user:" + input.userName());
+        String username = input.userName();
+        cognitoTenantRepository.deleteUser(username);
+        if (deleteGroup) {
+            String tenantDomain = input.request().get("userAttributes").get("email").asText().split("@")[1];
+            System.out.println("event::cognito::signup::request::delete::group:" + "tenant.%s.users".formatted(tenantDomain));
+            cognitoTenantRepository.deleteGroup("tenant.%s.users".formatted(tenantDomain));
         }
-        ;
-        sendSNSMessage(tenantModel, signupUser);
-        return converter.responsePostSignup(input);
+
     }
 
     public void finishTenantAdminSetup(Tenant tenant, SignupUser signupUser) {

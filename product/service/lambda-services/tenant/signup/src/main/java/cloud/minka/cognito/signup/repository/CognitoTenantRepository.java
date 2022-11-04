@@ -88,4 +88,21 @@ public class CognitoTenantRepository {
     }
 
 
+    public void deleteUser(String userName) {
+        cognitoClient.adminDeleteUser(deleteUserRequest(userName));
+    }
+
+    private Consumer<AdminDeleteUserRequest.Builder> deleteUserRequest(String userName) {
+        return builder -> builder
+                .username(userName);
+    }
+
+    public void deleteGroup(String groupName) {
+        cognitoClient.deleteGroup(deleteGroupRequest(groupName));
+    }
+
+    private Consumer<DeleteGroupRequest.Builder> deleteGroupRequest(String groupName) {
+        return builder -> builder
+                .groupName(groupName);
+    }
 }
