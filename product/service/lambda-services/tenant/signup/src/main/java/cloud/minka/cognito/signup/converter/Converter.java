@@ -97,8 +97,13 @@ public class Converter {
     }
 
     public String convertTenantAndSignupUserToSNSMessage(Tenant tenant, SignupUser signupUser) {
-        JsonNode tenantJson = mapper.valueToTree(tenant);
+        System.out.println("AAAAAAAAAtenant: " + tenant);
+        System.out.println("AAAAAAAAAsignupUser: " + signupUser);
         JsonNode signupUserJson = mapper.valueToTree(signupUser);
+        System.out.println("AAAAAAAAAsignupUserJson: " + signupUserJson);
+        JsonNode tenantJson = mapper.valueToTree(tenant);
+        System.out.println("AAAAAAAAAtenantJson: " + tenantJson);
+        ;
         return "{\"tenant\": " + tenantJson.toString() + ", \"signupUser\": " + signupUserJson.toString() + "}";
 
     }
