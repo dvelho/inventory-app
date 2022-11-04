@@ -12,12 +12,5 @@
     <artifactId>cognito</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>Product Services Model Cognito</name>
-    <dependencies>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.13.4.2</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+
 </project>
