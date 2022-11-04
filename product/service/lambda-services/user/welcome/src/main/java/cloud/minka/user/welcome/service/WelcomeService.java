@@ -1,5 +1,7 @@
 package cloud.minka.user.welcome.service;
 
+import cloud.minka.service.model.cognito.SignupUser;
+import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.user.welcome.repository.SesEmailService;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -63,29 +65,26 @@ public class WelcomeService {
         }
 
         JsonNode messageAttributes = body.get("MessageAttributes");
-        String tenantId = messageAttributes.get("tenantId").get("Value").asText();
-        String userName = messageAttributes.get("userName").get("Value").asText();
-        String userEmail = messageAttributes.get("userEmail").get("Value").asText();
+        String messageType = messageAttributes.get("MESSAGE_TYPE").get("Value").asText();
         String tenantDomain = messageAttributes.get("tenantDomain").get("Value").asText();
         boolean isTenantAdmin = Boolean.parseBoolean(messageAttributes.get("isTenantAdmin").get("Value").asText());
-        String messageType = messageAttributes.get("SNS_MESSAGE_TYPE").get("Value").asText();
+        JsonNode messageBody = null;
+        try {
+            messageBody = mapper.readTree(body.get("Message").asText());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        JsonNode tenantJson = messageBody.get("tenant");
+        JsonNode signupUserJson = messageBody.get("signupUser");
+        Tenant tenant = mapper.convertValue(tenantJson, Tenant.class);
+        SignupUser signupUser = mapper.convertValue(signupUserJson, SignupUser.class);
+
+
         System.out.println("event::user::welcome::request:" + body);
 
-        //need  refactor PostConfirmationService body should contain all data
+
+        sendWelcomeEmail(signupUser.email());
 
 
-       /* JsonNode jsonNode = message.getRecords().get(0).getBody();
-        SQSEvent.MessageAttribute messageAttributes = message.getRecords().get(0).getMessageAttributes();
-        message = message.get("MessageAttributes");
-        String tenantId = message.get("tenantId").asText();
-        String userName = message.get("userName").asText();
-        String userEmail = message.get("userEmail").asText();
-        String tenantDomain = message.get("tenantDomain").asText();
-        boolean isTenantAdmin = message.get("isTenantAdmin").asBoolean();
-        if (isTenantAdmin) {
-            sendWelcomeEmail(userEmail);
-            return;
-        }
-        sendWelcomeEmail(userEmail);*/
     }
 }
