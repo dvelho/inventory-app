@@ -1,10 +1,10 @@
 package cloud.minka.user.welcome.service;
 
-import cloud.minka.service.model.cognito.SignupUser;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.user.welcome.converter.Converter;
+import cloud.minka.user.welcome.dto.MessageAttributes;
+import cloud.minka.user.welcome.dto.NewUserMessage;
 import cloud.minka.user.welcome.repository.SesEmailService;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
@@ -20,7 +20,6 @@ import java.io.InputStream;
 public class WelcomeService {
 
 
-    SesEmailService sesEmailService;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
     @ConfigProperty(name = "cloud.minka.tenant.sns.topic", defaultValue = "arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud")
@@ -34,11 +33,31 @@ public class WelcomeService {
     @ConfigProperty(name = "cloud.minka.email.welcome.html")
     String emailHtml;
 
-    ObjectMapper mapper = new ObjectMapper().registerModule(new JodaModule());
+    SesEmailService sesEmailService;
+    ObjectMapper mapper;
+    Converter converter;
 
     @Inject
-    public WelcomeService(SesEmailService sesEmailService) {
+    public WelcomeService(SesEmailService sesEmailService, ObjectMapper mapper, Converter converter) {
         this.sesEmailService = sesEmailService;
+        this.mapper = mapper.registerModule(new JodaModule());
+        this.converter = converter;
+    }
+
+
+    public void process(SQSEvent.SQSMessage message) {
+
+        JsonNode body = converter.bodyFromSQSMessage(message);
+        JsonNode messageAttributes = body.get("MessageAttributes");
+        MessageAttributes attributes = converter.messageAttributesFromJson(messageAttributes);
+
+        JsonNode messageBody = converter.messageFromBody(body.get("Message"));
+        NewUserMessage newUserMessage = converter.newUserMessageFromJson(messageBody);
+
+        System.out.println("event::user::welcome::request:" + body);
+        sendWelcomeEmail(newUserMessage.signupUser().email());
+
+
     }
 
     public void sendWelcomeEmail(String email) {
@@ -56,35 +75,4 @@ public class WelcomeService {
         }
     }
 
-    public void process(SQSEvent.SQSMessage message) {
-        JsonNode body = null;
-        try {
-            body = mapper.readTree(message.getBody());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        JsonNode messageAttributes = body.get("MessageAttributes");
-        String messageType = messageAttributes.get("MESSAGE_TYPE").get("Value").asText();
-        String tenantDomain = messageAttributes.get("tenantDomain").get("Value").asText();
-        boolean isTenantAdmin = Boolean.parseBoolean(messageAttributes.get("isTenantAdmin").get("Value").asText());
-        JsonNode messageBody = null;
-        try {
-            messageBody = mapper.readTree(body.get("Message").asText());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        JsonNode tenantJson = messageBody.get("tenant");
-        JsonNode signupUserJson = messageBody.get("signupUser");
-        Tenant tenant = mapper.convertValue(tenantJson, Tenant.class);
-        SignupUser signupUser = mapper.convertValue(signupUserJson, SignupUser.class);
-
-
-        System.out.println("event::user::welcome::request:" + body);
-
-
-        sendWelcomeEmail(signupUser.email());
-
-
-    }
 }
