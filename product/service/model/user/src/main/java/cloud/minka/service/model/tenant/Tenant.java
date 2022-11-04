@@ -6,7 +6,6 @@ public record Tenant(
         String SK,
         String adminEmail,
         TenantStatus status,
-        TenantType type,
-        String userPoolId
+        TenantType type
 ) {
 }

@@ -1,10 +1,12 @@
 package cloud.minka.cognito.signup.service;
 
-import cloud.minka.cognito.signup.converter.CognitoSignupEventConverter;
+import cloud.minka.cognito.signup.converter.Converter;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
+import cloud.minka.service.model.tenant.Tenant;
 import cloud.minka.service.model.tenant.TenantStatus;
+import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -29,7 +31,7 @@ public final class PreSignupProcessingService {
     @Inject
     CognitoTenantRepository cognitoTenantRepository;
     @Inject
-    CognitoSignupEventConverter cognitoSignupEventConverter;
+    Converter converter;
     @ConfigProperty(name = "cloud.minka.tenant.table", defaultValue = "dev-tenants-info-minka-cloud")
     String tableName;
 
@@ -59,20 +61,29 @@ public final class PreSignupProcessingService {
         System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
 
         // Check if the tenant exists
-        GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
-        System.out.println("event::cognito::signup::request::tenant::response:" + tenant);
-        CognitoSignupEvent responseSuccess = cognitoSignupEventConverter.response(input);
-        if (tenant.item().size() == 0) {
+        GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, tenantDomain);
+        CognitoSignupEvent responseSuccess = converter.response(input);
+        Tenant tenant;
+        if (tenantDb.item().size() == 0) {
+            tenant = new Tenant(
+                    tenantDomain,
+                    tenantDomain,
+                    userEmail,
+                    TenantStatus.PENDING_CONFIGURATION,
+                    TenantType.HOSTED,
+                    input.userPoolId());
+
             System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s", tenantDomain);
-            tenantRepository.insertTenantIntoTable(tableName, tenantDomain, userEmail);
+            tenantRepository.insertTenantIntoTable(tableName, tenant);
             System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
             return responseSuccess;
         }
 
+        tenant = converter.convertGetItemResponseToTenant(tenantDb);
+
         //Check if the tenant is in pending configuration
-        System.out.println("event::cognito::signup::request::tenant::exists");
-        TenantStatus tenantStatus = TenantStatus.valueOf(tenant.item().get("status").s());
-        return switch (tenantStatus) {
+
+        return switch (tenant.status()) {
             case PENDING_CONFIGURATION ->
                     throw new IllegalArgumentException("Your domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
             case ACTIVE -> {

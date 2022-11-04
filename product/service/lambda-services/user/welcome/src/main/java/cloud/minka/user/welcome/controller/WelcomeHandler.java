@@ -3,18 +3,17 @@ package cloud.minka.user.welcome.controller;
 import cloud.minka.user.welcome.service.WelcomeService;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.amazonaws.services.lambda.runtime.events.SNSEvent;
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Map;
 
 
 @Named("welcome-handler")
-public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> {
+public final class WelcomeHandler implements RequestHandler<SQSEvent, JsonNode> {
 
 
     ObjectMapper mapper = new ObjectMapper().registerModule(new JodaModule());
@@ -28,9 +27,13 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
 
 
     @Override
-    public JsonNode handleRequest(SNSEvent input, Context context) {
+    public JsonNode handleRequest(SQSEvent input, Context context) {
 
+        input.getRecords().forEach(record -> {
+            welcomeService.process(record);
+        });
 
+/*
         System.out.println("event::user::welcome::request:" + mapper.valueToTree(input));
         if (true) {
             return mapper.createObjectNode().put("message", "Welcome to Minka");
@@ -51,7 +54,7 @@ public final class WelcomeHandler implements RequestHandler<SNSEvent, JsonNode> 
             welcomeService.sendWelcomeEmail(userEmail);
 
 
-        });
+        });*/
         return mapper.valueToTree(input);
     }
 

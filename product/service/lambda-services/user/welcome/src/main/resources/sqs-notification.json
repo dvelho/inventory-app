@@ -1,0 +1,23 @@
+{
+  "Records": [
+    {
+      "messageId": "f382d96f-ecf6-4ad2-b550-336c14d13f74",
+      "receiptHandle": "AQEBckWfavlrSxYtebaACWw8rktuJqhTYKoMgb4wxyuUXgCFKiZgoI6clxiTZRRHr1D/0OY4U0aq/7TX1CY61QDZ3SxF+NOY/eLjrxOqpslPqgLTJBtbOEceXtMB1coT3H3Kbqug8EZ2vT36+OQhXbhyFudyXXEKW572I8Qjn1H9sKTEBtBdJ/oxSwMz0Km5z9nVMK8/FrDdB+fwGNGpSGNhm1yy+KgmQvXRGtvRCW5vIpCQzFCSfccX4FYKC1txH0py0oIGvhhUUdp95oLvOAXSfyMlqY4PLA7//JlMQ4T6fkJX7jfnKFbDnAK4EsXOQuZx",
+      "body": "{\n  \"Type\" : \"Notification\",\n  \"MessageId\" : \"7c258ef6-f230-544e-8b91-d528f38ce679\",\n  \"SequenceNumber\" : \"10000000000000011000\",\n  \"TopicArn\" : \"arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud.fifo\",\n  \"Subject\" : \"teste\",\n  \"Message\" : \"teste\",\n  \"Timestamp\" : \"2022-11-03T17:50:52.077Z\",\n  \"UnsubscribeURL\" : \"https://sns.eu-west-1.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:eu-west-1:631674088803:dev1-tenant-signup-messages-minka-cloud.fifo:a6994375-e170-43e3-a89c-0b82ea9a0330\",\n  \"MessageAttributes\" : {\n    \"teste\" : {\"Type\":\"String\",\"Value\":\"teste\"}\n  }\n}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1667497852201",
+        "SequenceNumber": "18873623523873007616",
+        "MessageGroupId": "teste",
+        "SenderId": "AIDAWYJAWPFU7SUQGUJC6",
+        "MessageDeduplicationId": "46070d4bf934fb0d4b06d9e2c46e346944e322444900a435d7d9a95e6d7435f5",
+        "ApproximateFirstReceiveTimestamp": "1667497852201"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "c727ae78c59918aff6fcc1cbee7d811b",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:eu-west-1:631674088803:dev1-tenant-slack-messages-minka-cloud.fifo",
+      "awsRegion": "eu-west-1"
+    }
+  ]
+}

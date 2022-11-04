@@ -19,24 +19,12 @@ public class CognitoTenantRepository {
 
     public boolean emailExists(String email, String userPoolId) {
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + email);
-        System.out.println("event::cognito::signup::request::tenant::email::exists:" + userPoolId);
-        //TODO: check if the email exists in the user pool  (userPoolId)
         ListUsersRequest listUsersRequest = ListUsersRequest.builder()
                 .userPoolId(userPoolId)
                 .filter("email = \"" + email + "\"")
                 .build();
-
         ListUsersResponse listUsersResponse = cognitoClient.listUsers(listUsersRequest);
         System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
-        listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
-        System.out.println("event::cognito::signup::request::tenant::email::DEBUG:");
-        listUsersRequest = ListUsersRequest.builder()
-                .userPoolId(userPoolId)
-                .build();
-        listUsersResponse = cognitoClient.listUsers(listUsersRequest);
-        System.out.println("event::cognito::signup::request::tenant::email::exists:" + listUsersResponse.users().size());
-        listUsersResponse.users().forEach(userType -> System.out.println("event::cognito::signup::request::tenant::email::exists:" + userType.username()));
-
         return listUsersResponse.users().size() > 0;
     }
 
@@ -85,7 +73,6 @@ public class CognitoTenantRepository {
                 .poolName(userPoolName);
     }
 
-    //Create UserPoolClient
     public void createUserPoolClient(String userPoolId, String clientName) {
         cognitoClient.createUserPoolClient(createUserPoolClientRequest(userPoolId, clientName));
     }
@@ -96,10 +83,9 @@ public class CognitoTenantRepository {
                 .clientName(clientName);
     }
 
-    //CreateUserPoolClientRequest
-
-    //CreateUserPoolDomainRequest
-    //CreateUserPoolClientRequest
+    public CreateUserPoolResponse createUSerPool(String tenantDomain) {
+        return cognitoClient.createUserPool(createUserPoolRequest(tenantDomain));
+    }
 
 
 }
