@@ -45,7 +45,7 @@ public class PostConfirmationService {
             System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
             GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
             if (!tenant.hasItem()) {
-                throw new TenantNotFoundException("TenantCreate not found");
+                throw new TenantNotFoundException("Tenant not found");
             }
             TenantCreate tenantCreateModel = converter.convertGetItemResponseToTenant(tenant);
             boolean isTenantAdmin = tenantCreateModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
