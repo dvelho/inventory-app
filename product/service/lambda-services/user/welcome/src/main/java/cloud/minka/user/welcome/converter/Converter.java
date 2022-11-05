@@ -1,7 +1,7 @@
 package cloud.minka.user.welcome.converter;
 
 import cloud.minka.service.model.cognito.SignupUser;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 import cloud.minka.user.welcome.dto.MessageAttributes;
 import cloud.minka.user.welcome.dto.NewUserMessage;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
@@ -14,7 +14,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-@RegisterForReflection(targets = {SignupUser.class, Tenant.class})
+@RegisterForReflection(targets = {SignupUser.class, TenantCreate.class})
 @ApplicationScoped
 public class Converter {
 
@@ -29,13 +29,13 @@ public class Converter {
         return mapper.convertValue(signupUserJson, SignupUser.class);
     }
 
-    public Tenant tenantFromJson(JsonNode tenantJson) {
-        return mapper.convertValue(tenantJson, Tenant.class);
+    public TenantCreate tenantFromJson(JsonNode tenantJson) {
+        return mapper.convertValue(tenantJson, TenantCreate.class);
     }
 
     public NewUserMessage newUserMessageFromJson(JsonNode newUserMessageJson) {
         JsonNode signupUserJson = newUserMessageJson.get("signupUser");
-        JsonNode tenantJson = newUserMessageJson.get("tenant");
+        JsonNode tenantJson = newUserMessageJson.get("tenantCreate");
         return new NewUserMessage(tenantFromJson(tenantJson), signupUserFromJson(signupUserJson));
     }
 

@@ -3,7 +3,7 @@ package cloud.minka.cognito.signup.util;
 import cloud.minka.cognito.signup.converter.Converter;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 import io.quarkus.arc.Priority;
 import io.quarkus.runtime.LaunchMode;
 import io.quarkus.runtime.StartupEvent;
@@ -46,7 +46,7 @@ public class DataLoader {
     private void loadData() {
         String tenantDomain = "mindera.com";
         String tenantAdminEmail = "diogo.velho@mindera.com";
-        Tenant tenant = new Tenant(
+        TenantCreate tenantCreate = new TenantCreate(
                 tenantDomain,
                 tenantDomain,
                 tenantAdminEmail,
@@ -55,7 +55,7 @@ public class DataLoader {
                 "user-pool-id");
         tenantRepository.createTenantTable(tableName);
 
-        tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenant));
+        tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenantCreate));
       /*   CreateUserPoolResponse response = cognitoTenantRepository.createUSerPool(tenantDomain);
         LOGGER.info("User pool created: " + response.userPool().id());*/
     }

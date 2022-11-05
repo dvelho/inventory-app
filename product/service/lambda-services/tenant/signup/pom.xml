@@ -8,7 +8,7 @@
         <version>0.0.2-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
-    <groupId>cloud.minka.product.service.tenant</groupId>
+    <groupId>cloud.minka.product.service.tenantCreate</groupId>
     <artifactId>signup</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>Product Services Lambda Tenant Signup flows</name>
@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>cloud.minka.product.service.model</groupId>
-            <artifactId>tenant</artifactId>
+            <artifactId>tenantCreate</artifactId>
             <version>0.0.2-SNAPSHOT</version>
         </dependency>
     </dependencies>

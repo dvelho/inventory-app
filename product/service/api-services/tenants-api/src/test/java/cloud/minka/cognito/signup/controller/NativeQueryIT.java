@@ -4,7 +4,7 @@ import io.quarkus.test.junit.NativeImageTest;
 
 
 @NativeImageTest
-public class NativeExampleResourceIT extends ExampleResourceTest {
+public class NativeQueryIT extends QueryTest {
 
     // Execute the same tests but in native mode.
 }

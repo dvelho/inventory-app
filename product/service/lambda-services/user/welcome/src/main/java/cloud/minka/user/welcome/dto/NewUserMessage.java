@@ -1,9 +1,9 @@
 package cloud.minka.user.welcome.dto;
 
 import cloud.minka.service.model.cognito.SignupUser;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 
-public record NewUserMessage(Tenant tenant, SignupUser signupUser) {
+public record NewUserMessage(TenantCreate tenantCreate, SignupUser signupUser) {
 
 
 }

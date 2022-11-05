@@ -7,7 +7,7 @@ import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
 import cloud.minka.service.model.cognito.SignupUser;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 import cloud.minka.service.model.tenant.TenantStatus;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
@@ -40,21 +40,27 @@ public class PostConfirmationService {
 
     public CognitoSignupEvent process(CognitoSignupEvent input) {
         try {
-            String tenantDomain = input.request().get("userAttributes").get("email").asText().split("@")[1];
+            String userEmail = input.request().get("userAttributes").get("email").asText();
+            String tenantDomain = userEmail.split("@")[1];
             System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
             GetItemResponse tenant = tenantRepository.getTenantFromTable(tableName, tenantDomain);
             if (!tenant.hasItem()) {
-                throw new TenantNotFoundException("Tenant not found");
+                throw new TenantNotFoundException("TenantCreate not found");
             }
-            Tenant tenantModel = converter.convertGetItemResponseToTenant(tenant);
-            boolean isTenantAdmin = tenantModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
+            TenantCreate tenantCreateModel = converter.convertGetItemResponseToTenant(tenant);
+            boolean isTenantAdmin = tenantCreateModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
+
+            if (isTenantAdmin && !userEmail.equals(tenantCreateModel.adminEmail())) {
+                throw new TentantStatusInvalidException("Your email is not the admin email and the tenant is not yet configured");
+            }
+
             SignupUser signupUser = converter.convertCognitoSignupEventToSignupUser(input, isTenantAdmin);
-            switch (tenantModel.status()) {
-                case PENDING_CONFIGURATION -> finishTenantAdminSetup(tenantModel, signupUser);
-                case ACTIVE -> finishTenantUserSetup(tenantModel, signupUser);
+            switch (tenantCreateModel.status()) {
+                case PENDING_CONFIGURATION -> finishTenantAdminSetup(tenantCreateModel, signupUser);
+                case ACTIVE -> finishTenantUserSetup(tenantCreateModel, signupUser);
                 default -> throw new TentantStatusInvalidException("The tenant is not in a valid state");
             }
-            sendSNSMessage(tenantModel, signupUser);
+            sendSNSMessage(tenantCreateModel, signupUser);
             return converter.responsePostSignup(input);
         } catch (TenantNotFoundException e) {
             System.out.println("event::cognito::signup::request::error:" + e.getMessage());
@@ -83,24 +89,24 @@ public class PostConfirmationService {
 
     }
 
-    public void finishTenantAdminSetup(Tenant tenant, SignupUser signupUser) {
-        System.out.println("event::cognito::signup::request::tenant::add::group::admin");
-        cognitoTenantRepository.adminAddUserToGroup(tenant.userPoolId(), signupUser.userName(), "tenant.main.admin");
-        createTenantGroups(tenant.userPoolId(), tenant.PK());
-        finishTenantUserSetup(tenant, signupUser);
+    public void finishTenantAdminSetup(TenantCreate tenantCreate, SignupUser signupUser) {
+        System.out.println("event::cognito::signup::request::tenantCreate::add::group::admin");
+        cognitoTenantRepository.adminAddUserToGroup(tenantCreate.userPoolId(), signupUser.userName(), "tenantCreate.main.admin");
+        createTenantGroups(tenantCreate.userPoolId(), tenantCreate.PK());
+        finishTenantUserSetup(tenantCreate, signupUser);
     }
 
-    public void finishTenantUserSetup(Tenant tenant, SignupUser signupUser) {
-        System.out.println("event::cognito::signup::request::tenant::add::group::tenant::user");
-        cognitoTenantRepository.adminAddUserToGroup(tenant.userPoolId(), signupUser.userName(), "tenant.%s.users".formatted(tenant.PK()));
-        setUserCognitoAttributes(tenant, signupUser);
+    public void finishTenantUserSetup(TenantCreate tenantCreate, SignupUser signupUser) {
+        System.out.println("event::cognito::signup::request::tenantCreate::add::group::tenantCreate::user");
+        cognitoTenantRepository.adminAddUserToGroup(tenantCreate.userPoolId(), signupUser.userName(), "tenantCreate.%s.users".formatted(tenantCreate.PK()));
+        setUserCognitoAttributes(tenantCreate, signupUser);
 
     }
 
-    public void setUserCognitoAttributes(Tenant tenant, SignupUser signupUser) {
-        System.out.println("event::cognito::signup::request::tenant::config::cognito::user::attributes");
-        cognitoTenantRepository.adminUpdateUserAttributes(tenant.userPoolId(), signupUser.userName(), "custom:domain", tenant.PK());
-        cognitoTenantRepository.adminUpdateUserAttributes(tenant.userPoolId(), signupUser.userName(), "custom:tenantId", tenant.PK());
+    public void setUserCognitoAttributes(TenantCreate tenantCreate, SignupUser signupUser) {
+        System.out.println("event::cognito::signup::request::tenantCreate::config::cognito::user::attributes");
+        cognitoTenantRepository.adminUpdateUserAttributes(tenantCreate.userPoolId(), signupUser.userName(), "custom:domain", tenantCreate.PK());
+        cognitoTenantRepository.adminUpdateUserAttributes(tenantCreate.userPoolId(), signupUser.userName(), "custom:tenantId", tenantCreate.PK());
     }
 
     public void createTenantGroups(String userPoolId, String tenantDomain) {
@@ -108,9 +114,9 @@ public class PostConfirmationService {
         cognitoTenantRepository.createGroup(userPoolId, "tenant.%s.users".formatted(tenantDomain));
     }
 
-    private void sendSNSMessage(Tenant tenant, SignupUser signupUser) {
-        System.out.println("event::cognito::signup::request::tenant::send::sns::message");
-        String snsMessage = converter.convertTenantAndSignupUserToSNSMessage(tenant, signupUser);
+    private void sendSNSMessage(TenantCreate tenantCreate, SignupUser signupUser) {
+        System.out.println("event::cognito::signup::request::tenantCreate::send::sns::message");
+        String snsMessage = converter.convertTenantAndSignupUserToSNSMessage(tenantCreate, signupUser);
         snsClient
                 .publish(builder -> builder.topicArn(topicArn)
                         .message(snsMessage)
@@ -119,7 +125,7 @@ public class PostConfirmationService {
                             put("MESSAGE_TYPE", MessageAttributeValue.builder()
                                     .dataType("String").stringValue("NEW_USER_SIGNUP").build());
                             put("tenantDomain", MessageAttributeValue.builder()
-                                    .dataType("String").stringValue(tenant.PK())
+                                    .dataType("String").stringValue(tenantCreate.PK())
                                     .build());
                             put("isTenantAdmin", MessageAttributeValue.builder()
                                     .dataType("String").stringValue(String.valueOf(signupUser.isTenantAdmin()))

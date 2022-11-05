@@ -9,7 +9,7 @@
         <relativePath>../base</relativePath>
     </parent>
     <groupId>cloud.minka.product.service.model</groupId>
-    <artifactId>tenant</artifactId>
+    <artifactId>tenantCreate</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <name>Product Services Model Tenant</name>
 </project>

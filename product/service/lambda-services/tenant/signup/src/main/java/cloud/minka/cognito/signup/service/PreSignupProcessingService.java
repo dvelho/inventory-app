@@ -5,7 +5,7 @@ import cloud.minka.cognito.signup.converter.TenantBuilder;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
 import cloud.minka.cognito.signup.repository.TenantRepository;
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 import cloud.minka.service.model.tenant.TenantStatus;
 import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @ApplicationScoped
-@RecordBuilder.Include({Tenant.class})// generates a record builder for ImportedRecord
+@RecordBuilder.Include({TenantCreate.class})// generates a record builder for ImportedRecord
 public final class PreSignupProcessingService {
 
 
@@ -57,18 +57,18 @@ public final class PreSignupProcessingService {
         }
 
         if (cognitoTenantRepository.emailExists(userEmail, input.userPoolId())) {
-            System.out.println("event::cognito::signup::request::tenant::email::exists:" + userEmail);
+            System.out.println("event::cognito::signup::request::tenantCreate::email::exists:" + userEmail);
             throw new IllegalArgumentException("Email already exists. Maybe you already have an account?");
         }
 
-        System.out.println("event::cognito::signup::request::tenant::domain:" + tenantDomain);
+        System.out.println("event::cognito::signup::request::tenantCreate::domain:" + tenantDomain);
 
-        // Check if the tenant exists
+        // Check if the tenantCreate exists
         GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, tenantDomain);
         CognitoSignupEvent responseSuccess = converter.response(input);
-        Tenant tenant;
-        if (tenantDb.item().size() == 0) { // tenant does not exist
-            tenant = TenantBuilder.builder()
+        TenantCreate tenantCreate;
+        if (tenantDb.item().size() == 0) { // tenantCreate does not exist
+            tenantCreate = TenantBuilder.builder()
                     .PK(tenantDomain)
                     .SK(tenantDomain)
                     .adminEmail(userEmail)
@@ -77,22 +77,22 @@ public final class PreSignupProcessingService {
                     .userPoolId(input.userPoolId())
                     .build();
 
-            System.out.printf("event::cognito::signup::request::tenant::create::tenant::%s", tenantDomain);
-            tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenant));
-            System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
+            System.out.printf("event::cognito::signup::request::tenantCreate::create::tenantCreate::%s", tenantDomain);
+            tenantRepository.insertTenantIntoTable(converter.convertTenantToPutItemRequest(tableName, tenantCreate));
+            System.out.println("event::cognito::signup::request::tenantCreate::response::success:" + responseSuccess);
             return responseSuccess;
         }
 
-        tenant = converter.convertGetItemResponseToTenant(tenantDb);
-        //Check if the tenant is in pending configuration
-        return switch (tenant.status()) {
+        tenantCreate = converter.convertGetItemResponseToTenant(tenantDb);
+        //Check if the tenantCreate is in pending configuration
+        return switch (tenantCreate.status()) {
             case PENDING_CONFIGURATION ->
                     throw new IllegalArgumentException("Your domain exists but is not yet fully configured. Please contact the person responsible for your Organization.");
             case ACTIVE -> {
-                System.out.println("event::cognito::signup::request::tenant::response::success:" + responseSuccess);
+                System.out.println("event::cognito::signup::request::tenantCreate::response::success:" + responseSuccess);
                 yield responseSuccess;
             }
-            default -> throw new IllegalArgumentException("The tenant is not in a valid state");
+            default -> throw new IllegalArgumentException("The tenantCreate is not in a valid state");
         };
     }
 

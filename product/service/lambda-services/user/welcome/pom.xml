@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>cloud.minka.product.service.model</groupId>
-            <artifactId>tenant</artifactId>
+            <artifactId>tenantCreate</artifactId>
             <version>0.0.2-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>

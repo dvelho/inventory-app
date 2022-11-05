@@ -3,7 +3,7 @@ package cloud.minka.cognito.signup.converter;
 
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
 import cloud.minka.service.model.cognito.SignupUser;
-import cloud.minka.service.model.tenant.Tenant;
+import cloud.minka.service.model.tenant.TenantCreate;
 import cloud.minka.service.model.tenant.TenantStatus;
 import cloud.minka.service.model.tenant.TenantType;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,9 +20,9 @@ import javax.inject.Inject;
 import java.util.Map;
 
 @RecordBuilder.Include({
-        CognitoSignupEvent.class, Tenant.class    // generates a record builder for ImportedRecord
+        CognitoSignupEvent.class, TenantCreate.class    // generates a record builder for ImportedRecord
 })
-@RegisterForReflection(targets = {CognitoSignupEvent.class, Tenant.class, SignupUser.class})
+@RegisterForReflection(targets = {CognitoSignupEvent.class, TenantCreate.class, SignupUser.class})
 @ApplicationScoped
 public class Converter {
     @Inject
@@ -64,9 +64,9 @@ public class Converter {
     }
 
 
-    public Tenant convertGetItemResponseToTenant(GetItemResponse tenant) {
+    public TenantCreate convertGetItemResponseToTenant(GetItemResponse tenant) {
         Map<String, AttributeValue> tenantMap = tenant.item();
-        return new Tenant(
+        return new TenantCreate(
                 tenantMap.get("PK").s(),
                 tenantMap.get("SK").s(),
                 tenantMap.get("adminEmail").s(),
@@ -76,16 +76,16 @@ public class Converter {
         );
     }
 
-    public PutItemRequest convertTenantToPutItemRequest(String table, Tenant tenant) {
+    public PutItemRequest convertTenantToPutItemRequest(String table, TenantCreate tenantCreate) {
         return PutItemRequest.builder()
                 .tableName(table)
                 .item(Map.of(
-                        "PK", AttributeValue.builder().s(tenant.PK()).build(),
-                        "SK", AttributeValue.builder().s(tenant.SK()).build(),
-                        "adminEmail", AttributeValue.builder().s(tenant.adminEmail()).build(),
-                        "status", AttributeValue.builder().s(tenant.status().name()).build(),
-                        "type", AttributeValue.builder().s(tenant.type().name()).build(),
-                        "userPoolId", AttributeValue.builder().s(tenant.userPoolId()).build()
+                        "PK", AttributeValue.builder().s(tenantCreate.PK()).build(),
+                        "SK", AttributeValue.builder().s(tenantCreate.SK()).build(),
+                        "adminEmail", AttributeValue.builder().s(tenantCreate.adminEmail()).build(),
+                        "status", AttributeValue.builder().s(tenantCreate.status().name()).build(),
+                        "type", AttributeValue.builder().s(tenantCreate.type().name()).build(),
+                        "userPoolId", AttributeValue.builder().s(tenantCreate.userPoolId()).build()
                 ))
                 .build();
     }
@@ -98,15 +98,15 @@ public class Converter {
         );
     }
 
-    public String convertTenantAndSignupUserToSNSMessage(Tenant tenant, SignupUser signupUser) {
-        System.out.println("AAAAAAAAAtenant: " + tenant);
+    public String convertTenantAndSignupUserToSNSMessage(TenantCreate tenantCreate, SignupUser signupUser) {
+        System.out.println("AAAAAAAAAtenant: " + tenantCreate);
         System.out.println("AAAAAAAAAsignupUser: " + signupUser);
         JsonNode signupUserJson = mapper.valueToTree(signupUser);
         System.out.println("AAAAAAAAAsignupUserJson: " + signupUserJson);
-        JsonNode tenantJson = mapper.valueToTree(tenant);
+        JsonNode tenantJson = mapper.valueToTree(tenantCreate);
         System.out.println("AAAAAAAAAtenantJson: " + tenantJson);
         ;
-        return "{\"tenant\": " + tenantJson.toString() + ", \"signupUser\": " + signupUserJson.toString() + "}";
+        return "{\"tenantCreate\": " + tenantJson.toString() + ", \"signupUser\": " + signupUserJson.toString() + "}";
 
     }
 }
