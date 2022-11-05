@@ -50,7 +50,7 @@ public class PostConfirmationService {
             TenantCreate tenantCreateModel = converter.convertGetItemResponseToTenant(tenant);
             boolean isTenantAdmin = tenantCreateModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
 
-            if (isTenantAdmin && !userEmail.equals(tenantCreateModel.adminEmail())) {
+            if (isTenantAdmin && !userEmail.equalsIgnoreCase(tenantCreateModel.adminEmail())) {
                 throw new TentantStatusInvalidException("Your email is not the admin email and the tenant is not yet configured");
             }
 
