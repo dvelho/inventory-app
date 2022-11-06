@@ -2,6 +2,9 @@
   "resources": [
     {
       "pattern": "free-email-providers.json"
+    },
+    {
+      "pattern": "application.properties"
     }
   ]
 }
