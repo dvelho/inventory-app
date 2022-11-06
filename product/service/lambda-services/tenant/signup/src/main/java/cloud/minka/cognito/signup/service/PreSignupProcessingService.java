@@ -70,8 +70,9 @@ public final class PreSignupProcessingService {
 
         System.out.println("event::cognito::signup::request::tenantCreate::domain:" + tenantDomain);
 
-        // Check if the tenantCreate exists
+        // Check if the tenant exists
         GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, PK);
+        System.out.println("event::cognito::signup::request::tenantCreate::domain::exists:" + tenantDb);
         CognitoSignupEvent responseSuccess = tenantConverter.response(input);
         TenantCreate tenantCreate;
         if (tenantDb.item().size() == 0) { // tenantCreate does not exist

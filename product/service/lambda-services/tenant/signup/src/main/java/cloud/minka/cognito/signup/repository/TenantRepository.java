@@ -52,11 +52,13 @@ public class TenantRepository {
     }
 
     public void insertTenantIntoTable(PutItemRequest request) {
+        System.out.println("event::cognito::signup::request::tenant::table::insert::request:" + request);
         client.putItem(request);
     }
 
     public GetItemResponse getTenantFromTable(String tenantTable, String tenantDomain) {
         //Get the tenant from dynamodb
+        System.out.println("event::cognito::signup::request::tenant::table::get::request:" + tenantTable + " " + tenantDomain);
         AttributeValue pk = AttributeValue.builder().s(tenantDomain).build();
         AttributeValue sk = AttributeValue.builder().s(tenantDomain).build();
         GetItemRequest request = GetItemRequest.builder()
