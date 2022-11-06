@@ -28,8 +28,8 @@ public class CognitoTenantRepository {
         return listUsersResponse.users().size() > 0;
     }
 
-    public void adminAddUserToGroup(String userPoolId, String userName, String user) {
-        cognitoClient.adminAddUserToGroup(addGroupRequest(userPoolId, userName, user));
+    public void adminAddUserToGroup(String userPoolId, String userName, String groupName) {
+        cognitoClient.adminAddUserToGroup(addGroupRequest(userPoolId, userName, groupName));
     }
 
     private Consumer<AdminAddUserToGroupRequest.Builder> addGroupRequest(String userPoolId, String userName, String groupName) {

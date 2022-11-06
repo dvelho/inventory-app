@@ -14,9 +14,12 @@ import io.soabase.recordbuilder.core.RecordBuilder;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.HashMap;
 import java.util.Map;
 
 @RecordBuilder.Include({
@@ -109,5 +112,25 @@ public class TenantConverter {
         JsonNode tenantJson = mapper.valueToTree(tenantCreate);
         return "{\"tenantCreate\": " + tenantJson.toString() + ", \"signupUser\": " + signupUserJson.toString() + "}";
 
+    }
+
+    public PublishRequest convertTenantAndSignupUserToSNSRequest(String topicArn, TenantCreate tenantCreate, SignupUser signupUser) {
+        return PublishRequest.builder()
+                .topicArn(topicArn)
+                .message(convertTenantAndSignupUserToSNSMessage(tenantCreate, signupUser))
+                .subject("NEW_USER_SIGNUP")
+                .messageAttributes(new HashMap<>() {{
+                    put("MESSAGE_TYPE", MessageAttributeValue.builder()
+                            .dataType("String").stringValue("NEW_USER_SIGNUP").build());
+                    put("tenantDomain", MessageAttributeValue.builder()
+                            .dataType("String").stringValue(tenantCreate.PK())
+                            .build());
+                    put("isTenantAdmin", MessageAttributeValue.builder()
+                            .dataType("String").stringValue(String.valueOf(signupUser.isTenantAdmin()))
+                            .build());
+                }})
+                // .messageDeduplicationId(UUID.randomUUID().toString())
+                .messageGroupId(signupUser.userName())
+                .build();
     }
 }

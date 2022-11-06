@@ -71,7 +71,7 @@ public final class PreSignupProcessingService {
         System.out.println("event::cognito::signup::request::tenantCreate::domain:" + tenantDomain);
 
         // Check if the tenantCreate exists
-        GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, tenantDomain);
+        GetItemResponse tenantDb = tenantRepository.getTenantFromTable(tableName, PK);
         CognitoSignupEvent responseSuccess = tenantConverter.response(input);
         TenantCreate tenantCreate;
         if (tenantDb.item().size() == 0) { // tenantCreate does not exist
@@ -82,7 +82,7 @@ public final class PreSignupProcessingService {
                     TenantStatus.PENDING_CONFIGURATION,
                     TenantType.HOSTED,
                     input.userPoolId());
-            System.out.printf("event::cognito::signup::request::tenantCreate::create::tenantCreate::%s", tenantDomain);
+            System.out.printf("event::cognito::signup::request::tenantCreate::create::tenantCreate::%s", PK);
             tenantRepository.insertTenantIntoTable(tenantConverter.convertTenantToPutItemRequest(tableName, tenantCreate));
             System.out.println("event::cognito::signup::request::tenantCreate::response::success:" + responseSuccess);
             return responseSuccess;

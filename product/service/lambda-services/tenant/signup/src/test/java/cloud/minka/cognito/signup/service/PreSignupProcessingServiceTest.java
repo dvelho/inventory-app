@@ -56,7 +56,7 @@ class PreSignupProcessingServiceTest {
                     "1",
                     "eu-west-1",
                     "dummy",
-                    "google_102051572441221876770",
+                    "dummy",
                     new CallerContext(
                             "dummy",
                             "dummy"
@@ -99,7 +99,7 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCantCreateTenantWithInValidSubDomain() {
-        String request = "{\"userAttributes\": {\"email\": \"test@test.mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@test.minka.co.uk\"}}";
         assertThrows(DomainException.class, () -> {
             preSignupProcessingService.process(cognitoSignupEvent(request, response));
         });
@@ -107,7 +107,7 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCantCreateTenantWithInValidSubDomainMoreThanTwoLetterss() {
-        String request = "{\"userAttributes\": {\"email\": \"test@tmindera.com.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@tminka.com.uk\"}}";
         assertThrows(DomainException.class, () -> {
             preSignupProcessingService.process(cognitoSignupEvent(request, response));
         });
@@ -132,9 +132,9 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCantCreateTenantUserIfEmailExists() {
-        String request = "{\"userAttributes\": {\"email\": \"test@mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@minka.co.uk\"}}";
 
-        when(cognitoTenantRepository.emailExists("test@mindera.co.uk", "dummy"))
+        when(cognitoTenantRepository.emailExists("test@minka.co.uk", "dummy"))
                 .thenReturn(true);
 
         assertThrows(DomainException.class, () -> {
@@ -144,25 +144,25 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCantCreateTenantUserIfTenantIsPending() {
-        String request = "{\"userAttributes\": {\"email\": \"test@mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@minka.co.uk\"}}";
         GetItemResponse getItemResponse = GetItemResponse.builder()
                 .item(new HashMap<>() {{
-                    put("PK", AttributeValue.builder().s("T#mindera.co.uk").build());
-                    put("SK", AttributeValue.builder().s("T#mindera.co.uk").build());
+                    put("PK", AttributeValue.builder().s("T#minka.co.uk").build());
+                    put("SK", AttributeValue.builder().s("T#minka.co.uk").build());
                     put("status", AttributeValue.builder().s("PENDING_CONFIGURATION").build());
                 }})
                 .build();
-        when(cognitoTenantRepository.emailExists("test@mindera.co.uk", "dummy"))
+        when(cognitoTenantRepository.emailExists("test@minka.co.uk", "dummy"))
                 .thenReturn(false);
         when(tenantRepository
-                .getTenantFromTable("dev-tenants-info-minka-cloud", "mindera.co.uk"))
+                .getTenantFromTable("dev-tenants-info-minka-cloud", "T#minka.co.uk"))
                 .thenReturn(getItemResponse);
         when(tenantConverter.response(cognitoSignupEvent(request, response)))
                 .thenReturn(cognitoSignupEvent(request, response));
         when(tenantConverter.convertGetItemResponseToTenant(getItemResponse)).thenReturn(
-                tenantCreate("T#mindera.co.uk",
-                        "T#mindera.co.uk",
-                        "test@mindera.co.uk",
+                tenantCreate("T#minka.co.uk",
+                        "T#minka.co.uk",
+                        "test@minka.co.uk",
                         TenantStatus.PENDING_CONFIGURATION)
         );
         assertThrows(DomainException.class, () -> {
@@ -173,27 +173,27 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCantCreateTenantUserIfStatusIsUnexpected() {
-        String request = "{\"userAttributes\": {\"email\": \"test@mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@minka.co.uk\"}}";
 
         GetItemResponse getItemResponse = GetItemResponse.builder()
                 .item(new HashMap<>() {{
-                    put("PK", AttributeValue.builder().s("T#mindera.co.uk").build());
-                    put("SK", AttributeValue.builder().s("T#mindera.co.uk").build());
+                    put("PK", AttributeValue.builder().s("T#minka.co.uk").build());
+                    put("SK", AttributeValue.builder().s("T#minka.co.uk").build());
                     put("status", AttributeValue.builder().s("UNKNOWN").build());
                 }})
                 .build();
 
-        when(cognitoTenantRepository.emailExists("test@mindera.co.uk", "dummy"))
+        when(cognitoTenantRepository.emailExists("test@minka.co.uk", "dummy"))
                 .thenReturn(false);
         when(tenantRepository
-                .getTenantFromTable("dev-tenants-info-minka-cloud", "mindera.co.uk"))
+                .getTenantFromTable("dev-tenants-info-minka-cloud", "T#minka.co.uk"))
                 .thenReturn(getItemResponse);
         when(tenantConverter.response(cognitoSignupEvent(request, response)))
                 .thenReturn(cognitoSignupEvent(request, response));
         when(tenantConverter.convertGetItemResponseToTenant(getItemResponse)).thenReturn(
-                tenantCreate("T#mindera.co.uk",
-                        "T#mindera.co.uk",
-                        "test@mindera.co.uk",
+                tenantCreate("T#minka.co.uk",
+                        "T#minka.co.uk",
+                        "test@minka.co.uk",
                         TenantStatus.UNKNOWN)
         );
         String message = assertThrows(IllegalArgumentException.class, () -> {
@@ -204,19 +204,19 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCanCreateTenantWithValidSubDomain() {
-        String request = "{\"userAttributes\": {\"email\": \"test@mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@minka.co.uk\"}}";
 
-        when(cognitoTenantRepository.emailExists("test@mindera.co.uk", "dummy"))
+        when(cognitoTenantRepository.emailExists("test@minka.co.uk", "dummy"))
                 .thenReturn(false);
         when(tenantRepository
-                .getTenantFromTable("dev-tenants-info-minka-cloud", "mindera.co.uk"))
+                .getTenantFromTable("dev-tenants-info-minka-cloud", "T#minka.co.uk"))
                 .thenReturn(GetItemResponse.builder().item(new HashMap<>()).build());
         when(tenantConverter.response(cognitoSignupEvent(request, response)))
                 .thenReturn(cognitoSignupEvent(request, response));
-        String pk = "T#mindera.co.uk";
-        String sk = "T#mindera.co.uk";
+        String pk = "T#minka.co.uk";
+        String sk = "T#minka.co.uk";
         PutItemRequest put = tenantConverter.convertTenantToPutItemRequest("dev-tenants-info-minka-cloud",
-                tenantCreate(pk, sk, "test@mindera.co.uk", TenantStatus.PENDING_CONFIGURATION));
+                tenantCreate(pk, sk, "test@minka.co.uk", TenantStatus.PENDING_CONFIGURATION));
         doNothing().when(tenantRepository).insertTenantIntoTable(put);
         CognitoSignupEvent cognitoSignupEvent = preSignupProcessingService.process(cognitoSignupEvent(request, response));
         assert cognitoSignupEvent.equals(cognitoSignupEvent(request, response));
@@ -224,27 +224,27 @@ class PreSignupProcessingServiceTest {
 
     @Test
     void testCanCreateTenantUserIfTenantActive() {
-        String request = "{\"userAttributes\": {\"email\": \"test@mindera.co.uk\"}}";
+        String request = "{\"userAttributes\": {\"email\": \"test@minka.co.uk\"}}";
 
         GetItemResponse getItemResponse = GetItemResponse.builder()
                 .item(new HashMap<>() {{
-                    put("PK", AttributeValue.builder().s("T#mindera.co.uk").build());
-                    put("SK", AttributeValue.builder().s("T#mindera.co.uk").build());
+                    put("PK", AttributeValue.builder().s("T#minka.co.uk").build());
+                    put("SK", AttributeValue.builder().s("T#minka.co.uk").build());
                     put("status", AttributeValue.builder().s("ACTIVE").build());
                 }})
                 .build();
 
-        when(cognitoTenantRepository.emailExists("test@mindera.co.uk", "dummy"))
+        when(cognitoTenantRepository.emailExists("test@minka.co.uk", "dummy"))
                 .thenReturn(false);
         when(tenantRepository
-                .getTenantFromTable("dev-tenants-info-minka-cloud", "mindera.co.uk"))
+                .getTenantFromTable("dev-tenants-info-minka-cloud", "T#minka.co.uk"))
                 .thenReturn(getItemResponse);
         when(tenantConverter.response(cognitoSignupEvent(request, response)))
                 .thenReturn(cognitoSignupEvent(request, response));
         when(tenantConverter.convertGetItemResponseToTenant(getItemResponse)).thenReturn(
-                tenantCreate("T#mindera.co.uk",
-                        "T#mindera.co.uk",
-                        "test@mindera.co.uk",
+                tenantCreate("T#minka.co.uk",
+                        "T#minka.co.uk",
+                        "test@minka.co.uk",
                         TenantStatus.ACTIVE)
         );
 
