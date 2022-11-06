@@ -3,6 +3,7 @@ package cloud.minka.cognito.signup.converter;
 
 import cloud.minka.service.model.cognito.CognitoSignupEvent;
 import cloud.minka.service.model.cognito.SignupUser;
+import cloud.minka.service.model.entity.EntityType;
 import cloud.minka.service.model.tenant.TenantCreate;
 import cloud.minka.service.model.tenant.TenantStatus;
 import cloud.minka.service.model.tenant.TenantType;
@@ -94,7 +95,9 @@ public class TenantConverter {
                         "adminEmail", AttributeValue.builder().s(tenantCreate.adminEmail()).build(),
                         "status", AttributeValue.builder().s(tenantCreate.status().name()).build(),
                         "type", AttributeValue.builder().s(tenantCreate.type().name()).build(),
-                        "userPoolId", AttributeValue.builder().s(tenantCreate.userPoolId()).build()
+                        "userPoolId", AttributeValue.builder().s(tenantCreate.userPoolId()).build(),
+                        "createdAt", AttributeValue.builder().s(String.valueOf(System.currentTimeMillis())).build(),
+                        "entity", AttributeValue.builder().s(EntityType.TENANT.description()).build()
                 ))
                 .build();
     }
