@@ -18,7 +18,10 @@
     <modules>
         <module>user</module>
         <module>base</module>
+        <module>entity</module>
         <module>cognito</module>
         <module>tenant</module>
+        <module>location</module>
+        <module>billing</module>
     </modules>
 </project>

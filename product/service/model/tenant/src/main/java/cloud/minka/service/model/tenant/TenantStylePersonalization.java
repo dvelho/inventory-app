@@ -8,7 +8,6 @@ public record TenantStylePersonalization(
         String linkColor,
         String linkHoverColor,
         String buttonColor,
-        String buttonHoverColor,
-        String buttonActiveColor
+        String buttonHoverColor
 ) {
 }

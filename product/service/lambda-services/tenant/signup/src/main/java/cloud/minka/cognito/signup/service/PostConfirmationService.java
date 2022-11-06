@@ -1,6 +1,6 @@
 package cloud.minka.cognito.signup.service;
 
-import cloud.minka.cognito.signup.converter.Converter;
+import cloud.minka.cognito.signup.converter.TenantConverter;
 import cloud.minka.cognito.signup.exception.TenantNotFoundException;
 import cloud.minka.cognito.signup.exception.TentantStatusInvalidException;
 import cloud.minka.cognito.signup.repository.CognitoTenantRepository;
@@ -28,7 +28,7 @@ public class PostConfirmationService {
     CognitoTenantRepository cognitoTenantRepository;
 
     @Inject
-    Converter converter;
+    TenantConverter tenantConverter;
 
     @Inject
     SnsClient snsClient;
@@ -47,21 +47,21 @@ public class PostConfirmationService {
             if (!tenant.hasItem()) {
                 throw new TenantNotFoundException("Tenant not found");
             }
-            TenantCreate tenantCreateModel = converter.convertGetItemResponseToTenant(tenant);
+            TenantCreate tenantCreateModel = tenantConverter.convertGetItemResponseToTenant(tenant);
             boolean isTenantAdmin = tenantCreateModel.status().equals(TenantStatus.PENDING_CONFIGURATION);
 
             if (isTenantAdmin && !userEmail.equalsIgnoreCase(tenantCreateModel.adminEmail())) {
                 throw new TentantStatusInvalidException("Your email is not the admin email and the tenant is not yet configured");
             }
 
-            SignupUser signupUser = converter.convertCognitoSignupEventToSignupUser(input, isTenantAdmin);
+            SignupUser signupUser = tenantConverter.convertCognitoSignupEventToSignupUser(input, isTenantAdmin);
             switch (tenantCreateModel.status()) {
                 case PENDING_CONFIGURATION -> finishTenantAdminSetup(tenantCreateModel, signupUser);
                 case ACTIVE -> finishTenantUserSetup(tenantCreateModel, signupUser);
                 default -> throw new TentantStatusInvalidException("The tenant is not in a valid state");
             }
             sendSNSMessage(tenantCreateModel, signupUser);
-            return converter.responsePostSignup(input);
+            return tenantConverter.responsePostSignup(input);
         } catch (TenantNotFoundException e) {
             System.out.println("event::cognito::signup::request::error:" + e.getMessage());
             deleteCognitoUser(input, true);
@@ -116,7 +116,7 @@ public class PostConfirmationService {
 
     private void sendSNSMessage(TenantCreate tenantCreate, SignupUser signupUser) {
         System.out.println("event::cognito::signup::request::tenantCreate::send::sns::message");
-        String snsMessage = converter.convertTenantAndSignupUserToSNSMessage(tenantCreate, signupUser);
+        String snsMessage = tenantConverter.convertTenantAndSignupUserToSNSMessage(tenantCreate, signupUser);
         snsClient
                 .publish(builder -> builder.topicArn(topicArn)
                         .message(snsMessage)

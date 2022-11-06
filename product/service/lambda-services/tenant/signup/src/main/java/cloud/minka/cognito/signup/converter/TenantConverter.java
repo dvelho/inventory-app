@@ -20,13 +20,19 @@ import javax.inject.Inject;
 import java.util.Map;
 
 @RecordBuilder.Include({
-        CognitoSignupEvent.class, TenantCreate.class    // generates a record builder for ImportedRecord
+        CognitoSignupEvent.class  // generates a record builder for ImportedRecord
 })
 @RegisterForReflection(targets = {CognitoSignupEvent.class, TenantCreate.class, SignupUser.class})
+
 @ApplicationScoped
-public class Converter {
+public class TenantConverter {
+    ObjectMapper mapper;
+
     @Inject
-    public ObjectMapper mapper;
+    public TenantConverter(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
+
 
     public CognitoSignupEvent response(CognitoSignupEvent input) {
         String response = "{\"autoConfirmUser\": \"false\", \"autoVerifyEmail\": \"false\", \"autoVerifyPhone\": \"false\"}";
@@ -99,13 +105,8 @@ public class Converter {
     }
 
     public String convertTenantAndSignupUserToSNSMessage(TenantCreate tenantCreate, SignupUser signupUser) {
-        System.out.println("AAAAAAAAAtenant: " + tenantCreate);
-        System.out.println("AAAAAAAAAsignupUser: " + signupUser);
         JsonNode signupUserJson = mapper.valueToTree(signupUser);
-        System.out.println("AAAAAAAAAsignupUserJson: " + signupUserJson);
         JsonNode tenantJson = mapper.valueToTree(tenantCreate);
-        System.out.println("AAAAAAAAAtenantJson: " + tenantJson);
-        ;
         return "{\"tenantCreate\": " + tenantJson.toString() + ", \"signupUser\": " + signupUserJson.toString() + "}";
 
     }

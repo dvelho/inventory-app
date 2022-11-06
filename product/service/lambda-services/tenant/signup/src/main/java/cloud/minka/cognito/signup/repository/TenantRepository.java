@@ -47,12 +47,7 @@ public class TenantRepository {
                                 .attributeType(ScalarAttributeType.S)
                                 .build()
                 )
-                .provisionedThroughput(
-                        ProvisionedThroughput.builder()
-                                .readCapacityUnits(1L)
-                                .writeCapacityUnits(1L)
-                                .build()
-                )
+                .billingMode(BillingMode.PAY_PER_REQUEST)
                 .build();
     }
 
