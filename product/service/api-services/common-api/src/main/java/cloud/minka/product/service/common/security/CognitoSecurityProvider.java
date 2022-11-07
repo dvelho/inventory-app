@@ -8,6 +8,8 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
+import io.vertx.core.json.JsonObject;
+import io.vertx.ext.auth.impl.jose.JWT;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.security.Principal;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 public class CognitoSecurityProvider implements LambdaIdentityProvider {
 
+    JWT jwt;
 
     @Override
     public SecurityIdentity authenticate(AwsProxyRequest event) {
@@ -29,11 +32,14 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
             e.printStackTrace();
             return null;
         }
+        System.out.println("Decoding:");
 
+        jwt = new JWT();
+        JsonObject a = jwt.decode(event.getMultiValueHeaders().get("Authorization").get(0).replace("Bearer ", ""));
 
-        // if (event.getMultiValueHeaders() == null || !event.getMultiValueHeaders().containsKey("x-user"))
-        //     return null;
-        Principal principal = new QuarkusPrincipal(event.getMultiValueHeaders().getFirst("x-user"));
+        System.out.println("event: " + a);
+
+        Principal principal = new QuarkusPrincipal(event.getRequestContext().getAuthorizer().getClaims().getEmail());
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder();
         builder.setPrincipal(principal);
         return builder.build();
