@@ -1,7 +1,5 @@
 package cloud.minka.product.service.common;
 
-import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -28,16 +26,12 @@ public class VersionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String version(@Context SecurityContext ctx) {
-        String version = "unknown";
+        System.out.println("version: " + ctx.getUserPrincipal().getName());
+        System.out.println("version: " + ctx.isUserInRole("User"));
+        System.out.println("version: " + ctx);
         return this.readGitProperties();
     }
 
-
-    @GET
-    @Path("/test")
-    public String req(@Context AwsProxyRequest req) {
-        return req.toString();
-    }
 
     /**
      * Read git properties string.
