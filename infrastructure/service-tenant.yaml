@@ -10,11 +10,7 @@ Description: Shared Tenant setup auth service
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html
 # Create a Cognito Identity Provider from Google
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identityprovider.html
-Globals:
-  Api:
-    EndpointConfiguration: REGIONAL
-    BinaryMediaTypes:
-      - "*/*"
+
 
 Parameters:
   TenantAggregatorName:
@@ -370,7 +366,7 @@ Resources:
       Endpoint: !GetAtt SlackQueue.Arn
       Protocol: sqs
       TopicArn: !Ref SignupSNSMessagesFifo
-
+  
   
   SlackQueue:
     Type: AWS::SQS::Queue
@@ -498,11 +494,12 @@ Resources:
   TenantsApiNative:
     Type: AWS::Serverless::Function
     Properties:
+      FunctionName: !Sub ${Environment}-tenants-api-native-${TenantAggregatorName}
       Handler: not.used.in.provided.runtimei
       Runtime: provided
       CodeUri: ../product/service/api-services/tenants-api/target/function.zip
       MemorySize: 128
-      Policies: AWSLambdaBasicExecutionRole
+      Role: !GetAtt LambdaExecutionRole.Arn
       Timeout: 15
       Environment:
         Variables:
@@ -513,6 +510,29 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: any
+            RestApiId: !Ref TenantsApi
+
+
+
+
+
+  TenantsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref Environment
+      EndpointConfiguration: REGIONAL
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
+
 
 
 #Creates a role that allows Cognito to send SNS messages
@@ -538,7 +558,7 @@ Outputs:
     Description: The SNS topic for user signup messages
   TenantsApiNativeApi:
     Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
     Export:
       Name: TenantsApiNativeApi
 
