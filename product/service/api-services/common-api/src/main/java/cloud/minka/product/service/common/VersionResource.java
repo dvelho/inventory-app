@@ -37,7 +37,7 @@ public class VersionResource {
     @Path("/text")
     @Produces(MediaType.APPLICATION_JSON)
     public String versionT(String ctx) {
-        System.out.println("testssj: " + ctx);
+        System.out.println("testsj: " + ctx);
         return this.readGitProperties();
     }
 

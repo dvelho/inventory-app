@@ -45,6 +45,7 @@ jobs:
               - 'product/service/lambda-services/tenant/**'
             tenant_api:
               - 'product/service/api-services/tenants-api/**'
+              - 'product/service/api-services/common-api/**'
             sam_build:
               - 'infrastructure/service-tenant.yaml'
 
