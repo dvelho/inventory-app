@@ -1,5 +1,6 @@
 package cloud.minka.product.service.common.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.amazon.lambda.http.LambdaAuthenticationRequest;
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
 import io.quarkus.security.identity.AuthenticationRequestContext;
@@ -19,12 +20,15 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
 
     @Override
     public SecurityIdentity authenticate(AwsProxyRequest event) {
-        System.out.println(event);
-        System.out.println(event.getRequestContext().toString());
-        System.out.println(event.getRequestContext().getAuthorizer().toString());
-        System.out.println(event.getRequestContext().getAuthorizer().getClaims().toString());
-        System.out.println(event.getRequestContext().getAuthorizer().getClaims().getClaim("cognito:groups"));
-        System.out.println(event.getRequestContext().getAuthorizer().getClaims().getClaim("cognito:groups").toString());
+        try {
+            //print json of event
+            ObjectMapper mapper = new ObjectMapper();
+            String json = mapper.writeValueAsString(event);
+            System.out.println("event: " + json);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
 
         // if (event.getMultiValueHeaders() == null || !event.getMultiValueHeaders().containsKey("x-user"))
