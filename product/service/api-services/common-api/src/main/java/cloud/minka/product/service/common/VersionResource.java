@@ -1,5 +1,7 @@
 package cloud.minka.product.service.common;
 
+import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,6 +31,15 @@ public class VersionResource {
     public String version(@Context SecurityContext ctx) {
         System.out.println("version: " + ctx.getUserPrincipal().getName());
         System.out.println("version: " + ctx.isUserInRole("User"));
+        System.out.println("version: " + ctx);
+        return this.readGitProperties();
+    }
+
+    @GET
+    @Path("/test")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String version1(@Context APIGatewayV2HTTPEvent.RequestContext ctx) {
+        System.out.println("version: " + ctx.getAuthorizer().getJwt());
         System.out.println("version: " + ctx);
         return this.readGitProperties();
     }
