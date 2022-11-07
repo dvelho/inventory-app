@@ -523,12 +523,12 @@ Resources:
         Authorizers:
           CognitoAuthorizer:
             UserPoolArn: !GetAtt UserPool.Arn
-        Cors:
-          AllowOrigin: "'*'"
-          AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-          AllowMethods: "'GET,OPTIONS,POST,PUT,DELETE'"
-          AllowCredentials: "'false'"
-          MaxAge: "'86400'"
+      Cors:
+        AllowOrigin: "'*'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowMethods: "'GET,OPTIONS,POST,PUT,DELETE'"
+        AllowCredentials: "'false'"
+        MaxAge: "'86400'"
 
 
 #Creates a role that allows Cognito to send SNS messages

@@ -13,7 +13,9 @@ import io.vertx.ext.auth.impl.jose.JWT;
 
 import javax.enterprise.context.ApplicationScoped;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 
@@ -45,7 +47,7 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
 
         Principal principal = new QuarkusPrincipal(event.getRequestContext().getAuthorizer().getClaims().getEmail());
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder();
-        builder.setPrincipal(principal);
+        builder.setPrincipal(principal).addRoles(Arrays.stream(a.getString("cognito:groups").split(",")).collect(Collectors.toSet()));
         return builder.build();
 
     }
