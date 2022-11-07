@@ -27,6 +27,7 @@ jobs:
             tenant:
               - 'product/service/**/tenant/**'
               - 'product/service/**/tenants**'
+              - 'product/service/api-services/common-api/**'
               - 'infrastructure/service-tenant.yaml'
 
   native_build:
