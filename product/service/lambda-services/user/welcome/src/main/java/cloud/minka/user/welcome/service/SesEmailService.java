@@ -1,4 +1,4 @@
-package cloud.minka.user.welcome.repository;
+package cloud.minka.user.welcome.service;
 
 import software.amazon.awssdk.services.ses.SesClient;
 

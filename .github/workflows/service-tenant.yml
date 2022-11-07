@@ -41,6 +41,8 @@ jobs:
           filters: |
             tenant_signup:
               - 'product/service/lambda-services/tenant/**'
+            tenant_api:
+              - 'product/service/api-services/tenants-api/**'
             sam_build:
               - 'infrastructure/service-tenant.yaml'
 
@@ -85,7 +87,7 @@ jobs:
 
 
       - name: Config graalvm
-        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-tenant.outputs.cache-hit != 'true'
+        if: steps.filter.outputs.tenant_signup == 'true'  || steps.cache-target-tenant.outputs.cache-hit != 'true' || steps.filter.outputs.tenant_api == 'true'
         uses: graalvm/setup-graalvm@v1
         with:
           version: 'latest'
@@ -93,7 +95,7 @@ jobs:
           components: 'native-image'
 
       - name: Cache maven modules
-        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
+        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true' || steps.filter.outputs.tenant_api == 'true'
         id: cache-maven
         uses: actions/cache@v3
         env:
@@ -114,13 +116,13 @@ jobs:
           mvn -f product/service/lambda-services/tenant/signup/pom.xml -q install -Dnative -DskipTests
           echo "DEPLOY_SAM=true" >> $GITHUB_ENV
 
-      - name: Debug filter
-        if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
+      - name: Maven Clean and Verify on Tenant Api Lambda
+        if: steps.filter.outputs.tenant_api == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true'
         run: |
-          echo "Filter tenant_signup: ${{ steps.filter.outputs.tenant_signup }}"
-          echo "Filter sam_build: ${{ steps.filter.outputs.sam_build }}"
-          echo "Cache a hit: ${{ steps.cache-target-tenant.outputs.cache-hit }}"
-          echo "DEPLOY_SAM: ${{ env.DEPLOY_SAM }}"
+          mvn -f product/pom.xml -q install -DskipTests
+          mvn -f product/service/api-services/tenants-api/pom.xml -q install -Dnative -DskipTests
+          echo "DEPLOY_SAM=true" >> $GITHUB_ENV
+
 
       - name: Configure AWS credentials
         if: env.DEPLOY_SAM == 'true'  || steps.filter.outputs.sam_build == 'true'

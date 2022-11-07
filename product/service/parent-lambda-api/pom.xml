@@ -34,7 +34,12 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <dependencies>
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-amazon-lambda-rest</artifactId>
+        </dependency>
         <dependency>
             <groupId>io.quarkiverse.amazonservices</groupId>
             <artifactId>quarkus-amazon-dynamodb</artifactId>
@@ -79,6 +84,7 @@
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
+        
     </dependencies>
     <build>
         <pluginManagement>

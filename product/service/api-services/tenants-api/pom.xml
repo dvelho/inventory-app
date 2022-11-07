@@ -13,12 +13,18 @@
     <version>0.0.2-SNAPSHOT</version>
     <name>Product Services Lambda Tenant Api</name>
     <dependencies>
-        <dependency>
-            <groupId>cloud.minka.product.service.model</groupId>
-            <artifactId>tenant</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
+      <dependency>
+        <groupId>cloud.minka.product.service.model</groupId>
+        <artifactId>tenant</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>cloud.minka.product.service</groupId>
+        <artifactId>common-api</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <optional>true</optional>
+      </dependency>
     </dependencies>
     <build>
         <plugins>

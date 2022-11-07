@@ -28,34 +28,7 @@ public final class WelcomeHandler implements RequestHandler<SQSEvent, JsonNode> 
 
     @Override
     public JsonNode handleRequest(SQSEvent input, Context context) {
-
-
-        input.getRecords().forEach(record -> {
-            welcomeService.process(record);
-        });
-
-/*
-        System.out.println("event::user::welcome::request:" + mapper.valueToTree(input));
-        if (true) {
-            return mapper.createObjectNode().put("message", "Welcome to Minka");
-        }
-        input.getRecords().stream().map(SNSEvent.SNSRecord::getSNS).forEach(sns -> {
-            String message = sns.getMessage();
-            String subject = sns.getSubject();
-            Map<String, SNSEvent.MessageAttribute> messageAttributes = sns.getMessageAttributes();
-            String tenantId = messageAttributes.get("tenantId").getValue();
-            String userName = messageAttributes.get("userName").getValue();
-            String userEmail = messageAttributes.get("userEmail").getValue();
-            String tenantDomain = messageAttributes.get("tenantDomain").getValue();
-            boolean isTenantAdmin = Boolean.parseBoolean(messageAttributes.get("isTenantAdmin").getValue());
-            if (isTenantAdmin) {
-                welcomeService.sendWelcomeEmail(userEmail);
-                return;
-            }
-            welcomeService.sendWelcomeEmail(userEmail);
-
-
-        });*/
+        input.getRecords().forEach(record -> welcomeService.process(record));
         return mapper.valueToTree(input);
     }
 

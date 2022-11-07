@@ -3,7 +3,6 @@ package cloud.minka.user.welcome.service;
 import cloud.minka.user.welcome.converter.Converter;
 import cloud.minka.user.welcome.dto.MessageAttributes;
 import cloud.minka.user.welcome.dto.NewUserMessage;
-import cloud.minka.user.welcome.repository.SesEmailService;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,13 +49,14 @@ public class WelcomeService {
         JsonNode body = converter.bodyFromSQSMessage(message);
         JsonNode messageAttributes = body.get("MessageAttributes");
         MessageAttributes attributes = converter.messageAttributesFromJson(messageAttributes);
-
         JsonNode messageBody = converter.messageFromBody(body.get("Message"));
         NewUserMessage newUserMessage = converter.newUserMessageFromJson(messageBody);
-
         System.out.println("event::user::welcome::request:" + body);
+        if (attributes.isTenantAdmin() == true) {
+            sendWelcomeEmail(newUserMessage.signupUser().email());
+            return;
+        }
         sendWelcomeEmail(newUserMessage.signupUser().email());
-
 
     }
 
@@ -65,7 +65,6 @@ public class WelcomeService {
     }
 
     private String getHtmlTemplate() {
-        // String resourcePath = "/welcome-email.html";
         try {
             InputStream ins = SesEmailService.class.getResourceAsStream(emailHtml);
             assert ins != null;

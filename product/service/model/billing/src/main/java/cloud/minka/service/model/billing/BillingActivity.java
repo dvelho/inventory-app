@@ -1,0 +1,17 @@
+package cloud.minka.service.model.billing;
+
+public enum BillingActivity {
+    CREATE_TENANT,
+    CREATE_USER,
+    CREATE_LOCATION,
+    CREATE_ITEM,
+    CREATE_ORDER,
+    CREATE_SHIPMENT,
+    ACTIVITY_USER_SIGNUP,
+    ACTIVITY_USER_SIGNIN,
+    ACTIVITY_SEARCH_ITEM,
+    ACTIVITY_FULL_SEARCH_ITEM,
+    ACTIVITY_SEARCH_ORDER,
+
+
+}

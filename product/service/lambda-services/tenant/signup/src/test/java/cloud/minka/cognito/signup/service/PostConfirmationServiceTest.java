@@ -297,6 +297,8 @@ class PostConfirmationServiceTest {
         verify(snsClient, Mockito.times(1)).publish(publishRequest);
         assert output.equals(input);
     }
+
+
 }
 
 
