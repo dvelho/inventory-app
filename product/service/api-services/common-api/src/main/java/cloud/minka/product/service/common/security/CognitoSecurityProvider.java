@@ -1,5 +1,6 @@
 package cloud.minka.product.service.common.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.amazon.lambda.http.LambdaAuthenticationRequest;
 import io.quarkus.amazon.lambda.http.model.AwsProxyRequest;
@@ -8,12 +9,12 @@ import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.security.runtime.QuarkusPrincipal;
 import io.quarkus.security.runtime.QuarkusSecurityIdentity;
 import io.smallrye.mutiny.Uni;
-import io.vertx.core.json.JsonObject;
-import io.vertx.ext.auth.impl.jose.JWT;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.json.JsonObject;
 import java.security.Principal;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
 
 public class CognitoSecurityProvider implements LambdaIdentityProvider {
 
-    JWT jwt;
 
     @Override
     public SecurityIdentity authenticate(AwsProxyRequest event) {
@@ -36,8 +36,15 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
         }
         System.out.println("Decoding:");
 
-        jwt = new JWT();
-        JsonObject a = jwt.decode(event.getMultiValueHeaders().get("Authorization").get(0).replace("Bearer ", ""));
+        String[] parts = event.getMultiValueHeaders().get("Authorization").get(0).replace("Bearer ", "").split("\\.");
+        String header = new String(Base64.getDecoder().decode(parts[0]));
+        String payload = new String(Base64.getDecoder().decode(parts[1]));
+        JsonObject a;
+        try {
+            a = new ObjectMapper().readValue(payload, JsonObject.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         System.out.println("event: " + a);
         System.out.println("event: " + a.getString("cognito:username"));
