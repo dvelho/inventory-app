@@ -21,7 +21,7 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
     @Override
     public SecurityIdentity authenticate(AwsProxyRequest event) {
         try {
-            //test
+
             ObjectMapper mapper = new ObjectMapper();
             String json = mapper.writeValueAsString(event);
             System.out.println("event: " + json);

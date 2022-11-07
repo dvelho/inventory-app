@@ -520,6 +520,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref Environment
+      Name: !Sub ${Environment}-tenants-api-${TenantAggregatorName}
       EndpointConfiguration: REGIONAL
       Auth:
         DefaultAuthorizer: CognitoAuthorizer
@@ -551,7 +552,7 @@ Outputs:
     Description: The SNS topic for user signup messages
   TenantsApiNativeApi:
     Description: URL for application
-    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
+    Value: !Sub 'https://${TenantsApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}/'
     Export:
       Name: TenantsApiNativeApi
 
