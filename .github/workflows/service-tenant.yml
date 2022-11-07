@@ -26,7 +26,7 @@ jobs:
           filters: |
             tenant:
               - 'product/service/**/tenant/**'
-              - 'product/service/api-services/tenants-api/**'
+              - 'product/service/tenants**'
               - 'infrastructure/service-tenant.yaml'
 
   native_build:
