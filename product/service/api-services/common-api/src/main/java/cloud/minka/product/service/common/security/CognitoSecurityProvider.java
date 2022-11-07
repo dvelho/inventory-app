@@ -38,6 +38,10 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
         JsonObject a = jwt.decode(event.getMultiValueHeaders().get("Authorization").get(0).replace("Bearer ", ""));
 
         System.out.println("event: " + a);
+        System.out.println("event: " + a.getString("cognito:username"));
+        System.out.println("event: " + a.getString("cognito:groups"));
+        System.out.println("event: " + a.getString("custom:domain"));
+        System.out.println("event: " + a.getString("custom:custom:tenantId"));
 
         Principal principal = new QuarkusPrincipal(event.getRequestContext().getAuthorizer().getClaims().getEmail());
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder();
