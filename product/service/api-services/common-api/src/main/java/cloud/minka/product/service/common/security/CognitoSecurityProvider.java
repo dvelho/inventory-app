@@ -20,6 +20,13 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
     @Override
     public SecurityIdentity authenticate(AwsProxyRequest event) {
         System.out.println(event);
+        System.out.println(event.getRequestContext().toString());
+        System.out.println(event.getRequestContext().getAuthorizer().toString());
+        System.out.println(event.getRequestContext().getAuthorizer().getClaims().toString());
+        System.out.println(event.getRequestContext().getAuthorizer().getClaims().getClaim("cognito:groups"));
+        System.out.println(event.getRequestContext().getAuthorizer().getClaims().getClaim("cognito:groups").toString());
+
+
         // if (event.getMultiValueHeaders() == null || !event.getMultiValueHeaders().containsKey("x-user"))
         //     return null;
         Principal principal = new QuarkusPrincipal(event.getMultiValueHeaders().getFirst("x-user"));
