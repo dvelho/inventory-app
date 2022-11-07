@@ -32,6 +32,14 @@ public class VersionResource {
         return this.readGitProperties();
     }
 
+    @GET
+    @Path("/text")
+    @Produces(MediaType.APPLICATION_JSON)
+    public String versionT(String ctx) {
+        System.out.println("test: " + ctx);
+        return this.readGitProperties();
+    }
+
 
     /**
      * Read git properties string.
