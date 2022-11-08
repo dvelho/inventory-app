@@ -532,12 +532,6 @@ Resources:
         AllowMethods: "'GET,OPTIONS,POST,PUT,DELETE'"
         AllowCredentials: "'false'"
         MaxAge: "'86400'"
-      Tags:
-        - Key: Environment
-          Value: !Ref Environment
-        - Key: TenantAggregatorName
-          Value: !Ref TenantAggregatorName
-
 
 #Creates a role that allows Cognito to send SNS messages
 Outputs:

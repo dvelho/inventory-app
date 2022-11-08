@@ -1,10 +1,8 @@
 package cloud.minka.product.service.common;
 
-import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
 import io.quarkus.security.identity.SecurityIdentity;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
@@ -38,23 +36,6 @@ public class VersionResource {
         ctx.getUserPrincipal().getName();
         System.out.println("version: " + ctx.isUserInRole("User"));
         System.out.println("version: " + ctx);
-        return this.readGitProperties();
-    }
-
-    @GET
-    @Path("/test")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String version1(@Context APIGatewayV2HTTPEvent.RequestContext ctx) {
-        System.out.println("version: " + ctx.getAuthorizer().getJwt());
-        System.out.println("version: " + ctx);
-        return this.readGitProperties();
-    }
-
-    @POST
-    @Path("/text")
-    @Produces(MediaType.APPLICATION_JSON)
-    public String versionT(String ctx) {
-        System.out.println("testsj: " + ctx);
         return this.readGitProperties();
     }
 
