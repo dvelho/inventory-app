@@ -1,5 +1,11 @@
 package cloud.minka.tenants.api.controller;
 
+import cloud.minka.service.model.location.Address;
+import cloud.minka.service.model.tenant.TenantConfiguration;
+import cloud.minka.service.model.tenant.TenantRegion;
+import cloud.minka.service.model.tenant.TenantStatus;
+import cloud.minka.service.model.tenant.TenantStylePersonalization;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -9,7 +15,7 @@ import javax.ws.rs.core.MediaType;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/query")
+@Path("/")
 public class Query {
 
     /**
@@ -19,44 +25,23 @@ public class Query {
      */
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    public String getTenant() {
-        return "hello from tenants";
-    }
-
-    public void getTenantAdmin() {
-
-    }
-
-    public void getTenantUser() {
-
-    }
-
-    public void getTenantRole() {
-
-    }
-
-    public void getTenantRolePermission() {
-
-    }
-
-    public void getTenantPermission() {
-
-    }
-
-    public void getTenantPermissionGroup() {
-
-    }
-
-    public void getTenantPermissionGroupPermission() {
-
-    }
-
-    public void getTenantPermissionGroupRole() {
-
-    }
-
-    public void getTenantPermissionGroupRolePermission() {
-
+    public TenantConfiguration getTenant() {
+        return new TenantConfiguration(
+                "PKAAAAAAAAA",
+                "SK",
+                new Address("add1", "add2", "city", "state", "zip", "countryCode"),
+                TenantStatus.ACTIVE,
+                new TenantStylePersonalization("logoUrl",
+                        "primaryColor",
+                        "backgroundColor",
+                        "textColor",
+                        "linkColor",
+                        "linkHoverColor",
+                        "linkActiveColor",
+                        "linkVisitedColor"
+                ),
+                TenantRegion.EU_WEST_1
+        );
     }
 
 

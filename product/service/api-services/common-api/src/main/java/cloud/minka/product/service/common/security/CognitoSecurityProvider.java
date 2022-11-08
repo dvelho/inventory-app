@@ -56,16 +56,24 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
     private String getJwtPayload(String jwt) {
         /**
          * Can't get the JWT from the request context, so we have to parse it from the event
-         * Also regex does not work in native mode, so we have to do it manually
+         * Also regex does not work due to characters, so we have to do it manually
+         * (?:Bearer*\w+.)(.\w+)(?:.\w+)*
          * The Jwt is verified by AWS, so we don't need to do it here
+         *
          * */
         jwt = jwt.substring(jwt.indexOf("Bearer") + 7);
+        if (jwt.isBlank()) {
+            return null;
+        }
         jwt = jwt.substring(0, jwt.indexOf("\"") - 1).split("\\.")[1];
         return new String(Base64.getDecoder().decode(jwt));
 
     }
 
     private QuarkusSecurityIdentity getPrincipal(String jwtPayload, ObjectMapper mapper) throws IOException {
+        if (jwtPayload == null) {
+            return null;
+        }
         JsonNode jsonNode;
         jsonNode = mapper.readTree(jwtPayload);
         String username = jsonNode.get("cognito:username").asText();
@@ -73,7 +81,7 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
         String domain = jsonNode.get("custom:domain").asText();
         String tenantId = jsonNode.get("custom:tenantId").asText();
         Set<String> roles = new HashSet<>();
-        jsonNode.get("cognito:groups").forEach(jnode -> roles.add(jnode.asText()));
+        jsonNode.get("cognito:groups").forEach(j -> roles.add(j.asText()));
         Principal principal = new QuarkusPrincipal(username);
         QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder();
         builder.setPrincipal(principal)
