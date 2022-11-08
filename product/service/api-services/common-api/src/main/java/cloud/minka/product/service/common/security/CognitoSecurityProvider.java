@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 
 @ApplicationScoped
-
 public class CognitoSecurityProvider implements LambdaIdentityProvider {
 
 
@@ -58,6 +57,7 @@ public class CognitoSecurityProvider implements LambdaIdentityProvider {
         /**
          * Can't get the JWT from the request context, so we have to parse it from the event
          * Also regex does not work in native mode, so we have to do it manually
+         * The Jwt is verified by AWS, so we don't need to do it here
          * */
         jwt = jwt.substring(jwt.indexOf("Bearer") + 7);
         jwt = jwt.substring(0, jwt.indexOf("\"") - 1).split("\\.")[1];

@@ -46,10 +46,6 @@ Parameters:
     Type: String
     Description: The ARN of the certificate
     Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
-  TenantSignupPath:
-    Type: String
-    Description: The s3 key to publish the function.zip to
-    Default: "../product/service/lambda-services/user/welcome/target/function.zip" #"auth.minka.tech" #
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
@@ -536,6 +532,11 @@ Resources:
         AllowMethods: "'GET,OPTIONS,POST,PUT,DELETE'"
         AllowCredentials: "'false'"
         MaxAge: "'86400'"
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: TenantAggregatorName
+          Value: !Ref TenantAggregatorName
 
 
 #Creates a role that allows Cognito to send SNS messages

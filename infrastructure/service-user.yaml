@@ -1,17 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: Shared Tenant setup auth service
-#This is the template for the Cognito User Pool for the tenant
-# Create a Cognito User Pool
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpool.html
-# Create a Cognito User Pool Client
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpoolclient.html
-# Create a Cognito User Pool Domain
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-userpooldomain.html
-# Create a Cognito Identity Provider from Google
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-cognito-identityprovider.html
-
-
+Description: User service
 
 Parameters:
   TenantAggregatorName:
@@ -47,10 +36,6 @@ Parameters:
     Type: String
     Description: The ARN of the certificate
     Default: "arn:aws:acm:us-east-1:631674088803:certificate/0dfc0ddd-8e43-4662-adad-7b55df9bd9c2" #"arn:aws:acm:us-east-1:631674088803:certificate/34706a68-bf88-41f0-8f6a-d9646b263404"
-  WelcomeFilePath:
-    Type: String
-    Description: The s3 key to publish the function.zip to
-    Default: "../product/service/lambda-services/user/welcome/target/function.zip" #"auth.minka.tech" #
 
 Conditions:
   IsProd: !Equals [ !Ref Environment, "prod" ]
