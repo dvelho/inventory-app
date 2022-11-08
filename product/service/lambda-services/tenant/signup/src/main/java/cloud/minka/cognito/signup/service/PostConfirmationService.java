@@ -124,6 +124,7 @@ public class PostConfirmationService {
     private void sendSNSMessage(TenantCreate tenantCreate, SignupUser signupUser) {
         System.out.println("event::cognito::signup::request::tenantCreate::send::sns::message");
         PublishRequest request = tenantConverter.convertTenantAndSignupUserToSNSRequest(topicArn, tenantCreate, signupUser);
+        System.out.println("event::cognito::signup::request::tenantCreate::send::sns::message::request:" + request);
         snsClient
                 .publish(request);
 

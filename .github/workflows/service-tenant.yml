@@ -108,7 +108,7 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: Maven Clean om all project
+      - name: Maven Clean all projects
         if: steps.filter.outputs.tenant_signup == 'true' || steps.cache-target-tenant.outputs.cache-hit != 'true' || steps.filter.outputs.tenant_api == 'true'
         run: |
           mvn -f product/pom.xml -q clean install -DskipTests

@@ -28,6 +28,7 @@ public final class WelcomeHandler implements RequestHandler<SQSEvent, JsonNode> 
 
     @Override
     public JsonNode handleRequest(SQSEvent input, Context context) {
+        System.out.println("event::welcome::request:" + mapper.valueToTree(input));
         input.getRecords().forEach(record -> welcomeService.process(record));
         return mapper.valueToTree(input);
     }
