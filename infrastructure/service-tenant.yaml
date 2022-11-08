@@ -171,6 +171,7 @@ Resources:
           TENANT_NAME: !Ref TenantAggregatorName
           TENANT_INFO_TABLE_NAME: !Ref TenantInfoTable
           SIGNUP_SNS_TOPIC_ARN: !Ref SignupSNSMessagesFifo
+
   LogGroupSignupTriggerLambda:
     Type: AWS::Logs::LogGroup
     Properties:
