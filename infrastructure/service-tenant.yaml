@@ -512,6 +512,13 @@ Resources:
             Method: any
             RestApiId: !Ref TenantsApi
 
+  LogGroupTenantsApiNative:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${TenantsApiNative}"
+      # Explicit retention time
+      RetentionInDays: 7
+
   TenantsApi:
     Type: AWS::Serverless::Api
     Properties:

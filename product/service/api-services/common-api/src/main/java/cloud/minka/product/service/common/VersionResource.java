@@ -1,6 +1,7 @@
 package cloud.minka.product.service.common;
 
 import com.amazonaws.services.lambda.runtime.events.APIGatewayV2HTTPEvent;
+import io.quarkus.security.identity.SecurityIdentity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -28,8 +29,13 @@ public class VersionResource {
     // @RolesAllowed({"User", "Admin"})
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public String version(@Context SecurityContext ctx) {
+    public String version(@Context SecurityContext ctx, @Context SecurityIdentity identity) {
+        identity.getAttributes().forEach((k, v) -> System.out.println(k + " : " + v));
+        identity.getCredentials().forEach(System.out::println);
+        identity.getRoles().forEach(System.out::println);
+        System.out.println(identity.getPrincipal().getName());
         System.out.println("version: " + ctx.getUserPrincipal().getName());
+        ctx.getUserPrincipal().getName();
         System.out.println("version: " + ctx.isUserInRole("User"));
         System.out.println("version: " + ctx);
         return this.readGitProperties();

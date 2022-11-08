@@ -88,6 +88,13 @@ Resources:
         Type: "lambda"
         Name: "welcome"
 
+  LogGroupWelcomeTriggerLambda:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${Environment}-welcome-native-${TenantAggregatorName}
+      RetentionInDays: 7
+
+
   WelcomeQueueSnsWelcomeSubscription: #WelcomeSnsMessages
     Type: AWS::SNS::Subscription
     Properties:
