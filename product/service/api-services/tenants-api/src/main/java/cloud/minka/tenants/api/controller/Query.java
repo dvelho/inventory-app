@@ -26,8 +26,9 @@ public class Query {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public TenantConfiguration getTenant() {
+        //test
         return new TenantConfiguration(
-                "PKAAAAAAAAA",
+                "PK",
                 "SK",
                 new Address("add1", "add2", "city", "state", "zip", "countryCode"),
                 TenantStatus.ACTIVE,
